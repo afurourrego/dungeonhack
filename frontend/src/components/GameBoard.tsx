@@ -14,7 +14,7 @@ import {
   GameState,
   CardRevealState,
   DEV_MODE,
-  ENTRY_FEE_SUI,
+  ENTRY_FEE_USDC,
 } from "@/lib/constants";
 import {
   startDungeonRun,
@@ -68,7 +68,7 @@ export default function GameBoard() {
             GAME_CONFIG.BASIC_ATK
           );
           setActiveRunId(runId);
-          setMessage(`Entry fee paid! (${ENTRY_FEE_SUI} SUI)`);
+          setMessage(`Entry fee paid! (${ENTRY_FEE_USDC} USDC)`);
         } catch (error: any) {
           setError(error.message || "Failed to start run");
           setLoading(false);
@@ -105,6 +105,13 @@ export default function GameBoard() {
     setTimeout(() => {
       const card = currentDeck[index];
       const result = resolveCardLogic(card, playerStats.def, playerStats.hp);
+
+      console.log("Card resolved:", {
+        cardType: card.type,
+        cardValue: card.value,
+        goldEarned: result.gold,
+        currentGold: playerStats.gold
+      });
 
       // Update game state
       resolveCard(index, result.newHP, result.gold, result.defeated);
@@ -208,14 +215,14 @@ export default function GameBoard() {
           playerStats.gold // gems collected
         );
         setMessage(
-          `✅ Success! Claimed ${totalMonsters} SOUL token${
+          `✅ Success! Defeated ${totalMonsters} monster${
             totalMonsters > 1 ? "s" : ""
-          }!`
+          }! Score recorded.`
         );
         refreshBalance();
       } else if (DEV_MODE) {
         setMessage(
-          `Dev mode: Simulated claiming ${totalMonsters} SOUL tokens`
+          `Dev mode: Defeated ${totalMonsters} monster${totalMonsters > 1 ? "s" : ""}`
         );
       }
 
@@ -255,9 +262,9 @@ export default function GameBoard() {
             </div>
           </div>
           <div className="stat-box">
-            <div className="text-xs text-gray-400">SOUL Tokens</div>
+            <div className="text-xs text-gray-400">Leaderboard Score</div>
             <div className="text-2xl font-bold text-dungeon-gold">
-              {gameState === GameState.COMPLETED ? currentRunMonsters + currentRoomMonsters : 0}
+              {playerStats.gold}
             </div>
           </div>
         </div>
@@ -269,7 +276,7 @@ export default function GameBoard() {
         )}
 
         <button onClick={resetGame} className="btn-primary">
-          New Run (Pay {ENTRY_FEE_SUI} SUI)
+          New Run (Pay {ENTRY_FEE_USDC} USDC)
         </button>
       </div>
     );
@@ -284,8 +291,8 @@ export default function GameBoard() {
         </h2>
 
         <p className="text-gray-300 mb-4">
-          Pay a tax of <span className="text-dungeon-gold font-bold">{ENTRY_FEE_SUI} SUI</span> to
-          the Emperor to enter the dungeon.
+          Pay an entry fee of <span className="text-dungeon-gold font-bold">{ENTRY_FEE_USDC} USDC</span> to
+          enter the dungeon and compete for weekly prizes!
         </p>
 
         <p className="text-gray-400 text-sm mb-6">
@@ -295,7 +302,7 @@ export default function GameBoard() {
           <br />
           After each room: Continue (risk death) or Exit (claim rewards).
           <br />
-          Earn 1 SOUL token per monster defeated!
+          Your score = gems collected!
         </p>
 
         <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-6">
@@ -324,7 +331,7 @@ export default function GameBoard() {
           disabled={isProcessing}
           className="btn-success"
         >
-          {isProcessing ? "Starting..." : `Pay ${ENTRY_FEE_SUI} SUI & Enter`}
+          {isProcessing ? "Starting..." : `Pay ${ENTRY_FEE_USDC} USDC & Enter`}
         </button>
 
         {DEV_MODE && (
@@ -366,15 +373,9 @@ export default function GameBoard() {
             </div>
           </div>
           <div className="stat-box">
-            <div className="text-xs text-gray-400">Gems</div>
+            <div className="text-xs text-gray-400">Score (Gems)</div>
             <div className="text-2xl font-bold text-dungeon-gold">
               {playerStats.gold}
-            </div>
-          </div>
-          <div className="stat-box">
-            <div className="text-xs text-gray-400">Monsters</div>
-            <div className="text-2xl font-bold text-red-400">
-              {currentRunMonsters}
             </div>
           </div>
         </div>
@@ -427,7 +428,7 @@ export default function GameBoard() {
               className="btn-success"
               disabled={isProcessing}
             >
-              ✅ Exit & Claim ({currentRunMonsters + currentRoomMonsters} SOUL)
+              ✅ Exit & Claim Rewards ({playerStats.gold} gems)
             </button>
           </div>
         </div>

@@ -1,21 +1,40 @@
 module dungeon_flip::active_run {
     use sui::coin::{Self, Coin};
-    use sui::sui::SUI;
+    use sui::clock::Clock;
     use sui::event;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
+    use dungeon_flip::fee_distributor::{Self, FeeDistributor};
+    use dungeon_flip::rewards_pool::RewardsPool;
+
+    // ⚠️ CRITICAL: Replace with actual USDC coin type before deployment!
+    // This placeholder struct is NOT the real USDC on Sui.
+    //
+    // To use real USDC:
+    // 1. Find USDC package address on Sui (testnet/mainnet)
+    // 2. Replace with: use 0xUSCD_PACKAGE::usdc::USDC;
+    // 3. Remove the struct definition below
+    //
+    // WARNING: Deploying with this placeholder allows anyone to create fake USDC!
+    struct USDC has drop {}
 
     // Errors
     const EInsufficientPayment: u64 = 0;
     const EInvalidRun: u64 = 1;
+    const EInvalidStats: u64 = 2;
 
-    // Entry fee: 0.01 SUI (10_000_000 MIST)
-    const ENTRY_FEE: u64 = 10_000_000;
+    // Entry fee: 1 USDC (1_000_000 with 6 decimals)
+    const ENTRY_FEE: u64 = 1_000_000;
 
-    /// Treasury object to hold collected fees
-    struct Treasury has key {
+    /// Admin capability for managing entry fees
+    struct AdminCap has key, store {
         id: UID,
-        balance: u64,
+    }
+
+    /// Config for entry fee (adjustable by admin)
+    struct FeeConfig has key {
+        id: UID,
+        entry_fee: u64,
     }
 
     /// Represents an active dungeon run
@@ -53,35 +72,47 @@ module dungeon_flip::active_run {
         survived: bool,
     }
 
-    /// Initialize the treasury (called once on deployment)
+    /// Initialize fee config (called once on deployment)
     fun init(ctx: &mut TxContext) {
-        let treasury = Treasury {
+        let fee_config = FeeConfig {
             id: object::new(ctx),
-            balance: 0,
+            entry_fee: ENTRY_FEE,
         };
 
-        transfer::share_object(treasury);
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+
+        transfer::share_object(fee_config);
+        transfer::transfer(admin_cap, tx_context::sender(ctx));
     }
 
-    /// Start a new dungeon run by paying entry fee
+    /// Start a new dungeon run by paying entry fee in USDC
     public entry fun start_run(
-        treasury: &mut Treasury,
-        payment: Coin<SUI>,
+        fee_config: &FeeConfig,
+        fee_distributor: &mut FeeDistributor,
+        rewards_pool: &mut RewardsPool,
+        payment: Coin<USDC>,
+        clock: &Clock,
         initial_hp: u64,
         initial_atk: u64,
         ctx: &mut TxContext
     ) {
         // Verify entry fee payment
         let paid_amount = coin::value(&payment);
-        assert!(paid_amount >= ENTRY_FEE, EInsufficientPayment);
+        assert!(paid_amount >= fee_config.entry_fee, EInsufficientPayment);
 
-        // Update treasury balance tracking
-        treasury.balance = treasury.balance + paid_amount;
+        // Validate initial stats
+        assert!(initial_hp > 0 && initial_atk > 0, EInvalidStats);
 
-        // Transfer payment to treasury (the contract deployer will own this)
-        // In production, this should go to a multisig or DAO treasury address
-        let deployer = @0x0; // Replace with actual treasury/deployer address before deployment
-        transfer::public_transfer(payment, deployer);
+        // Distribute fee automatically (70% pool, 20% dev, 10% marketing)
+        fee_distributor::distribute_entry_fee(
+            fee_distributor,
+            rewards_pool,
+            payment,
+            clock,
+            ctx
+        );
 
         let sender = tx_context::sender(ctx);
         let run_id = object::new(ctx);
@@ -175,11 +206,16 @@ module dungeon_flip::active_run {
         run.hp
     }
 
-    public fun get_entry_fee(): u64 {
-        ENTRY_FEE
+    public fun get_entry_fee(fee_config: &FeeConfig): u64 {
+        fee_config.entry_fee
     }
 
-    public fun get_treasury_balance(treasury: &Treasury): u64 {
-        treasury.balance
+    /// Update entry fee (admin only)
+    public entry fun update_entry_fee(
+        _: &AdminCap,
+        fee_config: &mut FeeConfig,
+        new_fee: u64
+    ) {
+        fee_config.entry_fee = new_fee;
     }
 }

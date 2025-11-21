@@ -10,12 +10,13 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 
 **Dungeon Flip Lite** is a simple yet engaging roguelite card game where players:
 
-1. Connect their **OneWallet** (Sui wallet)
+1. Connect their **Sui Wallet** (compatible with OneChain)
 2. Mint a free **Aventurer NFT** (Sui Object)
-3. Play dungeon runs with 4 random cards
-4. Face **Monsters**, collect **Treasures**, and avoid **Traps**
-5. Earn **Soul Fragment tokens** (Sui Coin) for defeating monsters
-6. Track progress on-chain via shared objects
+3. Pay **1 USDC** entry fee per dungeon run
+4. Play dungeon runs with 4 random cards
+5. Face **Monsters**, collect **Treasures**, and avoid **Traps**
+6. Compete for **weekly USDC prizes** distributed to top 10 players
+7. Track progress on-chain via shared objects
 
 ### Game Mechanics
 
@@ -33,6 +34,18 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 - **Win Condition**: Survive all 4 cards with HP > 0
 - **Lose Condition**: HP reaches 0
 
+### 💰 Economy (USDC-Based)
+
+- **Entry Fee**: 1 USDC per run
+- **Automatic Distribution**:
+  - 70% → Weekly Rewards Pool (top 10 players)
+  - 20% → Dev Treasury
+  - 10% → Marketing Reserve
+- **Weekly Prizes**: Every Friday 4:20 UTC
+  - 1st place: 30% of pool
+  - 2nd-10th: Decreasing percentages
+  - See [USDC_ECONOMY.md](USDC_ECONOMY.md) for full details
+
 ## 🏗️ Project Structure
 
 ```
@@ -41,7 +54,9 @@ DungeonFlip/
 │   ├── Move.toml                  # Package configuration
 │   └── sources/
 │       ├── aventurer_nft.move     # NFT (Owned Object)
-│       ├── soul_fragment.move     # Reward token (Coin<T>)
+│       ├── active_run.move        # Dungeon run management + entry fees
+│       ├── fee_distributor.move   # USDC distribution logic
+│       ├── rewards_pool.move      # Weekly prize pool
 │       └── dungeon_progress.move  # Progress tracking (Shared Object)
 ├── frontend/                      # Next.js frontend
 │   ├── src/
@@ -167,12 +182,11 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Stats**: ATK=1, DEF=1, HP=4
 - **Events**: `AventurerMinted`
 
-### 2. soul_fragment.move
-- **Type**: Coin<SOUL_FRAGMENT>
-- **Functions**:
-  - `reward_player()` - Mint 1 token
-  - `batch_reward()` - Mint multiple tokens
-- **Authority**: TreasuryCap (owned by deployer)
+### 2. active_run.move + fee_distributor.move + rewards_pool.move
+- **Entry Fee**: 1 USDC per run
+- **Auto-Distribution**: 70% pool / 20% dev / 10% marketing
+- **Weekly Prizes**: Automatic distribution to top 10 players
+- See [USDC_ECONOMY.md](USDC_ECONOMY.md) for complete documentation
 
 ### 3. dungeon_progress.move
 - **Type**: Shared Object (ProgressRegistry)
@@ -186,7 +200,9 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### On-Chain (Sui)
 - ✅ NFT ownership verification
-- ✅ Token rewards (Soul Fragments)
+- ✅ USDC-based reward economy
+- ✅ Automatic fee distribution
+- ✅ Weekly prize pool
 - ✅ Progress tracking in shared object
 - ✅ Event emission for indexing
 
@@ -205,7 +221,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📚 Documentation
 
+- **[USDC_ECONOMY.md](USDC_ECONOMY.md)** - Complete USDC economy guide
 - **[ONEHACK_SUBMISSION.md](ONEHACK_SUBMISSION.md)** - Hackathon submission document
+- **[SECURITY_AUDIT.md](SECURITY_AUDIT.md)** - Security analysis and vulnerabilities
+- **[DEVELOPMENT_MODE.md](DEVELOPMENT_MODE.md)** - Test without blockchain
 - **[Move Contracts](move/sources/)** - Smart contract source code with inline comments
 
 ## 🔗 Useful Links

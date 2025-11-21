@@ -150,34 +150,6 @@ export const getAventurerNFT = async (
   }
 };
 
-/**
- * Get Soul Fragment balance
- */
-export const getSoulBalance = async (address: string): Promise<number> => {
-  try {
-    // If package ID is not set, return 0 (contracts not deployed yet)
-    if (!PACKAGE_ID) {
-      return 0;
-    }
-
-    const client = getSuiClient();
-
-    const coins = await client.getCoins({
-      owner: address,
-      coinType: `${PACKAGE_ID}::soul_fragment::SOUL_FRAGMENT`,
-    });
-
-    let total = 0;
-    coins.data.forEach((coin) => {
-      total += Number(coin.balance);
-    });
-
-    return total;
-  } catch (error) {
-    console.error("Error getting soul balance:", error);
-    return 0;
-  }
-};
 
 /**
  * Record a completed run with rooms reached
@@ -211,45 +183,6 @@ export const recordRun = async (
   }
 };
 
-/**
- * Reward player with Soul Fragments
- * Only the game admin can call this (requires GAME_ADMIN_ID object)
- */
-export const claimReward = async (
-  signAndExecuteTransactionBlock: any,
-  address: string,
-  amount: number = 1
-): Promise<void> => {
-  try {
-    const tx = new Transaction();
-
-    if (amount === 1) {
-      tx.moveCall({
-        target: `${PACKAGE_ID}::soul_fragment::reward_player`,
-        arguments: [tx.object(GAME_ADMIN_ID), tx.pure.address(address)],
-      });
-    } else {
-      tx.moveCall({
-        target: `${PACKAGE_ID}::soul_fragment::batch_reward`,
-        arguments: [
-          tx.object(GAME_ADMIN_ID),
-          tx.pure.address(address),
-          tx.pure.u64(amount),
-        ],
-      });
-    }
-
-    await signAndExecuteTransactionBlock({
-      transaction: tx,
-      options: {
-        showEffects: true,
-      },
-    });
-  } catch (error: any) {
-    console.error("Error claiming reward:", error);
-    throw new Error(error.message || "Failed to claim reward");
-  }
-};
 
 /**
  * Get player progress
@@ -376,8 +309,7 @@ export const advanceToNextRoom = async (
 };
 
 /**
- * Exit dungeon and claim rewards
- * This ends the run and mints SOUL tokens based on monsters defeated
+ * Exit dungeon and end the active run
  */
 export const exitDungeonRun = async (
   signAndExecuteTransactionBlock: any,
@@ -399,23 +331,12 @@ export const exitDungeonRun = async (
       ],
     });
 
-    // If monsters were defeated, mint SOUL tokens
-    if (monstersDefeated > 0) {
-      tx.moveCall({
-        target: `${PACKAGE_ID}::soul_fragment::batch_reward`,
-        arguments: [
-          tx.object(GAME_ADMIN_ID),
-          tx.pure.address(await signAndExecuteTransactionBlock.address),
-          tx.pure.u64(monstersDefeated),
-        ],
-      });
-    }
-
     // Record the run in progress registry (for leaderboard)
     tx.moveCall({
       target: `${PACKAGE_ID}::dungeon_progress::record_run`,
       arguments: [
         tx.object(PROGRESS_REGISTRY_ID),
+        tx.object("0x6"), // Clock object
         tx.pure.bool(survived),
         tx.pure.u64(roomsReached),
         tx.pure.u64(gemsCollected),

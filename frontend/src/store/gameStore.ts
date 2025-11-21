@@ -69,7 +69,7 @@ interface GameStore {
 const initialPlayerStats: PlayerStats = {
   hp: 4,
   atk: 1,
-  def: 0,
+  def: 1,
   gold: 0,
 };
 

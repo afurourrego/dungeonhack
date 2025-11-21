@@ -50,16 +50,24 @@ export const PROGRESS_REGISTRY_ID = process.env.NEXT_PUBLIC_PROGRESS_REGISTRY_ID
 // Set to "true" to enable demo mode (bypass blockchain checks)
 export const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
-// Entry fee for dungeon runs (tax to the emperor)
-export const ENTRY_FEE_SUI = 0.01; // 0.01 SUI
-export const ENTRY_FEE_MIST = 10_000_000; // 0.01 SUI in MIST (1 SUI = 1,000,000,000 MIST)
+// Entry fee for dungeon runs in USDC (stablecoin)
+export const ENTRY_FEE_USDC = 1.0; // 1 USDC
+export const ENTRY_FEE_USDC_UNITS = 1_000_000; // 1 USDC with 6 decimals
 
-// Reward per monster defeated
-export const REWARD_PER_MONSTER = 1; // 1 SOUL token per monster
+// Fee distribution (automatic on entry):
+// 70% → Weekly Rewards Pool (distributed to top 10 players)
+// 20% → Dev Treasury
+// 10% → Marketing Reserve
+
+// Weekly distribution schedule:
+// - Distribution happens every Friday at 4:20 UTC
+// - Top 10 players receive: 30%, 20%, 15%, 10%, 8%, 6%, 4%, 3%, 2%, 2%
+
+// Reward per monster defeated (off-chain tracking for Phase 1)
+export const REWARD_PER_MONSTER = 1; // Used for leaderboard scoring
 
 // For testing purposes, you can set these manually after deploying:
 // PACKAGE_ID: The package ID from `sui client publish`
-// GAME_ADMIN_ID: The GameAdmin object ID for minting Soul Fragments
 // MINT_REGISTRY_ID: The MintRegistry shared object ID for tracking NFT mints
 // PROGRESS_REGISTRY_ID: The ProgressRegistry shared object ID for tracking game progress
 

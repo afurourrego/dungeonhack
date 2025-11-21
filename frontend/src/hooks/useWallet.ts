@@ -7,7 +7,6 @@ import {
 import { useGameStore } from "@/store/gameStore";
 import {
   hasAventurer,
-  getSoulBalance,
   mintAventurer,
   getAventurerNFT,
   getPlayerProgress,
@@ -23,13 +22,11 @@ export const useWallet = () => {
     address,
     hasNFT,
     tokenId,
-    soulBalance,
     isLoading,
     error,
     setWalletConnection,
     disconnectWallet,
     setHasNFT,
-    setSoulBalance,
     setLoading,
     setError,
     setMessage,
@@ -64,9 +61,6 @@ export const useWallet = () => {
         setHasNFT(false);
       }
 
-      // Get soul balance
-      const balance = await getSoulBalance(walletAddress);
-      setSoulBalance(balance);
     } catch (err: any) {
       console.error("Error checking NFT and balance:", err);
       setError(err.message || "Failed to check account status");
@@ -120,17 +114,11 @@ export const useWallet = () => {
     }
   }, [account, signAndExecuteTransaction, setHasNFT, setLoading, setError, setMessage]);
 
-  // Refresh balance
+  // Refresh balance - removed (no longer using Soul Fragments)
   const refreshBalance = useCallback(async () => {
-    if (!account?.address) return;
-
-    try {
-      const balance = await getSoulBalance(account.address);
-      setSoulBalance(balance);
-    } catch (err) {
-      console.error("Failed to refresh balance:", err);
-    }
-  }, [account, setSoulBalance]);
+    // Soul Fragment system removed
+    return;
+  }, []);
 
   // Refresh NFT status
   const refreshNFT = useCallback(async () => {
@@ -171,7 +159,6 @@ export const useWallet = () => {
     address: account?.address || null,
     hasNFT,
     tokenId,
-    soulBalance,
     isLoading,
     error,
 
