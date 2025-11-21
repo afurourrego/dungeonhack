@@ -345,13 +345,12 @@ export const startDungeonRun = async (
 
 /**
  * Advance to next room (called when player chooses "Continue")
+ * Note: gold and monsters are tracked off-chain in the frontend
  */
 export const advanceToNextRoom = async (
   signAndExecuteTransactionBlock: any,
   activeRunId: string,
-  newHP: number,
-  goldGained: number,
-  monsterDefeated: boolean
+  newHP: number
 ): Promise<void> => {
   try {
     const tx = new Transaction();
@@ -361,8 +360,6 @@ export const advanceToNextRoom = async (
       arguments: [
         tx.object(activeRunId),
         tx.pure.u64(newHP),
-        tx.pure.u64(goldGained),
-        tx.pure.bool(monsterDefeated),
       ],
     });
 

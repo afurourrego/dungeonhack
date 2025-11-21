@@ -44,8 +44,8 @@ Technical overview of the project structure and design decisions.
 **Purpose**: Represent player's adventurer as an NFT.
 
 **Key Features:**
-- One free mint per wallet (`hasMinted` mapping)
-- Fixed stats stored on-chain (ATK, DEF, HP)
+- One free mint per wallet (enforced via MintRegistry)
+- Fixed stats stored on-chain: ATK=1, DEF=1, HP=4
 - Sequential token IDs starting from 1
 - Owner can query their token ID
 
@@ -280,7 +280,7 @@ getPlayerProgress(signer, address) → { runs, monsters }
 
 **Probability Distribution:**
 - 60% Monster (ATK 1-3 random)
-- 30% Treasure (10-30 gold random)
+- 30% Treasure (10-30 gold random, tracked off-chain)
 - 10% Trap (1 HP damage)
 
 ```typescript
@@ -295,13 +295,20 @@ export const generateCard = (id: number): GameCard => {
 
 ### Combat Resolution
 
+**DEF-Based Combat System:**
+- Damage = Monster ATK - Player DEF
+- If damage > 0: Player loses that much HP
+- If damage <= 0: Player blocks the attack completely
+- Monsters only count as defeated if player survives the encounter
+
 ```typescript
-export const resolveCard = (card, playerATK, currentHP) => {
+export const resolveCard = (card, playerDEF, currentHP) => {
   if (card.type === MONSTER) {
-    if (playerATK >= card.value) {
-      return { defeated: true, message: "Victory!" };
+    const damage = Math.max(0, card.value - playerDEF);
+    if (damage > 0) {
+      return { newHP: currentHP - damage, message: `Took ${damage} damage!` };
     } else {
-      return { newHP: currentHP - 1, message: "Too strong!" };
+      return { message: "Blocked the attack!" };
     }
   }
   // ... treasure & trap logic
@@ -343,7 +350,8 @@ export const resolveCard = (card, playerATK, currentHP) => {
 **Off-Chain:**
 - Card generation (save gas)
 - Combat calculations (instant feedback)
-- Gold tracking (cosmetic only)
+- Gold tracking (cosmetic only, tracked in frontend)
+- Monsters defeated count (tracked in frontend, synced on run completion)
 
 ### Why This Stack?
 

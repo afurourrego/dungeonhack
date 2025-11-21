@@ -44,7 +44,7 @@ module dungeon_flip::aventurer_nft {
     }
 
     /// Mint a basic Aventurer NFT
-    /// Stats: ATK:1, DEF:0, HP:3
+    /// Stats: ATK:1, DEF:1, HP:4
     /// Only allows 1 NFT per address
     public entry fun mint_basic_aventurer(
         registry: &mut MintRegistry,
@@ -62,8 +62,8 @@ module dungeon_flip::aventurer_nft {
             id: object::new(ctx),
             name: string::utf8(b"Basic Aventurer"),
             atk: 1,
-            def: 0,
-            hp: 3,
+            def: 1,
+            hp: 4,
             owner: sender,
         };
 
@@ -74,8 +74,8 @@ module dungeon_flip::aventurer_nft {
             aventurer_id,
             owner: sender,
             atk: 1,
-            def: 0,
-            hp: 3,
+            def: 1,
+            hp: 4,
         });
 
         // Transfer to the minter

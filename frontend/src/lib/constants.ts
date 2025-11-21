@@ -1,8 +1,8 @@
 // Game constants
 export const GAME_CONFIG = {
   CARDS_PER_RUN: 4,
-  BASIC_ATK: 1,
-  BASIC_DEF: 0,
+  BASIC_ATK: 1, // ATK is for display only, not used in combat
+  BASIC_DEF: 1, // DEF is used to block monster attacks
   BASIC_HP: 4,
 } as const;
 

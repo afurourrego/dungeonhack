@@ -26,8 +26,6 @@ module dungeon_flip::active_run {
         current_room: u64,
         hp: u64,
         atk: u64,
-        gold: u64,
-        monsters_defeated: u64,
         started_at: u64,
     }
 
@@ -45,7 +43,6 @@ module dungeon_flip::active_run {
         player: address,
         new_room: u64,
         hp: u64,
-        monsters_defeated: u64,
     }
 
     /// Event emitted when a run ends
@@ -53,8 +50,6 @@ module dungeon_flip::active_run {
         run_id: ID,
         player: address,
         final_room: u64,
-        monsters_defeated: u64,
-        gold: u64,
         survived: bool,
     }
 
@@ -98,8 +93,6 @@ module dungeon_flip::active_run {
             current_room: 1, // Always start at room 1
             hp: initial_hp,
             atk: initial_atk,
-            gold: 0,
-            monsters_defeated: 0,
             started_at: tx_context::epoch(ctx),
         };
 
@@ -115,11 +108,10 @@ module dungeon_flip::active_run {
     }
 
     /// Advance to the next room (called when player chooses "Continue")
+    /// Note: gold and monsters_defeated are tracked off-chain in the frontend
     public entry fun advance_room(
         run: &mut ActiveRun,
         new_hp: u64,
-        gold_gained: u64,
-        monster_defeated: bool,
         ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
@@ -128,27 +120,22 @@ module dungeon_flip::active_run {
         // Update run state
         run.current_room = run.current_room + 1;
         run.hp = new_hp;
-        run.gold = run.gold + gold_gained;
-
-        if (monster_defeated) {
-            run.monsters_defeated = run.monsters_defeated + 1;
-        };
 
         event::emit(RoomAdvanced {
             run_id: object::uid_to_inner(&run.id),
             player: sender,
             new_room: run.current_room,
             hp: run.hp,
-            monsters_defeated: run.monsters_defeated,
         });
     }
 
     /// End the run (called when player exits or dies)
+    /// Note: gold and monsters_defeated are tracked off-chain and passed separately
     public fun end_run(
         run: ActiveRun,
         survived: bool,
         ctx: &mut TxContext
-    ): (address, u64, u64, u64) {
+    ): (address, u64) {
         let sender = tx_context::sender(ctx);
         assert!(run.player == sender, EInvalidRun);
 
@@ -158,8 +145,6 @@ module dungeon_flip::active_run {
             current_room,
             hp: _,
             atk: _,
-            gold,
-            monsters_defeated,
             started_at: _,
         } = run;
 
@@ -167,15 +152,13 @@ module dungeon_flip::active_run {
             run_id: object::uid_to_inner(&id),
             player,
             final_room: current_room,
-            monsters_defeated,
-            gold,
             survived,
         });
 
         object::delete(id);
 
-        // Return player address, monsters defeated, final room, and gold
-        (player, monsters_defeated, current_room, gold)
+        // Return player address and final room
+        (player, current_room)
     }
 
     // === View Functions ===
@@ -190,14 +173,6 @@ module dungeon_flip::active_run {
 
     public fun get_hp(run: &ActiveRun): u64 {
         run.hp
-    }
-
-    public fun get_monsters_defeated(run: &ActiveRun): u64 {
-        run.monsters_defeated
-    }
-
-    public fun get_gold(run: &ActiveRun): u64 {
-        run.gold
     }
 
     public fun get_entry_fee(): u64 {

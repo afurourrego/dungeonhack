@@ -21,14 +21,14 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 
 - **Cards per Run**: 4 cards
 - **Card Types**:
-  - 🦹 **Monster** (60%): Defeat with ATK ≥ Monster ATK
-  - 💎 **Treasure** (30%): Collect gold (off-chain)
+  - 🦹 **Monster** (60%): Block attacks with DEF, take damage = Monster ATK - Player DEF
+  - 💎 **Treasure** (30%): Collect gold (tracked off-chain in frontend)
   - 🕸️ **Trap** (10%): Lose 1 HP
 
 - **Basic Adventurer Stats**:
   - ATK: 1
-  - DEF: 0
-  - HP: 3
+  - DEF: 1
+  - HP: 4
 
 - **Win Condition**: Survive all 4 cards with HP > 0
 - **Lose Condition**: HP reaches 0
@@ -164,7 +164,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Type**: Owned Object (NFT)
 - **Functions**:
   - `mint_basic_aventurer()` - Mint free Adventurer NFT
-- **Stats**: ATK=1, DEF=0, HP=3
+- **Stats**: ATK=1, DEF=1, HP=4
 - **Events**: `AventurerMinted`
 
 ### 2. soul_fragment.move
@@ -193,7 +193,8 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### Off-Chain (Frontend)
 - ✅ Game logic (instant, free)
 - ✅ Card generation
-- ✅ Combat resolution
+- ✅ Combat resolution (DEF-based damage calculation)
+- ✅ Gold and monsters defeated tracking
 - ✅ Visual feedback
 
 ### Hybrid Model Benefits

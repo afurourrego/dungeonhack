@@ -79,7 +79,7 @@ export const generateDeck = (): GameCard[] => {
  */
 export const resolveCard = (
   card: GameCard,
-  playerATK: number,
+  playerDEF: number,
   currentHP: number
 ): {
   newHP: number;
@@ -94,13 +94,13 @@ export const resolveCard = (
 
   switch (card.type) {
     case CardType.MONSTER:
-      if (playerATK >= card.value) {
-        message = `⚔️ You defeated a Monster (ATK ${card.value})!`;
+      if (playerDEF >= card.value) {
+        message = `🛡️ You blocked the Monster (ATK ${card.value}) with your defense!`;
         defeated = true;
       } else {
-        const damage = card.value - playerATK;
+        const damage = card.value - playerDEF;
         newHP -= damage;
-        message = `💔 Monster (ATK ${card.value}) is too strong! You lose ${damage} HP.`;
+        message = `💔 Monster (ATK ${card.value}) broke through your defense! You lose ${damage} HP.`;
       }
       break;
 
@@ -161,7 +161,7 @@ export const calculateRunStats = (
     if (card.revealed === CardRevealState.RESOLVED) {
       switch (card.type) {
         case CardType.MONSTER:
-          if (GAME_CONFIG.BASIC_ATK >= card.value) {
+          if (GAME_CONFIG.BASIC_DEF >= card.value) {
             monstersDefeated++;
           }
           break;

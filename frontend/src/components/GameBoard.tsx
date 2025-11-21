@@ -104,7 +104,7 @@ export default function GameBoard() {
     // Wait for animation
     setTimeout(() => {
       const card = currentDeck[index];
-      const result = resolveCardLogic(card, playerStats.atk, playerStats.hp);
+      const result = resolveCardLogic(card, playerStats.def, playerStats.hp);
 
       // Update game state
       resolveCard(index, result.newHP, result.gold, result.defeated);
@@ -170,9 +170,7 @@ export default function GameBoard() {
         await advanceRoomBlockchain(
           signAndExecuteTransaction,
           activeRunId,
-          playerStats.hp,
-          0, // gold gained (tracked off-chain for now)
-          currentRunMonsters > 0 // monster defeated in this room
+          playerStats.hp
         );
       }
 
@@ -362,9 +360,9 @@ export default function GameBoard() {
             </div>
           </div>
           <div className="stat-box">
-            <div className="text-xs text-gray-400">ATK</div>
-            <div className="text-2xl font-bold text-red-400">
-              {playerStats.atk}
+            <div className="text-xs text-gray-400">DEF</div>
+            <div className="text-2xl font-bold text-blue-400">
+              {playerStats.def}
             </div>
           </div>
           <div className="stat-box">

@@ -51,8 +51,8 @@ TreasuryCap:          0x... (for SOUL_FRAGMENT minting)
 
 **NFT System (Sui Objects)**:
 - Players mint free Aventurer NFT (owned object)
-- One NFT per wallet address (enforced in contract)
-- Fixed stats stored on-chain (ATK 1, DEF 0, HP 3)
+- One NFT per wallet address (enforced via MintRegistry)
+- Fixed stats stored on-chain (ATK 1, DEF 1, HP 4)
 - Fully compliant Sui object standard
 
 **Token System (Sui Coin)**:
@@ -128,12 +128,13 @@ TreasuryCap:          0x... (for SOUL_FRAGMENT minting)
 **Card System**:
 - **Monster** (60%): Combat encounter
   - ATK values: 1, 2, or 3 (random)
-  - Defeat if player ATK ≥ monster ATK
-  - Fail → Lose 1 HP
+  - DEF-based combat: Damage = Monster ATK - Player DEF
+  - Player survives if remaining HP > 0
+  - Monsters count only when player survives the encounter
 
 - **Treasure** (30%): Reward
   - Gold values: 10, 20, or 30 (random)
-  - Instant collection (off-chain)
+  - Tracked off-chain in frontend (cosmetic)
   - Future: Purchase upgrades
 
 - **Trap** (10%): Hazard
@@ -146,9 +147,10 @@ TreasuryCap:          0x... (for SOUL_FRAGMENT minting)
 **Lose Condition**: HP reaches 0
 
 **Rewards**:
-- Off-chain: Gold (cosmetic)
-- On-chain: Soul Fragment coins (per monster defeated)
+- Off-chain: Gold and monsters defeated count (tracked in frontend, cosmetic)
+- On-chain: Soul Fragment coins (per monster defeated, synced at run end)
 - On-chain: Progress stats (permanent record in shared object)
+- Treasury system for secure entry fee collection (future feature)
 
 ---
 

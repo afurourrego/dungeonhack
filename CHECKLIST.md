@@ -35,13 +35,13 @@ Use this checklist to ensure everything is ready for OneHack 2.0 submission.
 - [x] `contracts/DungeonProgress.sol` - Progress tracking
 
 ### Contract Features
-- [x] One free mint per wallet (AventurerNFT)
-- [x] Fixed stats (ATK 1, DEF 0, HP 3)
-- [x] Reward distribution system (SoulFragmentToken)
-- [x] Authorization system (only authorized contracts can mint)
-- [x] Progress tracking (runs, monsters, treasures, traps)
+- [x] One free mint per wallet (enforced via MintRegistry)
+- [x] Fixed stats (ATK 1, DEF 1, HP 4)
+- [x] Reward distribution system (TreasuryCap-based)
+- [x] Authorization system (GameAdmin capability pattern)
+- [x] Progress tracking in shared object (runs, monsters)
 - [x] Event emissions for indexing
-- [x] OpenZeppelin libraries used
+- [x] Treasury system for entry fee collection (future feature)
 
 ### Deployment
 - [ ] Contracts deployed to OneChain
@@ -67,9 +67,9 @@ Use this checklist to ensure everything is ready for OneHack 2.0 submission.
 
 ### Game Logic
 - [x] Card generation (60% monster, 30% treasure, 10% trap)
-- [x] Combat resolution (ATK comparison)
+- [x] Combat resolution (DEF-based damage calculation)
 - [x] HP tracking and game over detection
-- [x] Stats calculation (runs, monsters, gold)
+- [x] Stats calculation (runs tracked on-chain, monsters and gold tracked off-chain in frontend)
 
 ### Blockchain Integration
 - [x] OneWallet connection

@@ -69,7 +69,7 @@ npm run frontend:dev
 
 **[Show transaction in wallet, confirm]**
 
-> "This creates an ERC-721 NFT with fixed stats: 1 ATK, 0 DEF, 3 HP. The NFT is now in my wallet and verifiable on-chain."
+> "This creates an ERC-721 NFT with fixed stats: 1 ATK, 1 DEF, 4 HP. The NFT is now in my wallet and verifiable on-chain."
 
 **[Show minted stats]**
 
@@ -85,7 +85,7 @@ npm run frontend:dev
 
 **[Click second card - Monster]**
 
-> "Second card: Monster with ATK 1. My adventurer also has ATK 1, so I defeat it!"
+> "Second card: Monster with ATK 2. My adventurer has DEF 1, so I block 1 damage and take 1 HP damage, surviving the encounter!"
 
 **[Point to "Claim Reward" button]**
 
@@ -97,7 +97,7 @@ npm run frontend:dev
 
 **[Click fourth card - Treasure]**
 
-> "Last card: Another treasure! I survived with 2 HP remaining."
+> "Last card: Another treasure! I survived with 2 HP remaining. Notice that gold is tracked in the frontend for cosmetic purposes."
 
 **[Show results screen]**
 
