@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneWallet Detection Tool</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 5px;
+        }
+        pre {
+            background: #000;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .error { color: #ff0000; }
+        .success { color: #00ff00; }
+        .info { color: #00aaff; }
+    </style>
+</head>
+<body>
+    <h1>🔍 OneWallet Detection Tool</h1>
+
+    <div class="section">
+        <h2>Step 1: Check Available Window Objects</h2>
+        <button onclick="checkWindowObjects()">Scan Window Objects</button>
+        <pre id="windowObjects"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Step 2: Test Connection Methods</h2>
+        <button onclick="testWindowEthereum()">Test window.ethereum</button>
+        <button onclick="testOneWallet()">Test window.oneWallet</button>
+        <button onclick="testOnechainWallet()">Test window.onechainWallet</button>
+        <pre id="connectionTest"></pre>
+    </div>
+
+    <div class="section">
+        <h2>Step 3: Try Connection</h2>
+        <button onclick="tryConnect()">Attempt Connection</button>
+        <pre id="connectionResult"></pre>
+    </div>
+
+    <script>
+        function log(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : 'info';
+            element.innerHTML += `<span class="${className}">${message}</span>\n`;
+        }
+
+        function checkWindowObjects() {
+            const output = document.getElementById('windowObjects');
+            output.innerHTML = '';
+
+            log('windowObjects', '=== Checking Window Objects ===\n');
+
+            // Check standard ethereum
+            if (typeof window.ethereum !== 'undefined') {
+                log('windowObjects', '✓ window.ethereum exists', 'success');
+                log('windowObjects', `  isMetaMask: ${window.ethereum.isMetaMask}`);
+                log('windowObjects', `  isOneWallet: ${window.ethereum.isOneWallet}`);
+                log('windowObjects', `  Methods: ${Object.keys(window.ethereum).join(', ')}\n`);
+            } else {
+                log('windowObjects', '✗ window.ethereum not found', 'error');
+            }
+
+            // Check oneWallet
+            if (typeof window.oneWallet !== 'undefined') {
+                log('windowObjects', '✓ window.oneWallet exists', 'success');
+                log('windowObjects', `  Type: ${typeof window.oneWallet}`);
+                log('windowObjects', `  Keys: ${Object.keys(window.oneWallet).join(', ')}\n`);
+            } else {
+                log('windowObjects', '✗ window.oneWallet not found', 'error');
+            }
+
+            // Check onechainWallet
+            if (typeof window.onechainWallet !== 'undefined') {
+                log('windowObjects', '✓ window.onechainWallet exists', 'success');
+                log('windowObjects', `  Type: ${typeof window.onechainWallet}`);
+                log('windowObjects', `  Keys: ${Object.keys(window.onechainWallet).join(', ')}\n`);
+            } else {
+                log('windowObjects', '✗ window.onechainWallet not found', 'error');
+            }
+
+            // Check for any wallet-related objects
+            log('windowObjects', '\n=== Searching for wallet-related objects ===\n');
+            const walletKeywords = ['wallet', 'one', 'chain', 'harmony', 'web3'];
+            Object.keys(window).forEach(key => {
+                const lowerKey = key.toLowerCase();
+                if (walletKeywords.some(keyword => lowerKey.includes(keyword))) {
+                    log('windowObjects', `Found: window.${key}`, 'info');
+                }
+            });
+        }
+
+        async function testWindowEthereum() {
+            const output = document.getElementById('connectionTest');
+            output.innerHTML = '';
+
+            log('connectionTest', '=== Testing window.ethereum ===\n');
+
+            if (typeof window.ethereum === 'undefined') {
+                log('connectionTest', '✗ window.ethereum not available', 'error');
+                return;
+            }
+
+            try {
+                log('connectionTest', 'Available methods:', 'info');
+                const methods = ['request', 'enable', 'send', 'sendAsync', 'on', 'removeListener'];
+                methods.forEach(method => {
+                    const exists = typeof window.ethereum[method] === 'function';
+                    log('connectionTest', `  ${method}: ${exists ? '✓' : '✗'}`, exists ? 'success' : 'error');
+                });
+            } catch (error) {
+                log('connectionTest', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testOneWallet() {
+            const output = document.getElementById('connectionTest');
+            output.innerHTML = '';
+
+            log('connectionTest', '=== Testing window.oneWallet ===\n');
+
+            if (typeof window.oneWallet === 'undefined') {
+                log('connectionTest', '✗ window.oneWallet not available', 'error');
+                return;
+            }
+
+            try {
+                log('connectionTest', `Structure: ${JSON.stringify(Object.keys(window.oneWallet), null, 2)}`);
+            } catch (error) {
+                log('connectionTest', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testOnechainWallet() {
+            const output = document.getElementById('connectionTest');
+            output.innerHTML = '';
+
+            log('connectionTest', '=== Testing window.onechainWallet ===\n');
+
+            if (typeof window.onechainWallet === 'undefined') {
+                log('connectionTest', '✗ window.onechainWallet not available', 'error');
+                return;
+            }
+
+            try {
+                log('connectionTest', `Structure: ${JSON.stringify(Object.keys(window.onechainWallet), null, 2)}`);
+            } catch (error) {
+                log('connectionTest', `Error: ${error.message}`, 'error');
+            }
+        }
+
+        async function tryConnect() {
+            const output = document.getElementById('connectionResult');
+            output.innerHTML = '';
+
+            log('connectionResult', '=== Attempting Connection ===\n');
+
+            // Try different providers in order
+            const providers = [
+                { name: 'window.ethereum', obj: window.ethereum },
+                { name: 'window.oneWallet', obj: window.oneWallet },
+                { name: 'window.onechainWallet', obj: window.onechainWallet }
+            ];
+
+            for (const provider of providers) {
+                if (!provider.obj) {
+                    log('connectionResult', `✗ ${provider.name} not available\n`, 'error');
+                    continue;
+                }
+
+                log('connectionResult', `\nTrying ${provider.name}...`, 'info');
+
+                // Try request method
+                if (typeof provider.obj.request === 'function') {
+                    try {
+                        log('connectionResult', '  Method: request("eth_requestAccounts")');
+                        const accounts = await provider.obj.request({ method: 'eth_requestAccounts' });
+                        log('connectionResult', `  ✓ Success! Accounts: ${accounts}`, 'success');
+                        return;
+                    } catch (error) {
+                        log('connectionResult', `  ✗ Failed: ${error.message}`, 'error');
+                    }
+                }
+
+                // Try enable method
+                if (typeof provider.obj.enable === 'function') {
+                    try {
+                        log('connectionResult', '  Method: enable()');
+                        const accounts = await provider.obj.enable();
+                        log('connectionResult', `  ✓ Success! Accounts: ${accounts}`, 'success');
+                        return;
+                    } catch (error) {
+                        log('connectionResult', `  ✗ Failed: ${error.message}`, 'error');
+                    }
+                }
+
+                // Try connect method
+                if (typeof provider.obj.connect === 'function') {
+                    try {
+                        log('connectionResult', '  Method: connect()');
+                        const result = await provider.obj.connect();
+                        log('connectionResult', `  ✓ Success! Result: ${JSON.stringify(result)}`, 'success');
+                        return;
+                    } catch (error) {
+                        log('connectionResult', `  ✗ Failed: ${error.message}`, 'error');
+                    }
+                }
+            }
+
+            log('connectionResult', '\n✗ All connection attempts failed', 'error');
+        }
+
+        // Auto-run on page load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                checkWindowObjects();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

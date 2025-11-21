@@ -1,0 +1,36 @@
+{
+  "name": "dungeon-flip-lite",
+  "version": "1.0.0",
+  "description": "Web3 Roguelite Game for OneHack 2.0 - OneChain Integration",
+  "scripts": {
+    "setup": "bash scripts/setup.sh",
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "test:local": "hardhat run scripts/test-local.js",
+    "deploy": "hardhat run scripts/deploy.js",
+    "deploy:onechain": "hardhat run scripts/deploy.js --network onechain",
+    "verify": "hardhat run scripts/verify.js",
+    "verify:onechain": "hardhat run scripts/verify.js --network onechain",
+    "node": "hardhat node",
+    "frontend:dev": "cd frontend && npm run dev",
+    "frontend:build": "cd frontend && npm run build",
+    "frontend:start": "cd frontend && npm start",
+    "frontend:install": "cd frontend && npm install",
+    "clean": "rm -rf cache artifacts deployments/hardhat.json",
+    "fullclean": "rm -rf cache artifacts node_modules frontend/node_modules frontend/.next"
+  },
+  "keywords": [
+    "web3",
+    "blockchain",
+    "onechain",
+    "nft",
+    "game",
+    "roguelite"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0",
+    "dotenv": "^16.3.1"
+  }
+}
