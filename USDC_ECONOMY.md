@@ -2,7 +2,7 @@
 
 ## Overview
 
-Dungeon Flip uses **USDC stablecoin** for its reward economy. Players pay a 1 USDC entry fee which is automatically distributed across three destinations:
+Dungeon Flip uses **USDC stablecoin** for its reward economy. Players pay a 0.05 USDC entry fee (5 cents) which is automatically distributed across three destinations:
 
 - **70%** → Weekly Rewards Pool (distributed to top 10 players)
 - **20%** → Dev Treasury (accumulated, withdrawable by admin)
@@ -13,18 +13,18 @@ Dungeon Flip uses **USDC stablecoin** for its reward economy. Players pay a 1 US
 ## Entry Fee
 
 ### Cost
-- **1 USDC** per dungeon run
-- Equals 1,000,000 units (USDC has 6 decimals on Sui)
+- **0.05 USDC** (5 cents) per dungeon run
+- Equals 50,000 units (USDC has 6 decimals on Sui)
 
 ### Payment Flow
 ```
-Player pays 1 USDC
+Player pays 0.05 USDC
        ↓
 [fee_distributor.move]
        ↓
-├─ 0.7 USDC → Rewards Pool (for weekly distribution)
-├─ 0.2 USDC → Dev Balance (accumulates)
-└─ 0.1 USDC → Marketing Balance (accumulates)
+├─ 0.035 USDC → Rewards Pool (for weekly distribution)
+├─ 0.010 USDC → Dev Balance (accumulates)
+└─ 0.005 USDC → Marketing Balance (accumulates)
 ```
 
 ### Automatic Distribution
@@ -134,8 +134,8 @@ cron.schedule('20 4 * * 5', distributeWeeklyRewards);
 
 ### Accumulation
 Funds accumulate automatically with each entry fee:
-- **Dev Balance**: 20% of each 1 USDC fee = 0.2 USDC per entry
-- **Marketing Balance**: 10% of each 1 USDC fee = 0.1 USDC per entry
+- **Dev Balance**: 20% of each 0.05 USDC fee = 0.01 USDC per entry
+- **Marketing Balance**: 10% of each 0.05 USDC fee = 0.005 USDC per entry
 
 ### Withdrawal (Admin Only)
 
@@ -235,34 +235,34 @@ struct USDC has drop {}
 ### Scenario: 100 Players in Week 1
 
 **Entry Fees Collected:**
-- 100 players × 1 USDC = 100 USDC total
+- 100 players × 0.05 USDC = 5 USDC total
 
 **Automatic Distribution:**
-- Rewards Pool: 70 USDC (goes to top 10 on Friday)
-- Dev Treasury: 20 USDC (accumulated, withdrawable)
-- Marketing: 10 USDC (accumulated, withdrawable)
+- Rewards Pool: 3.5 USDC (goes to top 10 on Friday)
+- Dev Treasury: 1 USDC (accumulated, withdrawable)
+- Marketing: 0.5 USDC (accumulated, withdrawable)
 
 **Winner Payouts (Friday 4:20 UTC):**
-- 1st place: 21 USDC (30% of 70 USDC)
-- 2nd place: 14 USDC
-- 3rd place: 10.5 USDC
+- 1st place: 1.05 USDC (30% of 3.5 USDC)
+- 2nd place: 0.70 USDC
+- 3rd place: 0.525 USDC
 - 4th-10th: Decreasing amounts
-- Total distributed: 70 USDC
+- Total distributed: 3.5 USDC
 
 **Admin Can Withdraw:**
-- Dev: 20 USDC anytime
-- Marketing: 10 USDC anytime
+- Dev: 1 USDC anytime
+- Marketing: 0.5 USDC anytime
 
 ### Scenario: 1,000 Players in Week 2
 
-**Entry Fees:** 1,000 USDC
+**Entry Fees:** 50 USDC
 
 **Distribution:**
-- Rewards Pool: 700 USDC
-  - 1st place wins 210 USDC (30%)
-  - Top 10 split 700 USDC
-- Dev: 200 USDC accumulated
-- Marketing: 100 USDC accumulated
+- Rewards Pool: 35 USDC
+  - 1st place wins 10.5 USDC (30%)
+  - Top 10 split 35 USDC
+- Dev: 10 USDC accumulated
+- Marketing: 5 USDC accumulated
 
 ---
 
@@ -271,7 +271,7 @@ struct USDC has drop {}
 ```
 ┌─────────────────┐
 │  Player Entry   │
-│   (1 USDC)      │
+│  (0.05 USDC)    │
 └────────┬────────┘
          │
          ↓

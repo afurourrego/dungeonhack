@@ -78,7 +78,12 @@ module dungeon_flip::rewards_pool {
             total_distributed: 0,
         };
 
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+
         transfer::share_object(pool);
+        transfer::transfer(admin_cap, tx_context::sender(ctx));
     }
 
     /// Add tokens to the current week's pool (called by fee_distributor)
@@ -104,16 +109,21 @@ module dungeon_flip::rewards_pool {
         });
     }
 
-    /// ⚠️ SECURITY WARNING: This function needs admin-only access control!
-    /// Currently callable by ANYONE - allows attackers to submit fake winner addresses.
+    /// Admin capability for weekly distribution
+    struct AdminCap has key, store {
+        id: UID,
+    }
+
+    /// ✅ SECURITY: Admin-only access via AdminCap
+    /// Only the holder of AdminCap (deployer) can distribute weekly rewards.
+    /// This prevents attackers from draining the pool with fake winner addresses.
     ///
-    /// TODO for production:
-    /// 1. Add AdminCap parameter to restrict access
-    /// 2. OR integrate oracle/leaderboard verification
-    /// 3. OR use commit-reveal scheme
-    ///
-    /// Temporary solution for hackathon: Trust off-chain script to call with correct winners
+    /// The admin must run an off-chain script to:
+    /// 1. Query the leaderboard/database for top 10 players
+    /// 2. Call this function with the correct winner addresses
+    /// 3. Distribution happens automatically on-chain
     public entry fun try_distribute_weekly_rewards(
+        _admin: &AdminCap,
         pool: &mut RewardsPool,
         clock: &Clock,
         winners: vector<address>,

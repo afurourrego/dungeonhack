@@ -23,8 +23,8 @@ module dungeon_flip::active_run {
     const EInvalidRun: u64 = 1;
     const EInvalidStats: u64 = 2;
 
-    // Entry fee: 1 USDC (1_000_000 with 6 decimals)
-    const ENTRY_FEE: u64 = 1_000_000;
+    // Entry fee: 0.05 USDC (50_000 with 6 decimals)
+    const ENTRY_FEE: u64 = 50_000;
 
     /// Admin capability for managing entry fees
     struct AdminCap has key, store {

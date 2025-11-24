@@ -12,7 +12,7 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 
 1. Connect their **Sui Wallet** (compatible with OneChain)
 2. Mint a free **Aventurer NFT** (Sui Object)
-3. Pay **1 USDC** entry fee per dungeon run
+3. Pay **0.05 USDC** (5 cents) entry fee per dungeon run
 4. Play dungeon runs with 4 random cards
 5. Face **Monsters**, collect **Treasures**, and avoid **Traps**
 6. Compete for **weekly USDC prizes** distributed to top 10 players
@@ -36,7 +36,7 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 
 ### 💰 Economy (USDC-Based)
 
-- **Entry Fee**: 1 USDC per run
+- **Entry Fee**: 0.05 USDC (5 cents) per run
 - **Automatic Distribution**:
   - 70% → Weekly Rewards Pool (top 10 players)
   - 20% → Dev Treasury
@@ -183,7 +183,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Events**: `AventurerMinted`
 
 ### 2. active_run.move + fee_distributor.move + rewards_pool.move
-- **Entry Fee**: 1 USDC per run
+- **Entry Fee**: 0.05 USDC (5 cents) per run
 - **Auto-Distribution**: 70% pool / 20% dev / 10% marketing
 - **Weekly Prizes**: Automatic distribution to top 10 players
 - See [USDC_ECONOMY.md](USDC_ECONOMY.md) for complete documentation
