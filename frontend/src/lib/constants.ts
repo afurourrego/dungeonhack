@@ -50,9 +50,9 @@ export const PROGRESS_REGISTRY_ID = process.env.NEXT_PUBLIC_PROGRESS_REGISTRY_ID
 // Set to "true" to enable demo mode (bypass blockchain checks)
 export const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
-// Entry fee for dungeon runs in USDC (stablecoin)
-export const ENTRY_FEE_USDC = 1.0; // 1 USDC
-export const ENTRY_FEE_USDC_UNITS = 1_000_000; // 1 USDC with 6 decimals
+// Entry fee for dungeon runs in SUI (native token)
+export const ENTRY_FEE_SUI = 0.05; // 0.05 SUI
+export const ENTRY_FEE_MIST = 50_000_000; // 0.05 SUI in MIST (SUI has 9 decimals)
 
 // Fee distribution (automatic on entry):
 // 70% → Weekly Rewards Pool (distributed to top 10 players)

@@ -7,13 +7,13 @@ module dungeon_flip::aventurer_nft {
     use std::string::{Self, String};
 
     /// Shared registry to track which addresses have minted
-    struct MintRegistry has key {
+    public struct MintRegistry has key {
         id: UID,
         minted_addresses: Table<address, bool>,
     }
 
     /// The Aventurer NFT with fixed stats
-    struct AventurerNFT has key, store {
+    public struct AventurerNFT has key, store {
         id: UID,
         name: String,
         atk: u64,
@@ -23,7 +23,7 @@ module dungeon_flip::aventurer_nft {
     }
 
     /// Event emitted when an Aventurer is minted
-    struct AventurerMinted has copy, drop {
+    public struct AventurerMinted has copy, drop {
         aventurer_id: address,
         owner: address,
         atk: u64,

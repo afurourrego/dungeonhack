@@ -14,7 +14,7 @@ import {
   GameState,
   CardRevealState,
   DEV_MODE,
-  ENTRY_FEE_USDC,
+  ENTRY_FEE_SUI,
 } from "@/lib/constants";
 import {
   startDungeonRun,
@@ -68,7 +68,7 @@ export default function GameBoard() {
             GAME_CONFIG.BASIC_ATK
           );
           setActiveRunId(runId);
-          setMessage(`Entry fee paid! (${ENTRY_FEE_USDC} USDC)`);
+          setMessage(`Entry fee paid! (${ENTRY_FEE_SUI} SUI)`);
         } catch (error: any) {
           setError(error.message || "Failed to start run");
           setLoading(false);
@@ -276,7 +276,7 @@ export default function GameBoard() {
         )}
 
         <button onClick={resetGame} className="btn-primary">
-          New Run (Pay {ENTRY_FEE_USDC} USDC)
+          New Run (Pay {ENTRY_FEE_SUI} SUI)
         </button>
       </div>
     );
@@ -291,7 +291,7 @@ export default function GameBoard() {
         </h2>
 
         <p className="text-gray-300 mb-4">
-          Pay an entry fee of <span className="text-dungeon-gold font-bold">{ENTRY_FEE_USDC} USDC</span> to
+          Pay an entry fee of <span className="text-dungeon-gold font-bold">{ENTRY_FEE_SUI} SUI</span> to
           enter the dungeon and compete for weekly prizes!
         </p>
 
@@ -331,7 +331,7 @@ export default function GameBoard() {
           disabled={isProcessing}
           className="btn-success"
         >
-          {isProcessing ? "Starting..." : `Pay ${ENTRY_FEE_USDC} USDC & Enter`}
+          {isProcessing ? "Starting..." : `Pay ${ENTRY_FEE_SUI} SUI & Enter`}
         </button>
 
         {DEV_MODE && (

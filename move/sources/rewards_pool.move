@@ -3,20 +3,11 @@ module dungeon_flip::rewards_pool {
     use sui::balance::{Self, Balance};
     use sui::clock::{Self, Clock};
     use sui::event;
+    use sui::object;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use std::vector;
-
-    // ⚠️ CRITICAL: Replace with actual USDC coin type before deployment!
-    // This placeholder struct is NOT the real USDC on Sui.
-    //
-    // To use real USDC:
-    // 1. Find USDC package address on Sui (testnet/mainnet)
-    // 2. Replace with: use 0xUSCD_PACKAGE::usdc::USDC;
-    // 3. Remove the struct definition below
-    //
-    // WARNING: Deploying with this placeholder allows anyone to create fake USDC!
-    struct USDC has drop {}
+    use sui::sui::SUI;
 
     /// Errors
     const EDistributionNotReady: u64 = 0;
@@ -41,9 +32,9 @@ module dungeon_flip::rewards_pool {
     const TOP_10_PCT: u64 = 200;  // 2%
 
     /// Weekly rewards pool
-    struct RewardsPool has key {
+    public struct RewardsPool has key {
         id: UID,
-        pool_balance: Balance<USDC>,
+        pool_balance: Balance<SUI>,
         current_week: u64,
         last_distribution: u64,
         next_distribution_time: u64,
@@ -51,7 +42,7 @@ module dungeon_flip::rewards_pool {
     }
 
     /// Event emitted when tokens are added to pool
-    struct TokensAddedToPool has copy, drop {
+    public struct TokensAddedToPool has copy, drop {
         week: u64,
         amount: u64,
         new_balance: u64,
@@ -59,7 +50,7 @@ module dungeon_flip::rewards_pool {
     }
 
     /// Event emitted when weekly distribution completes
-    struct WeeklyDistributionCompleted has copy, drop {
+    public struct WeeklyDistributionCompleted has copy, drop {
         week: u64,
         total_distributed: u64,
         winners: vector<address>,
@@ -78,13 +69,18 @@ module dungeon_flip::rewards_pool {
             total_distributed: 0,
         };
 
+        let admin_cap = AdminCap {
+            id: object::new(ctx),
+        };
+
         transfer::share_object(pool);
+        transfer::transfer(admin_cap, tx_context::sender(ctx));
     }
 
     /// Add tokens to the current week's pool (called by fee_distributor)
     public fun add_to_pool(
         pool: &mut RewardsPool,
-        tokens: Coin<USDC>,
+        tokens: Coin<SUI>,
         clock: &Clock,
         ctx: &mut TxContext
     ) {
@@ -94,7 +90,7 @@ module dungeon_flip::rewards_pool {
         // Initialize distribution time on first deposit
         if (pool.next_distribution_time == 0) {
             pool.next_distribution_time = clock::timestamp_ms(clock) + WEEK_DURATION_MS;
-        }
+        };
 
         event::emit(TokensAddedToPool {
             week: pool.current_week,
@@ -104,16 +100,21 @@ module dungeon_flip::rewards_pool {
         });
     }
 
-    /// ⚠️ SECURITY WARNING: This function needs admin-only access control!
-    /// Currently callable by ANYONE - allows attackers to submit fake winner addresses.
+    /// Admin capability for weekly distribution
+    public struct AdminCap has key, store {
+        id: UID,
+    }
+
+    /// ✅ SECURITY: Admin-only access via AdminCap
+    /// Only the holder of AdminCap (deployer) can distribute weekly rewards.
+    /// This prevents attackers from draining the pool with fake winner addresses.
     ///
-    /// TODO for production:
-    /// 1. Add AdminCap parameter to restrict access
-    /// 2. OR integrate oracle/leaderboard verification
-    /// 3. OR use commit-reveal scheme
-    ///
-    /// Temporary solution for hackathon: Trust off-chain script to call with correct winners
+    /// The admin must run an off-chain script to:
+    /// 1. Query the leaderboard/database for top 10 players
+    /// 2. Call this function with the correct winner addresses
+    /// 3. Distribution happens automatically on-chain
     public entry fun try_distribute_weekly_rewards(
+        _admin: &AdminCap,
         pool: &mut RewardsPool,
         clock: &Clock,
         winners: vector<address>,

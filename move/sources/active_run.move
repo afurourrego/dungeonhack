@@ -1,45 +1,37 @@
 module dungeon_flip::active_run {
     use sui::coin::{Self, Coin};
-    use sui::clock::Clock;
+    use sui::clock::{Self, Clock};
     use sui::event;
+    use sui::object;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use dungeon_flip::fee_distributor::{Self, FeeDistributor};
     use dungeon_flip::rewards_pool::RewardsPool;
-
-    // ⚠️ CRITICAL: Replace with actual USDC coin type before deployment!
-    // This placeholder struct is NOT the real USDC on Sui.
-    //
-    // To use real USDC:
-    // 1. Find USDC package address on Sui (testnet/mainnet)
-    // 2. Replace with: use 0xUSCD_PACKAGE::usdc::USDC;
-    // 3. Remove the struct definition below
-    //
-    // WARNING: Deploying with this placeholder allows anyone to create fake USDC!
-    struct USDC has drop {}
+    use sui::sui::SUI;
 
     // Errors
     const EInsufficientPayment: u64 = 0;
     const EInvalidRun: u64 = 1;
     const EInvalidStats: u64 = 2;
+    const EInvalidHP: u64 = 3;
 
-    // Entry fee: 1 USDC (1_000_000 with 6 decimals)
-    const ENTRY_FEE: u64 = 1_000_000;
+    // Entry fee: 0.05 SUI (50_000_000 MIST - SUI has 9 decimals)
+    const ENTRY_FEE: u64 = 50_000_000;
 
     /// Admin capability for managing entry fees
-    struct AdminCap has key, store {
+    public struct AdminCap has key, store {
         id: UID,
     }
 
     /// Config for entry fee (adjustable by admin)
-    struct FeeConfig has key {
+    public struct FeeConfig has key {
         id: UID,
         entry_fee: u64,
     }
 
     /// Represents an active dungeon run
     /// Owned by the player during their adventure
-    struct ActiveRun has key, store {
+    public struct ActiveRun has key, store {
         id: UID,
         player: address,
         current_room: u64,
@@ -49,7 +41,7 @@ module dungeon_flip::active_run {
     }
 
     /// Event emitted when a run starts
-    struct RunStarted has copy, drop {
+    public struct RunStarted has copy, drop {
         run_id: ID,
         player: address,
         room: u64,
@@ -57,7 +49,7 @@ module dungeon_flip::active_run {
     }
 
     /// Event emitted when a player advances to next room
-    struct RoomAdvanced has copy, drop {
+    public struct RoomAdvanced has copy, drop {
         run_id: ID,
         player: address,
         new_room: u64,
@@ -65,7 +57,7 @@ module dungeon_flip::active_run {
     }
 
     /// Event emitted when a run ends
-    struct RunEnded has copy, drop {
+    public struct RunEnded has copy, drop {
         run_id: ID,
         player: address,
         final_room: u64,
@@ -87,12 +79,12 @@ module dungeon_flip::active_run {
         transfer::transfer(admin_cap, tx_context::sender(ctx));
     }
 
-    /// Start a new dungeon run by paying entry fee in USDC
+    /// Start a new dungeon run by paying entry fee in SUI
     public entry fun start_run(
         fee_config: &FeeConfig,
         fee_distributor: &mut FeeDistributor,
         rewards_pool: &mut RewardsPool,
-        payment: Coin<USDC>,
+        payment: Coin<SUI>,
         clock: &Clock,
         initial_hp: u64,
         initial_atk: u64,
@@ -147,6 +139,12 @@ module dungeon_flip::active_run {
     ) {
         let sender = tx_context::sender(ctx);
         assert!(run.player == sender, EInvalidRun);
+
+        // ✅ SECURITY: Validate HP can only decrease or stay the same
+        assert!(new_hp <= run.hp, EInvalidHP);
+
+        // ✅ SECURITY: HP must remain positive (if 0, should call end_run instead)
+        assert!(new_hp > 0, EInvalidHP);
 
         // Update run state
         run.current_room = run.current_room + 1;

@@ -1,22 +1,13 @@
 module dungeon_flip::fee_distributor {
-    use sui::coin::Coin;
+    use sui::coin::{Self, Coin};
     use sui::balance::{Self, Balance};
-    use sui::clock::Clock;
+    use sui::clock::{Self, Clock};
     use sui::event;
+    use sui::object;
     use sui::transfer;
     use sui::tx_context::{Self, TxContext};
     use dungeon_flip::rewards_pool::{Self, RewardsPool};
-
-    // ⚠️ CRITICAL: Replace with actual USDC coin type before deployment!
-    // This placeholder struct is NOT the real USDC on Sui.
-    //
-    // To use real USDC:
-    // 1. Find USDC package address on Sui (testnet/mainnet)
-    // 2. Replace with: use 0xUSCD_PACKAGE::usdc::USDC;
-    // 3. Remove the struct definition below
-    //
-    // WARNING: Deploying with this placeholder allows anyone to create fake USDC!
-    struct USDC has drop {}
+    use sui::sui::SUI;
 
     /// Fee distribution percentages (in basis points, 100 = 1%)
     const POOL_PCT: u64 = 7000;      // 70%
@@ -24,20 +15,20 @@ module dungeon_flip::fee_distributor {
     const MARKETING_PCT: u64 = 1000; // 10%
 
     /// Fee distribution treasury - holds accumulated fees
-    struct FeeDistributor has key {
+    public struct FeeDistributor has key {
         id: UID,
-        dev_balance: Balance<USDC>,
-        marketing_balance: Balance<USDC>,
+        dev_balance: Balance<SUI>,
+        marketing_balance: Balance<SUI>,
         total_fees_collected: u64,
     }
 
     /// Admin capability for withdrawing accumulated fees
-    struct AdminCap has key, store {
+    public struct AdminCap has key, store {
         id: UID,
     }
 
     /// Event emitted when fees are distributed
-    struct FeesDistributed has copy, drop {
+    public struct FeesDistributed has copy, drop {
         total_fee: u64,
         pool_amount: u64,
         dev_amount: u64,
@@ -46,7 +37,7 @@ module dungeon_flip::fee_distributor {
     }
 
     /// Event emitted when funds are withdrawn
-    struct FundsWithdrawn has copy, drop {
+    public struct FundsWithdrawn has copy, drop {
         fund_type: vector<u8>, // "dev" or "marketing"
         amount: u64,
         recipient: address,
@@ -74,7 +65,7 @@ module dungeon_flip::fee_distributor {
     public fun distribute_entry_fee(
         distributor: &mut FeeDistributor,
         rewards_pool: &mut RewardsPool,
-        fee_payment: Coin<USDC>,
+        fee_payment: Coin<SUI>,
         clock: &Clock,
         ctx: &mut TxContext
     ) {

@@ -12,10 +12,10 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 
 1. Connect their **Sui Wallet** (compatible with OneChain)
 2. Mint a free **Aventurer NFT** (Sui Object)
-3. Pay **1 USDC** entry fee per dungeon run
+3. Pay **0.05 SUI** entry fee per dungeon run
 4. Play dungeon runs with 4 random cards
 5. Face **Monsters**, collect **Treasures**, and avoid **Traps**
-6. Compete for **weekly USDC prizes** distributed to top 10 players
+6. Compete for **weekly SUI prizes** distributed to top 10 players
 7. Track progress on-chain via shared objects
 
 ### Game Mechanics
@@ -34,9 +34,9 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 - **Win Condition**: Survive all 4 cards with HP > 0
 - **Lose Condition**: HP reaches 0
 
-### 💰 Economy (USDC-Based)
+### 💰 Economy (SUI-Based)
 
-- **Entry Fee**: 1 USDC per run
+- **Entry Fee**: 0.05 SUI per run
 - **Automatic Distribution**:
   - 70% → Weekly Rewards Pool (top 10 players)
   - 20% → Dev Treasury
@@ -44,7 +44,7 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 - **Weekly Prizes**: Every Friday 4:20 UTC
   - 1st place: 30% of pool
   - 2nd-10th: Decreasing percentages
-  - See [USDC_ECONOMY.md](USDC_ECONOMY.md) for full details
+  - See [SUI_ECONOMY.md](SUI_ECONOMY.md) for full details
 
 ## 🏗️ Project Structure
 
@@ -55,7 +55,7 @@ DungeonFlip/
 │   └── sources/
 │       ├── aventurer_nft.move     # NFT (Owned Object)
 │       ├── active_run.move        # Dungeon run management + entry fees
-│       ├── fee_distributor.move   # USDC distribution logic
+│       ├── fee_distributor.move   # SUI distribution logic
 │       ├── rewards_pool.move      # Weekly prize pool
 │       └── dungeon_progress.move  # Progress tracking (Shared Object)
 ├── frontend/                      # Next.js frontend
@@ -183,10 +183,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Events**: `AventurerMinted`
 
 ### 2. active_run.move + fee_distributor.move + rewards_pool.move
-- **Entry Fee**: 1 USDC per run
+- **Entry Fee**: 0.05 SUI per run
 - **Auto-Distribution**: 70% pool / 20% dev / 10% marketing
 - **Weekly Prizes**: Automatic distribution to top 10 players
-- See [USDC_ECONOMY.md](USDC_ECONOMY.md) for complete documentation
+- See [SUI_ECONOMY.md](SUI_ECONOMY.md) for complete documentation
 
 ### 3. dungeon_progress.move
 - **Type**: Shared Object (ProgressRegistry)
@@ -200,7 +200,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### On-Chain (Sui)
 - ✅ NFT ownership verification
-- ✅ USDC-based reward economy
+- ✅ SUI-based reward economy
 - ✅ Automatic fee distribution
 - ✅ Weekly prize pool
 - ✅ Progress tracking in shared object
@@ -221,7 +221,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 📚 Documentation
 
-- **[USDC_ECONOMY.md](USDC_ECONOMY.md)** - Complete USDC economy guide
+- **[SUI_ECONOMY.md](SUI_ECONOMY.md)** - Complete SUI economy guide
 - **[ONEHACK_SUBMISSION.md](ONEHACK_SUBMISSION.md)** - Hackathon submission document
 - **[SECURITY_AUDIT.md](SECURITY_AUDIT.md)** - Security analysis and vulnerabilities
 - **[DEVELOPMENT_MODE.md](DEVELOPMENT_MODE.md)** - Test without blockchain

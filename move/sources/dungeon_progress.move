@@ -6,12 +6,13 @@ module dungeon_flip::dungeon_progress {
     use sui::event;
     use sui::clock::{Self, Clock};
     use sui::vec_map::{Self, VecMap};
+    use dungeon_flip::active_run::{Self, ActiveRun};
 
     /// Week duration in milliseconds (7 days)
     const WEEK_DURATION_MS: u64 = 604_800_000;
 
     /// Shared object to track all players' progress
-    struct ProgressRegistry has key {
+    public struct ProgressRegistry has key {
         id: UID,
         player_progress: Table<address, PlayerProgress>,
         weekly_scores: Table<u64, WeeklyLeaderboard>, // week_number -> leaderboard
@@ -20,7 +21,7 @@ module dungeon_flip::dungeon_progress {
     }
 
     /// Individual player progress (all-time stats)
-    struct PlayerProgress has store {
+    public struct PlayerProgress has store {
         total_runs: u64,
         successful_runs: u64,
         monsters_defeated: u64,
@@ -29,13 +30,13 @@ module dungeon_flip::dungeon_progress {
     }
 
     /// Weekly leaderboard for a specific week
-    struct WeeklyLeaderboard has store {
+    public struct WeeklyLeaderboard has store {
         week_number: u64,
         player_scores: VecMap<address, u64>, // player -> best score this week
     }
 
     /// Event emitted when a run is completed
-    struct RunCompleted has copy, drop {
+    public struct RunCompleted has copy, drop {
         player: address,
         success: bool,
         total_runs: u64,
@@ -43,19 +44,19 @@ module dungeon_flip::dungeon_progress {
     }
 
     /// Event emitted when a new room record is set
-    struct NewRoomRecord has copy, drop {
+    public struct NewRoomRecord has copy, drop {
         player: address,
         rooms_reached: u64,
     }
 
     /// Event emitted when a new gems record is set
-    struct NewGemsRecord has copy, drop {
+    public struct NewGemsRecord has copy, drop {
         player: address,
         gems_collected: u64,
     }
 
     /// Event emitted when a monster is defeated
-    struct MonsterDefeated has copy, drop {
+    public struct MonsterDefeated has copy, drop {
         player: address,
         monsters_defeated: u64,
     }
@@ -101,16 +102,29 @@ module dungeon_flip::dungeon_progress {
     }
 
     /// Record a completed run (success or failure)
+    /// ✅ SECURITY: Requires ActiveRun object to prove this is a real run
+    /// The ActiveRun object is consumed (deleted) to prevent reuse
     public entry fun record_run(
         registry: &mut ProgressRegistry,
         clock: &Clock,
+        run: ActiveRun,  // ✅ Consume the run object (prevents fake stats)
         success: bool,
-        rooms_reached: u64,
         gems_collected: u64,
         ctx: &mut TxContext
     ) {
         let player = tx_context::sender(ctx);
         let current_time = clock::timestamp_ms(clock);
+
+        // ✅ SECURITY: Get rooms_reached from the run object (can't be faked)
+        let rooms_reached = active_run::get_current_room(&run);
+
+        // ✅ SECURITY: Verify run belongs to this player
+        assert!(active_run::get_player(&run) == player, 1);
+
+        // ✅ SECURITY: Consume the run object (calls end_run internally)
+        let (run_player, run_rooms) = active_run::end_run(run, success, ctx);
+        assert!(run_player == player, 1);
+        assert!(run_rooms == rooms_reached, 1);
 
         // Initialize week start time on first run
         if (registry.week_start_time == 0) {
