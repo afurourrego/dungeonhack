@@ -45,6 +45,9 @@ export const PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID || "";
 export const GAME_ADMIN_ID = process.env.NEXT_PUBLIC_GAME_ADMIN_ID || "";
 export const MINT_REGISTRY_ID = process.env.NEXT_PUBLIC_MINT_REGISTRY_ID || "";
 export const PROGRESS_REGISTRY_ID = process.env.NEXT_PUBLIC_PROGRESS_REGISTRY_ID || "";
+export const FEE_CONFIG_ID = process.env.NEXT_PUBLIC_FEE_CONFIG_ID || "";
+export const FEE_DISTRIBUTOR_ID = process.env.NEXT_PUBLIC_FEE_DISTRIBUTOR_ID || "";
+export const REWARDS_POOL_ID = process.env.NEXT_PUBLIC_REWARDS_POOL_ID || "";
 
 // Development mode - allows testing game without deployed contracts
 // Set to "true" to enable demo mode (bypass blockchain checks)

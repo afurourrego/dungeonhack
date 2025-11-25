@@ -1,10 +1,14 @@
 import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
+import { bcs } from "@mysten/bcs";
 import {
   PACKAGE_ID,
   GAME_ADMIN_ID,
   MINT_REGISTRY_ID,
   PROGRESS_REGISTRY_ID,
+  FEE_CONFIG_ID,
+  FEE_DISTRIBUTOR_ID,
+  REWARDS_POOL_ID,
   ENTRY_FEE_MIST,
 } from "./constants";
 
@@ -68,14 +72,23 @@ export const mintAventurer = async (
       throw new Error("Transaction failed - no result returned");
     }
 
-    if (!result.effects) {
-      throw new Error("Transaction succeeded but effects not available");
+    // Try to get NFT ID from effects (standard wallet response)
+    if (result.effects?.created && result.effects.created.length > 0) {
+      return result.effects.created[0].reference.objectId;
     }
 
-    // Get the NFT object ID from created objects
-    const createdObjects = result.effects.created;
-    if (createdObjects && createdObjects.length > 0) {
-      return createdObjects[0].reference.objectId;
+    // ✅ FALLBACK: If effects not available (OneWallet), query for the NFT
+    // Transaction succeeded (we have digest), so wait briefly and query
+    if (result.digest) {
+      console.log("Effects not available, querying for minted NFT...");
+
+      // Wait for blockchain to process
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      const nft = await getAventurerNFT(address);
+      if (nft) {
+        return nft.id;
+      }
     }
 
     throw new Error("Failed to get NFT object ID from transaction");
@@ -214,9 +227,30 @@ export const getPlayerProgress = async (
       transactionBlock: tx,
     });
 
-    // Parse the results
+    // ✅ FIX: Parse the BCS-encoded return values
     // The view function returns (u64, u64, u64, u64, u64): totalRuns, successfulRuns, monstersDefeated, maxRoomReached, maxGemsCollected
-    // This is a simplified version, actual parsing may vary based on dev mode
+    if (result.results && result.results.length > 0) {
+      const moveCallResult = result.results[0];
+      if (moveCallResult.returnValues && moveCallResult.returnValues.length === 5) {
+        // Each returnValue is a tuple of [bytes: number[], type: string]
+        // Parse each u64 value from BCS bytes
+        const totalRuns = Number(bcs.u64().parse(Uint8Array.from(moveCallResult.returnValues[0][0])));
+        const successfulRuns = Number(bcs.u64().parse(Uint8Array.from(moveCallResult.returnValues[1][0])));
+        const monstersDefeated = Number(bcs.u64().parse(Uint8Array.from(moveCallResult.returnValues[2][0])));
+        const maxRoomReached = Number(bcs.u64().parse(Uint8Array.from(moveCallResult.returnValues[3][0])));
+        const maxGemsCollected = Number(bcs.u64().parse(Uint8Array.from(moveCallResult.returnValues[4][0])));
+
+        return {
+          totalRuns,
+          successfulRuns,
+          monstersDefeated,
+          maxRoomReached,
+          maxGemsCollected,
+        };
+      }
+    }
+
+    // If no results or parsing failed, return zeros (new player)
     return {
       totalRuns: 0,
       successfulRuns: 0,
@@ -251,13 +285,17 @@ export const startDungeonRun = async (
     // Split SUI coins to get exact entry fee amount
     const [coin] = tx.splitCoins(tx.gas, [ENTRY_FEE_MIST]);
 
-    // Call start_run with entry fee payment
+    // ✅ FIX: Call start_run with ALL required arguments
     tx.moveCall({
       target: `${PACKAGE_ID}::active_run::start_run`,
       arguments: [
-        coin,
-        tx.pure.u64(initialHP),
-        tx.pure.u64(initialATK),
+        tx.object(FEE_CONFIG_ID), // fee_config
+        tx.object(FEE_DISTRIBUTOR_ID), // fee_distributor
+        tx.object(REWARDS_POOL_ID), // rewards_pool
+        coin, // payment
+        tx.object("0x6"), // clock
+        tx.pure.u64(initialHP), // initial_hp
+        tx.pure.u64(initialATK), // initial_atk
       ],
     });
 
@@ -269,24 +307,69 @@ export const startDungeonRun = async (
       },
     });
 
-    // ✅ FIX: Validate result exists before accessing objectChanges
+    // ✅ FIX: Validate result exists
     if (!result) {
       throw new Error("Transaction failed - no result returned");
     }
 
-    if (!result.objectChanges) {
-      throw new Error("Transaction succeeded but objectChanges not available");
+    // ✅ FIX: dapp-kit returns minimal response, we need to fetch full transaction details
+    // With OneWallet, transaction may take time to propagate, so retry with delays
+    const client = getSuiClient();
+    let txDetails = null;
+    let retries = 0;
+    const maxRetries = 5;
+
+    while (!txDetails && retries < maxRetries) {
+      try {
+        txDetails = await client.getTransactionBlock({
+          digest: result.digest,
+          options: {
+            showEffects: true,
+            showObjectChanges: true,
+          },
+        });
+      } catch (error: any) {
+        if (error.message?.includes("Could not find the referenced transaction") && retries < maxRetries - 1) {
+          console.log(`Transaction not found yet, retrying in ${(retries + 1) * 500}ms... (attempt ${retries + 1}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, (retries + 1) * 500));
+          retries++;
+        } else {
+          throw error;
+        }
+      }
     }
 
-    // Find the ActiveRun object ID from object changes
-    const created = result.objectChanges.filter(
-      (change: any) => change.type === "created" && change.objectType.includes("ActiveRun")
-    );
-
-    if (created && created.length > 0) {
-      return created[0].objectId;
+    if (!txDetails) {
+      throw new Error("Failed to fetch transaction details after multiple retries");
     }
 
+    console.log("Full transaction details:", JSON.stringify(txDetails, null, 2));
+
+    // Try objectChanges first
+    if (txDetails.objectChanges) {
+      const created = txDetails.objectChanges.filter(
+        (change: any) => change.type === "created" && change.objectType?.includes("ActiveRun")
+      );
+      if (created && created.length > 0) {
+        return created[0].objectId;
+      }
+    }
+
+    // Fallback: Try using effects.created
+    if (txDetails.effects?.created) {
+      const createdObjects = txDetails.effects.created;
+      // The ActiveRun is owned by an address (not shared/immutable)
+      const ownedObjects = createdObjects.filter((obj: any) => {
+        const owner = obj.owner;
+        return owner && typeof owner === 'object' && 'AddressOwner' in owner;
+      });
+
+      if (ownedObjects.length > 0) {
+        return ownedObjects[ownedObjects.length - 1].reference.objectId;
+      }
+    }
+
+    console.error("Failed to find ActiveRun in transaction");
     throw new Error("Failed to get ActiveRun object ID from transaction");
   } catch (error: any) {
     console.error("Error starting dungeon run:", error);
