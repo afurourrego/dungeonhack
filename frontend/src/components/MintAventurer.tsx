@@ -41,8 +41,8 @@ export default function MintAventurer() {
         🎭 Mint Your Adventurer
       </h2>
 
-      <p className="text-gray-300 mb-6">
-        Create your basic adventurer NFT to start playing Dungeon Flip Lite.
+      <p className="text-dungeon-gold mb-6">
+        Create your basic adventurer NFTORTA to start playing Dungeon Flip Lite.
         <br />
         <span className="text-sm text-gray-400">
           (Free mint - one per wallet)

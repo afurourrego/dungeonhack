@@ -57,9 +57,18 @@ export default function Leaderboard() {
 
   return (
     <div className="card">
-      <h2 className="text-xl font-bold text-dungeon-gold mb-6">
-        🏆 Your Stats
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-bold text-dungeon-gold">
+          🏆 Your Stats
+        </h2>
+        <button
+          onClick={loadPlayerStats}
+          disabled={loading}
+          className="px-3 py-1 bg-dungeon-gold/20 hover:bg-dungeon-gold/30 border border-dungeon-gold/50 rounded-lg text-dungeon-gold text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "⏳ Refreshing..." : "🔄 Refresh"}
+        </button>
+      </div>
 
       {loading ? (
         <p className="text-gray-400 text-center">Loading...</p>
