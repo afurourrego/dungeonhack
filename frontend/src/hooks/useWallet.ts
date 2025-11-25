@@ -15,7 +15,17 @@ import {
 export const useWallet = () => {
   const account = useCurrentAccount();
   const { mutate: disconnect } = useDisconnectWallet();
-  const { mutate: signAndExecuteTransaction } = useSignAndExecuteTransaction();
+  const { mutateAsync: signAndExecuteTransactionAsync } = useSignAndExecuteTransaction();
+
+  // ✅ FIX: Wrapper that returns a Promise with the transaction result
+  const signAndExecuteTransaction = useCallback(
+    async (params: any) => {
+      // mutateAsync already returns a Promise with the result
+      const result = await signAndExecuteTransactionAsync(params);
+      return result;
+    },
+    [signAndExecuteTransactionAsync]
+  );
 
   const {
     isConnected,
