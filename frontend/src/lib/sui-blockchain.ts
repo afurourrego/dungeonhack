@@ -59,41 +59,71 @@ export const mintAventurer = async (
       arguments: [tx.object(MINT_REGISTRY_ID)],
     });
 
+    console.log("Executing mint transaction...");
     const result = await signAndExecuteTransactionBlock({
       transaction: tx,
       options: {
         showEffects: true,
         showEvents: true,
+        showObjectChanges: true,
       },
     });
+
+    console.log("Mint transaction result:", result);
+    console.log("Effects type:", typeof result.effects);
+    console.log("Has digest:", !!result.digest);
 
     // ✅ FIX: Validate result exists before accessing effects
     if (!result) {
       throw new Error("Transaction failed - no result returned");
     }
 
-    // Try to get NFT ID from effects (standard wallet response)
-    if (result.effects?.created && result.effects.created.length > 0) {
-      return result.effects.created[0].reference.objectId;
-    }
-
-    // ✅ FALLBACK: If effects not available (OneWallet), query for the NFT
-    // Transaction succeeded (we have digest), so wait briefly and query
+    // If transaction has a digest, it likely succeeded
+    // Some wallets return effects as base64 strings, so we'll use the digest as success indicator
     if (result.digest) {
-      console.log("Effects not available, querying for minted NFT...");
+      console.log("Transaction has digest, assuming success. Digest:", result.digest);
 
       // Wait for blockchain to process
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log("Waiting 3 seconds for blockchain to process...");
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
-      const nft = await getAventurerNFT(address);
-      if (nft) {
-        return nft.id;
+      // Query for all NFTs owned by this address
+      console.log("Querying for all Aventurer NFTs...");
+      const client = getSuiClient();
+      const objects = await client.getOwnedObjects({
+        owner: address,
+        filter: {
+          StructType: `${PACKAGE_ID}::aventurer_nft::AventurerNFT`,
+        },
+        options: {
+          showContent: true,
+        },
+      });
+
+      console.log("Found NFTs:", objects.data.length);
+
+      if (objects.data.length > 0) {
+        // Return the most recently created NFT (last one in the array)
+        const latestNFT = objects.data[objects.data.length - 1];
+        const nftId = latestNFT.data?.objectId;
+        console.log("Returning latest NFT ID:", nftId);
+        if (nftId) {
+          return nftId;
+        }
       }
+
+      throw new Error("Transaction completed but could not find the minted NFT. Please refresh the page.");
     }
 
-    throw new Error("Failed to get NFT object ID from transaction");
+    throw new Error("Transaction failed - no digest returned");
   } catch (error: any) {
     console.error("Error minting aventurer:", error);
+
+    // Check if it's the "already minted" error (error code 0 = EAlreadyMinted)
+    if (error?.message?.includes("MoveAbort") && error?.message?.includes("}, 0)")) {
+      throw new Error("You have already minted an Aventurer NFT with this wallet. Only one NFT per wallet is allowed.");
+    }
+
     throw new Error(error.message || "Failed to mint aventurer");
   }
 };
@@ -350,8 +380,8 @@ export const startDungeonRun = async (
       const created = txDetails.objectChanges.filter(
         (change: any) => change.type === "created" && change.objectType?.includes("ActiveRun")
       );
-      if (created && created.length > 0) {
-        return created[0].objectId;
+      if (created && created.length > 0 && 'objectId' in created[0]) {
+        return (created[0] as any).objectId;
       }
     }
 

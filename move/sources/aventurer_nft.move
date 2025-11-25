@@ -45,18 +45,21 @@ module dungeon_flip::aventurer_nft {
 
     /// Mint a basic Aventurer NFT
     /// Stats: ATK:1, DEF:1, HP:4
-    /// Only allows 1 NFT per address
+    /// TEMPORARY: Allows multiple NFTs per address for testing
     public entry fun mint_basic_aventurer(
         registry: &mut MintRegistry,
         ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
 
+        // TEMPORARY: Commented out for testing - allows multiple mints per wallet
         // Check if address has already minted
-        assert!(!table::contains(&registry.minted_addresses, sender), EAlreadyMinted);
+        // assert!(!table::contains(&registry.minted_addresses, sender), EAlreadyMinted);
 
-        // Mark address as having minted
-        table::add(&mut registry.minted_addresses, sender, true);
+        // Mark address as having minted (only if not already marked)
+        if (!table::contains(&registry.minted_addresses, sender)) {
+            table::add(&mut registry.minted_addresses, sender, true);
+        };
 
         let aventurer = AventurerNFT {
             id: object::new(ctx),
