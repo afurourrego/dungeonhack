@@ -63,13 +63,22 @@ export const mintAventurer = async (
       },
     });
 
+    // ✅ FIX: Validate result exists before accessing effects
+    if (!result) {
+      throw new Error("Transaction failed - no result returned");
+    }
+
+    if (!result.effects) {
+      throw new Error("Transaction succeeded but effects not available");
+    }
+
     // Get the NFT object ID from created objects
-    const createdObjects = result.effects?.created;
+    const createdObjects = result.effects.created;
     if (createdObjects && createdObjects.length > 0) {
       return createdObjects[0].reference.objectId;
     }
 
-    throw new Error("Failed to get NFT object ID");
+    throw new Error("Failed to get NFT object ID from transaction");
   } catch (error: any) {
     console.error("Error minting aventurer:", error);
     throw new Error(error.message || "Failed to mint aventurer");
@@ -260,8 +269,17 @@ export const startDungeonRun = async (
       },
     });
 
+    // ✅ FIX: Validate result exists before accessing objectChanges
+    if (!result) {
+      throw new Error("Transaction failed - no result returned");
+    }
+
+    if (!result.objectChanges) {
+      throw new Error("Transaction succeeded but objectChanges not available");
+    }
+
     // Find the ActiveRun object ID from object changes
-    const created = result.objectChanges?.filter(
+    const created = result.objectChanges.filter(
       (change: any) => change.type === "created" && change.objectType.includes("ActiveRun")
     );
 
@@ -269,7 +287,7 @@ export const startDungeonRun = async (
       return created[0].objectId;
     }
 
-    throw new Error("Failed to get ActiveRun object ID");
+    throw new Error("Failed to get ActiveRun object ID from transaction");
   } catch (error: any) {
     console.error("Error starting dungeon run:", error);
     throw new Error(error.message || "Failed to start run");
@@ -310,6 +328,8 @@ export const advanceToNextRoom = async (
 
 /**
  * Exit dungeon and end the active run
+ * ✅ UPDATED: Now passes ActiveRun object to record_run (security fix)
+ * The Move contract will consume the ActiveRun object internally
  */
 export const exitDungeonRun = async (
   signAndExecuteTransactionBlock: any,
@@ -322,23 +342,18 @@ export const exitDungeonRun = async (
   try {
     const tx = new Transaction();
 
-    // End the run (this consumes the ActiveRun object)
-    tx.moveCall({
-      target: `${PACKAGE_ID}::active_run::end_run`,
-      arguments: [
-        tx.object(activeRunId),
-        tx.pure.bool(survived),
-      ],
-    });
-
-    // Record the run in progress registry (for leaderboard)
+    // ✅ FIX: Pass ActiveRun object directly to record_run
+    // The Move contract (dungeon_progress::record_run) will:
+    // 1. Validate the run belongs to the player
+    // 2. Call active_run::end_run internally to consume the object
+    // 3. Record the stats
     tx.moveCall({
       target: `${PACKAGE_ID}::dungeon_progress::record_run`,
       arguments: [
         tx.object(PROGRESS_REGISTRY_ID),
         tx.object("0x6"), // Clock object
+        tx.object(activeRunId), // ✅ Pass ActiveRun object (will be consumed by contract)
         tx.pure.bool(survived),
-        tx.pure.u64(roomsReached),
         tx.pure.u64(gemsCollected),
       ],
     });
