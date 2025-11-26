@@ -387,18 +387,22 @@ export default function GameBoard() {
         </div>
       </div>
 
-      {/* Floating Decision Modal */}
+      {/* Floating Decision Modal con animaciones mejoradas */}
       {awaitingDecision && !isProcessing && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 animate-fade-in pb-8">
-          <div className="card w-full max-w-2xl mx-4 animate-slide-up shadow-2xl border-2 border-amber-600/50">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/30 animate-fade-in pb-8">
+          <div className="card w-full max-w-2xl mx-4 animate-slide-up shadow-2xl border-2 border-amber-600/60"
+               style={{
+                 '--glow-color': 'rgba(251, 191, 36, 0.4)',
+                 boxShadow: '0 0 20px rgba(251, 191, 36, 0.3), 0 0 40px rgba(251, 191, 36, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5)'
+               } as React.CSSProperties}>
             {/* Header with Icon + Title */}
             <div className="flex items-center gap-4 mb-6">
-              <div className="text-6xl">🏰</div>
+              <div className="text-6xl animate-bounce-slow">🏰</div>
               <div className="text-left">
-                <h3 className="text-2xl md:text-3xl font-bold text-dungeon-gold leading-tight">
+                <h3 className="text-2xl md:text-3xl font-bold text-dungeon-gold leading-tight drop-shadow-lg animate-fade-in">
                   Room {currentRoom} Clear!
                 </h3>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-gray-300 mt-1 animate-fade-in" style={{ animationDelay: '0.1s' } as React.CSSProperties}>
                   Continue deeper or exit with your rewards
                 </p>
               </div>
@@ -408,7 +412,8 @@ export default function GameBoard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
                 onClick={handleContinue}
-                className="btn-primary px-4 py-3 text-center"
+                className="btn-primary px-4 py-3 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-purple-500/50 animate-fade-in"
+                style={{ animationDelay: '0.2s' } as React.CSSProperties}
                 disabled={isProcessing}
               >
                 <div className="flex items-center justify-center gap-3">
@@ -422,7 +427,8 @@ export default function GameBoard() {
 
               <button
                 onClick={handleExit}
-                className="btn-success px-4 py-3 text-center"
+                className="btn-success px-4 py-3 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-green-500/50 animate-fade-in"
+                style={{ animationDelay: '0.3s' } as React.CSSProperties}
                 disabled={isProcessing}
               >
                 <div className="flex items-center justify-center gap-3">
