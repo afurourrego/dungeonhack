@@ -1,0 +1,557 @@
+[warning] Client/Server api version mismatch, client api version : 1.61.1, server api version : 1.61.2
+[Note]: Dependency sources are no longer verified automatically during publication and upgrade. You can pass the `--verify-deps` option if you would like to verify them as part of publication or upgrade.
+[note] Dependencies on Bridge, MoveStdlib, Sui, and SuiSystem are automatically added, but this feature is disabled for your package because you have explicitly included dependencies on Sui. Consider removing these dependencies from Move.toml.
+UPDATING GIT DEPENDENCY https://github.com/MystenLabs/sui.git
+INCLUDING DEPENDENCY Sui
+INCLUDING DEPENDENCY MoveStdlib
+BUILDING DungeonFlip
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/dungeon_progress.move:2:23
+  [0m[34m│[0m
+[0m[34m2[0m [0m[34m│[0m     use sui::object::{[0m[33mSelf[0m, UID};
+  [0m[34m│[0m                       [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/dungeon_progress.move:2:29
+  [0m[34m│[0m
+[0m[34m2[0m [0m[34m│[0m     use sui::object::{Self, [0m[33mUID[0m};
+  [0m[34m│[0m                             [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/dungeon_progress.move:3:14
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m     use sui::[0m[33mtransfer[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/dungeon_progress.move:4:27
+  [0m[34m│[0m
+[0m[34m4[0m [0m[34m│[0m     use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[34m│[0m                           [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/dungeon_progress.move:4:33
+  [0m[34m│[0m
+[0m[34m4[0m [0m[34m│[0m     use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[34m│[0m                                 [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+   [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/dungeon_progress.move:78:12
+   [0m[34m│[0m
+[0m[34m78[0m [0m[34m│[0m     public [0m[33mentry[0m fun record_monster_defeated(
+   [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+   [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/dungeon_progress.move:107:12
+    [0m[34m│[0m
+[0m[34m107[0m [0m[34m│[0m     public [0m[33mentry[0m fun record_run(
+    [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[34m│[0m
+    [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:6:14
+  [0m[34m│[0m
+[0m[34m6[0m [0m[34m│[0m     use sui::[0m[33mobject[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:7:14
+  [0m[34m│[0m
+[0m[34m7[0m [0m[34m│[0m     use sui::[0m[33mtransfer[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:8:27
+  [0m[34m│[0m
+[0m[34m8[0m [0m[34m│[0m     use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[34m│[0m                           [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:8:33
+  [0m[34m│[0m
+[0m[34m8[0m [0m[34m│[0m     use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[34m│[0m                                 [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:9:14
+  [0m[34m│[0m
+[0m[34m9[0m [0m[34m│[0m     use std::[0m[33mvector[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'vector' for module 'std::vector'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:15:11
+   [0m[34m│[0m
+[0m[34m15[0m [0m[34m│[0m     const [0m[33mEInvalidAmounts[0m: u64 = 2;
+   [0m[34m│[0m           [0m[33m^^^^^^^^^^^^^^^[0m [0m[33mThe constant 'EInvalidAmounts' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:16:11
+   [0m[34m│[0m
+[0m[34m16[0m [0m[34m│[0m     const [0m[33mEAmountMismatch[0m: u64 = 3;
+   [0m[34m│[0m           [0m[33m^^^^^^^^^^^^^^^[0m [0m[33mThe constant 'EAmountMismatch' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09002][0m[1m: unused variable[0m
+   [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:85:9
+   [0m[34m│[0m
+[0m[34m85[0m [0m[34m│[0m         [0m[33mctx[0m: &mut TxContext
+   [0m[34m│[0m         [0m[33m^^^[0m [0m[33mUnused parameter 'ctx'. Consider removing or prefixing with an underscore: '_ctx'[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_variable)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/rewards_pool.move:116:12
+    [0m[34m│[0m
+[0m[34m116[0m [0m[34m│[0m     public [0m[33mentry[0m fun try_distribute_weekly_rewards(
+    [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[34m│[0m
+    [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/fee_distributor.move:6:14
+  [0m[34m│[0m
+[0m[34m6[0m [0m[34m│[0m     use sui::[0m[33mobject[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/fee_distributor.move:7:14
+  [0m[34m│[0m
+[0m[34m7[0m [0m[34m│[0m     use sui::[0m[33mtransfer[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/fee_distributor.move:8:27
+  [0m[34m│[0m
+[0m[34m8[0m [0m[34m│[0m     use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[34m│[0m                           [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/fee_distributor.move:8:33
+  [0m[34m│[0m
+[0m[34m8[0m [0m[34m│[0m     use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[34m│[0m                                 [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/fee_distributor.move:122:12
+    [0m[34m│[0m
+[0m[34m122[0m [0m[34m│[0m     public [0m[33mentry[0m fun withdraw_dev_funds(
+    [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[34m│[0m
+    [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/fee_distributor.move:143:12
+    [0m[34m│[0m
+[0m[34m143[0m [0m[34m│[0m     public [0m[33mentry[0m fun withdraw_marketing_funds(
+    [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[34m│[0m
+    [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09001][0m[1m: unused alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/active_run.move:3:22
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m     use sui::clock::{[0m[33mSelf[0m, Clock};
+  [0m[34m│[0m                      [0m[33m^^^^[0m [0m[33mUnused 'use' of alias 'clock'. Consider removing it[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(unused_use)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/active_run.move:5:14
+  [0m[34m│[0m
+[0m[34m5[0m [0m[34m│[0m     use sui::[0m[33mobject[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/active_run.move:6:14
+  [0m[34m│[0m
+[0m[34m6[0m [0m[34m│[0m     use sui::[0m[33mtransfer[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/active_run.move:7:27
+  [0m[34m│[0m
+[0m[34m7[0m [0m[34m│[0m     use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[34m│[0m                           [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/active_run.move:7:33
+  [0m[34m│[0m
+[0m[34m7[0m [0m[34m│[0m     use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[34m│[0m                                 [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+   [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/active_run.move:84:12
+   [0m[34m│[0m
+[0m[34m84[0m [0m[34m│[0m     public [0m[33mentry[0m fun start_run(
+   [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+   [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/active_run.move:137:12
+    [0m[34m│[0m
+[0m[34m137[0m [0m[34m│[0m     public [0m[33mentry[0m fun advance_room(
+    [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[34m│[0m
+    [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+    [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/active_run.move:215:12
+    [0m[34m│[0m
+[0m[34m215[0m [0m[34m│[0m     public [0m[33mentry[0m fun update_entry_fee(
+    [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+    [0m[34m│[0m
+    [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+    [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/aventurer_nft.move:2:23
+  [0m[34m│[0m
+[0m[34m2[0m [0m[34m│[0m     use sui::object::{[0m[33mSelf[0m, UID};
+  [0m[34m│[0m                       [0m[33m^^^^[0m [0m[33mUnnecessary alias 'object' for module 'sui::object'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/aventurer_nft.move:2:29
+  [0m[34m│[0m
+[0m[34m2[0m [0m[34m│[0m     use sui::object::{Self, [0m[33mUID[0m};
+  [0m[34m│[0m                             [0m[33m^^^[0m [0m[33mUnnecessary alias 'UID' for module member 'sui::object::UID'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/aventurer_nft.move:3:14
+  [0m[34m│[0m
+[0m[34m3[0m [0m[34m│[0m     use sui::[0m[33mtransfer[0m;
+  [0m[34m│[0m              [0m[33m^^^^^^^^[0m [0m[33mUnnecessary alias 'transfer' for module 'sui::transfer'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/aventurer_nft.move:4:27
+  [0m[34m│[0m
+[0m[34m4[0m [0m[34m│[0m     use sui::tx_context::{[0m[33mSelf[0m, TxContext};
+  [0m[34m│[0m                           [0m[33m^^^^[0m [0m[33mUnnecessary alias 'tx_context' for module 'sui::tx_context'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W02021][0m[1m: duplicate alias[0m
+  [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/aventurer_nft.move:4:33
+  [0m[34m│[0m
+[0m[34m4[0m [0m[34m│[0m     use sui::tx_context::{Self, [0m[33mTxContext[0m};
+  [0m[34m│[0m                                 [0m[33m^^^^^^^^^[0m [0m[33mUnnecessary alias 'TxContext' for module member 'sui::tx_context::TxContext'. This alias is provided by default[0m
+  [0m[34m│[0m
+  [0m[34m=[0m This warning can be suppressed with '#[allow(duplicate_alias)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[W09011][0m[1m: unused constant[0m
+   [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/aventurer_nft.move:35:11
+   [0m[34m│[0m
+[0m[34m35[0m [0m[34m│[0m     const [0m[33mEAlreadyMinted[0m: u64 = 0;
+   [0m[34m│[0m           [0m[33m^^^^^^^^^^^^^^[0m [0m[33mThe constant 'EAlreadyMinted' is never used. Consider removing it.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m This warning can be suppressed with '#[allow(unused_const)]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+[0m[1m[38;5;11mwarning[Lint W99010][0m[1m: unnecessary `entry` on a `public` function[0m
+   [0m[34m┌─[0m /Users/juanlopez/Documents/github/DungeonFlip/move/sources/aventurer_nft.move:49:12
+   [0m[34m│[0m
+[0m[34m49[0m [0m[34m│[0m     public [0m[33mentry[0m fun mint_basic_aventurer(
+   [0m[34m│[0m            [0m[33m^^^^^[0m [0m[33m`entry` on `public` functions limits composability as it adds restrictions, e.g. the type of each return value must have `drop`. `entry` on `public` is only meaningful in niche scenarios.[0m
+   [0m[34m│[0m
+   [0m[34m=[0m `public` functions can be called from PTBs. `entry` can be used to allow non-`public` functions to be called from PTBs, but it adds restrictions on the usage of input arguments and on the type of return values. Unless this `public` function interacts with an intricate set of other `entry` functions, the `entry` modifier should be removed.
+   [0m[34m=[0m This warning can be suppressed with '#[allow(lint(public_entry))]' applied to the 'module' or module member ('const', 'fun', or 'struct')
+
+Please report feedback on the linter warnings at https://forums.sui.io
+
+Skipping dependency verification
+Transaction Digest: E3RS3qrTFWygidWS7giU6YsgEPHPArTaQFjuRhEz2Swj
+╭──────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Transaction Data                                                                                             │
+├──────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                   │
+│ Gas Owner: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                │
+│ Gas Budget: 100000000 MIST                                                                                   │
+│ Gas Price: 1000 MIST                                                                                         │
+│ Gas Payment:                                                                                                 │
+│  ┌──                                                                                                         │
+│  │ ID: 0x1c0d83957ad9b7eef7ba83514b2c13adcc73dd8191c3bff36e0428e66283d4f9                                    │
+│  │ Version: 666876595                                                                                        │
+│  │ Digest: HYCk7YLaixXKNm7atVgikC5oy9swkdYWRpFqq3eGLDXY                                                      │
+│  └──                                                                                                         │
+│                                                                                                              │
+│ Transaction Kind: Programmable                                                                               │
+│ ╭──────────────────────────────────────────────────────────────────────────────────────────────────────────╮ │
+│ │ Input Objects                                                                                            │ │
+│ ├──────────────────────────────────────────────────────────────────────────────────────────────────────────┤ │
+│ │ 0   Pure Arg: Type: address, Value: "0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d" │ │
+│ ╰──────────────────────────────────────────────────────────────────────────────────────────────────────────╯ │
+│ ╭─────────────────────────────────────────────────────────────────────────╮                                  │
+│ │ Commands                                                                │                                  │
+│ ├─────────────────────────────────────────────────────────────────────────┤                                  │
+│ │ 0  Publish:                                                             │                                  │
+│ │  ┌                                                                      │                                  │
+│ │  │ Dependencies:                                                        │                                  │
+│ │  │   0x0000000000000000000000000000000000000000000000000000000000000001 │                                  │
+│ │  │   0x0000000000000000000000000000000000000000000000000000000000000002 │                                  │
+│ │  └                                                                      │                                  │
+│ │                                                                         │                                  │
+│ │ 1  TransferObjects:                                                     │                                  │
+│ │  ┌                                                                      │                                  │
+│ │  │ Arguments:                                                           │                                  │
+│ │  │   Result 0                                                           │                                  │
+│ │  │ Address: Input  0                                                    │                                  │
+│ │  └                                                                      │                                  │
+│ ╰─────────────────────────────────────────────────────────────────────────╯                                  │
+│                                                                                                              │
+│ Signatures:                                                                                                  │
+│    BRQuRvgRxSMFeuljqCBDRckS4fonh1u6aWmBQtT9h2n37ZUsKGq2DGOT/uwQb/8G43TFewNmJuEimYy3jdAeDw==                  │
+│                                                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Transaction Effects                                                                               │
+├───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Digest: E3RS3qrTFWygidWS7giU6YsgEPHPArTaQFjuRhEz2Swj                                              │
+│ Status: Success                                                                                   │
+│ Executed Epoch: 930                                                                               │
+│                                                                                                   │
+│ Created Objects:                                                                                  │
+│  ┌──                                                                                              │
+│  │ ID: 0x284a09387265a3d813f73105616a60fc7c13fb2135903d194adadbb2a1171d64                         │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )  │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: 9pFf2GQnUpqXdq9dSyb2YwXHxaQYfcb2y3bBwDEDts2C                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0x4f3ae9c685167b799a1645a52ce8ca443d965f12a80721ba76631ba58c8a4753                         │
+│  │ Owner: Shared( 666876596 )                                                                     │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: 7Wzi3yM5VDGBGv9vtExLH6NBUrSquaSL4hXx68Brv8yr                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0x8ebce376234d772fc8e608853569675b87d1424d38c4805a13131727a5a34863                         │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )  │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: 2n1MaiZNkHQVrFJx5LiHXbiMFrd2pGK8NgfiQr6dGxUa                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a                         │
+│  │ Owner: Immutable                                                                               │
+│  │ Version: 1                                                                                     │
+│  │ Digest: Fu2gagkaAYFQiNN7NZYht6DtekQEosVgBMySf9usbpgZ                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0xc14683539453de7b69e81d90210ceed2315b6412f6a1d65e60b68e5a0839ceaf                         │
+│  │ Owner: Shared( 666876596 )                                                                     │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: 3eCSgX5hJUyjftNMoxL1RhGcKYGV925Pfq1CmXgjvVhZ                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0xc4580c213a190a3b38f18541fa60c98b488d33dc014cdd783d2af688bad5299a                         │
+│  │ Owner: Shared( 666876596 )                                                                     │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: 2S3rrLsdeRJbBTB6pLn4iVmVkngZJ8pNCHZ6UnuL5ZDS                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0xc7904da77759ca1d551accf12315f1808bbdb69918995b129f700d2d96f52dd2                         │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )  │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: h88s8PS16MK2aLaNCmwd5YbEvxbkDKtKpsA9v7YHQQr                                            │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0xcbdbfde0ab734eed433c4d97a21d2e46fb8ff246b073b84fc7637fd0b02a8913                         │
+│  │ Owner: Shared( 666876596 )                                                                     │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: E39q93gG6AZYtxxYqcoisUTXmcLsDPa6zfq3LfzLftUX                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0xd94dc6c42d6644c15f7cc3f09b3f97b25147b54146ec81f53d34e9f400431d01                         │
+│  │ Owner: Shared( 666876596 )                                                                     │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: Fn7NaL5kfN2sjsAmYANWBCaDLUikWnSkL6gtMq3QBJnN                                           │
+│  └──                                                                                              │
+│  ┌──                                                                                              │
+│  │ ID: 0xf44b6935bfdb35fb8c238f182ef36965577fc09d85a1ca330f3c7c055eb9d274                         │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )  │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: GGt8HX5vkhBpRunDZJB955Hgmq78FNwijV9LtmMc9kou                                           │
+│  └──                                                                                              │
+│ Mutated Objects:                                                                                  │
+│  ┌──                                                                                              │
+│  │ ID: 0x1c0d83957ad9b7eef7ba83514b2c13adcc73dd8191c3bff36e0428e66283d4f9                         │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )  │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: DoszBaZXaY4i14SEo2FDTpJdYpkaLdVtiPYWLobW2aXD                                           │
+│  └──                                                                                              │
+│ Gas Object:                                                                                       │
+│  ┌──                                                                                              │
+│  │ ID: 0x1c0d83957ad9b7eef7ba83514b2c13adcc73dd8191c3bff36e0428e66283d4f9                         │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )  │
+│  │ Version: 666876596                                                                             │
+│  │ Digest: DoszBaZXaY4i14SEo2FDTpJdYpkaLdVtiPYWLobW2aXD                                           │
+│  └──                                                                                              │
+│ Gas Cost Summary:                                                                                 │
+│    Storage Cost: 93632000 MIST                                                                    │
+│    Computation Cost: 1000000 MIST                                                                 │
+│    Storage Rebate: 978120 MIST                                                                    │
+│    Non-refundable Storage Fee: 9880 MIST                                                          │
+│                                                                                                   │
+│ Transaction Dependencies:                                                                         │
+│    9D3Ypemh6DadH4weuCeYPjXD2nGsPpb5L8cNteZcUFyA                                                   │
+│    Bn4yPs813KV4WDF5TMT3hoeKbJPJBVkECvRdSc6RLKKs                                                   │
+│    Dd9pn1zFcSJjinxQewFd2gQdR4XKsHxFioD5MYnwLZQz                                                   │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭─────────────────────────────╮
+│ No transaction block events │
+╰─────────────────────────────╯
+
+╭────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Object Changes                                                                                                         │
+├────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Created Objects:                                                                                                       │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0x284a09387265a3d813f73105616a60fc7c13fb2135903d194adadbb2a1171d64                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )                       │
+│  │ ObjectType: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a::active_run::AdminCap                │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: 9pFf2GQnUpqXdq9dSyb2YwXHxaQYfcb2y3bBwDEDts2C                                                                │
+│  └──                                                                                                                   │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0x4f3ae9c685167b799a1645a52ce8ca443d965f12a80721ba76631ba58c8a4753                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Shared( 666876596 )                                                                                          │
+│  │ ObjectType: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a::rewards_pool::RewardsPool           │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: 7Wzi3yM5VDGBGv9vtExLH6NBUrSquaSL4hXx68Brv8yr                                                                │
+│  └──                                                                                                                   │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0x8ebce376234d772fc8e608853569675b87d1424d38c4805a13131727a5a34863                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )                       │
+│  │ ObjectType: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a::rewards_pool::AdminCap              │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: 2n1MaiZNkHQVrFJx5LiHXbiMFrd2pGK8NgfiQr6dGxUa                                                                │
+│  └──                                                                                                                   │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0xc14683539453de7b69e81d90210ceed2315b6412f6a1d65e60b68e5a0839ceaf                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Shared( 666876596 )                                                                                          │
+│  │ ObjectType: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a::active_run::FeeConfig               │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: 3eCSgX5hJUyjftNMoxL1RhGcKYGV925Pfq1CmXgjvVhZ                                                                │
+│  └──                                                                                                                   │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0xc4580c213a190a3b38f18541fa60c98b488d33dc014cdd783d2af688bad5299a                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Shared( 666876596 )                                                                                          │
+│  │ ObjectType: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a::fee_distributor::FeeDistributor     │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: 2S3rrLsdeRJbBTB6pLn4iVmVkngZJ8pNCHZ6UnuL5ZDS                                                                │
+│  └──                                                                                                                   │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0xc7904da77759ca1d551accf12315f1808bbdb69918995b129f700d2d96f52dd2                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )                       │
+│  │ ObjectType: 0x2::package::UpgradeCap                                                                                │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: h88s8PS16MK2aLaNCmwd5YbEvxbkDKtKpsA9v7YHQQr                                                                 │
+│  └──                                                                                                                   │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0xcbdbfde0ab734eed433c4d97a21d2e46fb8ff246b073b84fc7637fd0b02a8913                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Shared( 666876596 )                                                                                          │
+│  │ ObjectType: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a::aventurer_nft::MintRegistry         │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: E39q93gG6AZYtxxYqcoisUTXmcLsDPa6zfq3LfzLftUX                                                                │
+│  └──                                                                                                                   │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0xd94dc6c42d6644c15f7cc3f09b3f97b25147b54146ec81f53d34e9f400431d01                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Shared( 666876596 )                                                                                          │
+│  │ ObjectType: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a::dungeon_progress::ProgressRegistry  │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: Fn7NaL5kfN2sjsAmYANWBCaDLUikWnSkL6gtMq3QBJnN                                                                │
+│  └──                                                                                                                   │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0xf44b6935bfdb35fb8c238f182ef36965577fc09d85a1ca330f3c7c055eb9d274                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )                       │
+│  │ ObjectType: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a::fee_distributor::AdminCap           │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: GGt8HX5vkhBpRunDZJB955Hgmq78FNwijV9LtmMc9kou                                                                │
+│  └──                                                                                                                   │
+│ Mutated Objects:                                                                                                       │
+│  ┌──                                                                                                                   │
+│  │ ObjectID: 0x1c0d83957ad9b7eef7ba83514b2c13adcc73dd8191c3bff36e0428e66283d4f9                                        │
+│  │ Sender: 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d                                          │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )                       │
+│  │ ObjectType: 0x2::coin::Coin<0x2::sui::SUI>                                                                          │
+│  │ Version: 666876596                                                                                                  │
+│  │ Digest: DoszBaZXaY4i14SEo2FDTpJdYpkaLdVtiPYWLobW2aXD                                                                │
+│  └──                                                                                                                   │
+│ Published Objects:                                                                                                     │
+│  ┌──                                                                                                                   │
+│  │ PackageID: 0xc00cc2639032e8a8cbd7f966ddd0328deb5eb9e650e680fc378c369e66db601a                                       │
+│  │ Version: 1                                                                                                          │
+│  │ Digest: Fu2gagkaAYFQiNN7NZYht6DtekQEosVgBMySf9usbpgZ                                                                │
+│  │ Modules: active_run, aventurer_nft, dungeon_progress, fee_distributor, rewards_pool                                 │
+│  └──                                                                                                                   │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+╭───────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Balance Changes                                                                                   │
+├───────────────────────────────────────────────────────────────────────────────────────────────────┤
+│  ┌──                                                                                              │
+│  │ Owner: Account Address ( 0x93112b12a50efcd31932f17c12b9427b2ff91e2461de533094948a1509daf46d )  │
+│  │ CoinType: 0x2::sui::SUI                                                                        │
+│  │ Amount: -93653880                                                                              │
+│  └──                                                                                              │
+╰───────────────────────────────────────────────────────────────────────────────────────────────────╯
