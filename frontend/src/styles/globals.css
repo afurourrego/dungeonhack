@@ -14,12 +14,12 @@
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    cursor: url('/cursor/default.png') 0 0, auto;
+    cursor: url('/CursorImg/cursor.png') 0 0, auto;
   }
 
-  /* Custom cursor for interactive elements */
+  /* Custom cursor for interactive elements - maintain same cursor */
   button, a, [role="button"], .cursor-pointer {
-    cursor: url('/cursor/pointer.png') 0 0, pointer;
+    cursor: url('/CursorImg/cursor.png') 0 0, auto;
   }
 
   /* Disabled elements */
