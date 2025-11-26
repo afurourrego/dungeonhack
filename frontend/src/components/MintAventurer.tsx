@@ -1,12 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import { GAME_CONFIG, DEV_MODE } from "@/lib/constants";
 import { useGameStore } from "@/store/gameStore";
 
 export default function MintAventurer() {
-  const { hasNFT, isLoading, mint } = useWallet();
-  const { setHasNFT } = useGameStore();
+  const { hasNFT, isLoading, mint, refreshNFT } = useWallet();
+  const { setHasNFT, playerStats } = useGameStore();
+
+  // Refresh NFT stats when component mounts and when hasNFT changes
+  useEffect(() => {
+    if (hasNFT) {
+      refreshNFT();
+    }
+  }, [hasNFT, refreshNFT]);
 
   if (hasNFT) {
     return (
@@ -18,15 +26,15 @@ export default function MintAventurer() {
         <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-6">
           <div className="stat-box">
             <div className="text-xs text-gray-400">ATK</div>
-            <div className="text-3xl font-bold text-red-400">{GAME_CONFIG.BASIC_ATK}</div>
+            <div className="text-3xl font-bold text-red-400">{playerStats.atk}</div>
           </div>
           <div className="stat-box">
             <div className="text-xs text-gray-400">DEF</div>
-            <div className="text-3xl font-bold text-purple-400">{GAME_CONFIG.BASIC_DEF}</div>
+            <div className="text-3xl font-bold text-purple-400">{playerStats.def}</div>
           </div>
           <div className="stat-box">
             <div className="text-xs text-gray-400">HP</div>
-            <div className="text-3xl font-bold text-green-400">{GAME_CONFIG.BASIC_HP}</div>
+            <div className="text-3xl font-bold text-green-400">{playerStats.hp}</div>
           </div>
         </div>
 
@@ -41,26 +49,30 @@ export default function MintAventurer() {
         🎭 Mint Your Adventurer
       </h2>
 
-      <p className="text-dungeon-gold mb-6">
-        Create your basic adventurer NFTORTA to start playing Dungeon Flip Lite.
+      <p className="text-dungeon-gold mb-4">
+        Create your basic adventurer NFT to start playing Dungeon Flip Lite.
         <br />
         <span className="text-sm text-gray-400">
-          (Free mint - one per wallet)
+          (Free mint)
         </span>
+      </p>
+
+      <p className="text-amber-300 text-sm mb-6">
+        ✨ Each adventurer gets random stats!
       </p>
 
       <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-6">
         <div className="stat-box opacity-50">
           <div className="text-xs text-gray-400">ATK</div>
-          <div className="text-3xl font-bold text-red-400">{GAME_CONFIG.BASIC_ATK}</div>
+          <div className="text-3xl font-bold text-red-400">1-2</div>
         </div>
         <div className="stat-box opacity-50">
           <div className="text-xs text-gray-400">DEF</div>
-          <div className="text-3xl font-bold text-purple-400">{GAME_CONFIG.BASIC_DEF}</div>
+          <div className="text-3xl font-bold text-purple-400">1-2</div>
         </div>
         <div className="stat-box opacity-50">
           <div className="text-xs text-gray-400">HP</div>
-          <div className="text-3xl font-bold text-green-400">{GAME_CONFIG.BASIC_HP}</div>
+          <div className="text-3xl font-bold text-green-400">4-6</div>
         </div>
       </div>
 

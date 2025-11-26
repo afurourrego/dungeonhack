@@ -5,6 +5,7 @@ module dungeon_flip::aventurer_nft {
     use sui::event;
     use sui::table::{Self, Table};
     use std::string::{Self, String};
+    use sui::random::{Self, Random};
 
     /// Shared registry to track which addresses have minted
     public struct MintRegistry has key {
@@ -43,11 +44,12 @@ module dungeon_flip::aventurer_nft {
         transfer::share_object(registry);
     }
 
-    /// Mint a basic Aventurer NFT
-    /// Stats: ATK:1, DEF:1, HP:4
+    /// Mint a basic Aventurer NFT with random stats
+    /// Stats: HP:4-6, ATK:1-2, DEF:1-2
     /// TEMPORARY: Allows multiple NFTs per address for testing
     public entry fun mint_basic_aventurer(
         registry: &mut MintRegistry,
+        r: &Random,
         ctx: &mut TxContext
     ) {
         let sender = tx_context::sender(ctx);
@@ -61,24 +63,30 @@ module dungeon_flip::aventurer_nft {
             table::add(&mut registry.minted_addresses, sender, true);
         };
 
+        // Generate random stats
+        let mut generator = random::new_generator(r, ctx);
+        let hp = random::generate_u8_in_range(&mut generator, 4, 6); // 4-6
+        let atk = random::generate_u8_in_range(&mut generator, 1, 2); // 1-2
+        let def = random::generate_u8_in_range(&mut generator, 1, 2); // 1-2
+
         let aventurer = AventurerNFT {
             id: object::new(ctx),
             name: string::utf8(b"Basic Aventurer"),
-            atk: 1,
-            def: 1,
-            hp: 4,
+            atk: (atk as u64),
+            def: (def as u64),
+            hp: (hp as u64),
             owner: sender,
         };
 
         let aventurer_id = object::uid_to_address(&aventurer.id);
 
-        // Emit event
+        // Emit event with actual random stats
         event::emit(AventurerMinted {
             aventurer_id,
             owner: sender,
-            atk: 1,
-            def: 1,
-            hp: 4,
+            atk: (atk as u64),
+            def: (def as u64),
+            hp: (hp as u64),
         });
 
         // Transfer to the minter

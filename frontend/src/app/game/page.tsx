@@ -75,16 +75,16 @@ export default function GamePage() {
 
       {/* Header */}
       <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-2">
           <div className="flex items-center gap-4">
             <div className="flex-shrink-0">
               <button
                 onClick={() => router.push("/")}
-                className="text-2xl font-bold text-dungeon-gold text-glow hover:text-yellow-300 transition-colors"
+                className="text-xl font-bold text-dungeon-gold text-glow hover:text-yellow-300 transition-colors"
               >
                 Dungeon Flip Lite
               </button>
-              <p className="text-xs text-gray-400">Powered by OneChain</p>
+              <p className="text-[10px] text-gray-400">Powered by OneChain</p>
             </div>
             <div className="flex-1 flex justify-center">
               <TotalRunsBadge />
@@ -122,7 +122,7 @@ export default function GamePage() {
                 </div>
 
                 {/* Adventure Log - Right side, takes remaining space, matches height */}
-                <div className="flex">
+                <div className="flex h-[320px]">
                   <AdventureLog />
                 </div>
               </div>

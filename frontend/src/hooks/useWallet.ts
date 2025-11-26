@@ -40,6 +40,7 @@ export const useWallet = () => {
     setLoading,
     setError,
     setMessage,
+    setPlayerStats,
   } = useGameStore();
 
   // Sync account state with game store
@@ -64,6 +65,12 @@ export const useWallet = () => {
         const nftData = await getAventurerNFT(walletAddress);
         if (nftData) {
           setHasNFT(true, nftData.id);
+          // Set player stats from NFT
+          setPlayerStats({
+            hp: nftData.hp,
+            atk: nftData.atk,
+            def: nftData.def,
+          });
         } else {
           setHasNFT(false);
         }
@@ -95,6 +102,32 @@ export const useWallet = () => {
     setTimeout(() => setMessage(null), 3000);
   }, [disconnect, disconnectWallet, setMessage]);
 
+  // Refresh NFT status
+  const refreshNFT = useCallback(async () => {
+    if (!account?.address) return;
+
+    try {
+      const hasNFT = await hasAventurer(account.address);
+
+      if (hasNFT) {
+        const nftData = await getAventurerNFT(account.address);
+        if (nftData) {
+          setHasNFT(true, nftData.id);
+          // Update player stats from NFT
+          setPlayerStats({
+            hp: nftData.hp,
+            atk: nftData.atk,
+            def: nftData.def,
+          });
+        }
+      } else {
+        setHasNFT(false);
+      }
+    } catch (err) {
+      console.error("Failed to refresh NFT status:", err);
+    }
+  }, [account, setHasNFT, setPlayerStats]);
+
   // Mint NFT
   const mint = useCallback(async () => {
     if (!account) {
@@ -114,41 +147,24 @@ export const useWallet = () => {
       setMessage("Aventurer minted successfully!");
       setTimeout(() => setMessage(null), 3000);
 
-      // Refresh balance after minting
-      await refreshBalance();
+      // Wait a bit for the blockchain to process the transaction
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Refresh NFT data to get the actual stats
+      await refreshNFT();
     } catch (err: any) {
       console.error("Failed to mint aventurer:", err);
       setError(err.message || "Failed to mint aventurer");
     } finally {
       setLoading(false);
     }
-  }, [account, signAndExecuteTransaction, setHasNFT, setLoading, setError, setMessage]);
+  }, [account, signAndExecuteTransaction, setHasNFT, setLoading, setError, setMessage, refreshNFT]);
 
   // Refresh balance - removed (no longer using Soul Fragments)
   const refreshBalance = useCallback(async () => {
     // Soul Fragment system removed
     return;
   }, []);
-
-  // Refresh NFT status
-  const refreshNFT = useCallback(async () => {
-    if (!account?.address) return;
-
-    try {
-      const hasNFT = await hasAventurer(account.address);
-
-      if (hasNFT) {
-        const nftData = await getAventurerNFT(account.address);
-        if (nftData) {
-          setHasNFT(true, nftData.id);
-        }
-      } else {
-        setHasNFT(false);
-      }
-    } catch (err) {
-      console.error("Failed to refresh NFT status:", err);
-    }
-  }, [account, setHasNFT]);
 
   // Refresh player progress
   const refreshProgress = useCallback(async () => {

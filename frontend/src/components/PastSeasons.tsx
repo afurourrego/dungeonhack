@@ -34,12 +34,13 @@ export default function PastSeasons() {
       // Load past weeks (excluding current week)
       const pastWeeksData: WeekWinner[] = [];
 
-      // Load last 5 completed weeks (or fewer if game is new)
-      const weeksToLoad = Math.max(1, week - 1); // At least week 1
-      const startWeek = Math.max(1, week - 5); // Show last 5 weeks
+      // Only load completed weeks (week < current week)
+      if (week > 1) {
+        // Load last 5 completed weeks (or fewer if game is new)
+        const lastCompletedWeek = week - 1;
+        const startWeek = Math.max(1, lastCompletedWeek - 4); // Show last 5 weeks
 
-      for (let w = weeksToLoad; w >= startWeek; w--) {
-        if (w < week) { // Only show completed weeks
+        for (let w = lastCompletedWeek; w >= startWeek; w--) {
           pastWeeksData.push({
             weekNumber: w,
             winner: null,

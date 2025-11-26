@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { useWallet } from "@/hooks/useWallet";
 import Card from "./Card";
+import CombatScreen from "./CombatScreen";
 import {
   generateDeck,
   resolveCard as resolveCardLogic,
@@ -21,6 +22,7 @@ import {
   advanceToNextRoom as advanceRoomBlockchain,
   exitDungeonRun,
 } from "@/lib/sui-blockchain";
+import { generateMonster } from "@/lib/combatUtils";
 import Leaderboard from "./Leaderboard";
 import WeeklyTreasure from "./WeeklyTreasure";
 
@@ -37,6 +39,7 @@ export default function GameBoard() {
     awaitingDecision,
     address,
     message,
+    combatState,
     startGame,
     revealCard,
     resolveCard,
@@ -50,6 +53,8 @@ export default function GameBoard() {
     setAwaitingDecision,
     addLogEntry,
     setAvatarSrc,
+    startCombat,
+    resetCombat,
   } = useGameStore();
 
   const { refreshBalance, signAndExecuteTransaction } = useWallet();
@@ -61,6 +66,39 @@ export default function GameBoard() {
       setAvatarSrc("/avatars/adventurer-idle.png");
     }
   }, [gameState, setAvatarSrc]);
+
+  // Handle combat results
+  useEffect(() => {
+    if (combatState.combatResult) {
+      const timer = setTimeout(() => {
+        if (combatState.combatResult === "victory") {
+          // Victory: Award gems and resolve monster card
+          const gemsEarned = 10; // Fixed reward for defeating a monster
+          addLogEntry(`💰 Defeated the monster! Earned ${gemsEarned} gems.`, "combat");
+
+          // Resolve the monster card
+          resolveCard(currentCardIndex, playerStats.hp, gemsEarned, true);
+
+          // Reset combat and allow player to continue
+          resetCombat();
+          setAvatarSrc("/avatars/adventurer-idle.png");
+
+          // Show decision after a brief moment
+          setTimeout(() => {
+            setAwaitingDecision(true);
+            setIsProcessing(false);
+          }, 1000);
+        } else {
+          // Defeat: Trigger death sequence
+          resetCombat();
+          setAvatarSrc("/avatars/adventurer-idle.png");
+          handleDeath();
+        }
+      }, 500); // Small delay after combat ends
+
+      return () => clearTimeout(timer);
+    }
+  }, [combatState.combatResult, resetCombat, addLogEntry, resolveCard, currentCardIndex, playerStats.hp, setAwaitingDecision, setIsProcessing, setAvatarSrc]);
 
   // Start a new dungeon run with entry fee
   const handleStartGame = async () => {
@@ -113,24 +151,28 @@ export default function GameBoard() {
 
     setTimeout(() => {
       const card = currentDeck[index];
+
+      // If it's a monster, start combat instead of resolving immediately
+      if (card.type === "MONSTER") {
+        const monster = generateMonster();
+        addLogEntry(`⚔️ A ${monster.name} appears! (HP: ${monster.hp}, DMG: ${monster.attackRange[0]}-${monster.attackRange[1]})`, "combat");
+        setAvatarSrc("/avatars/adventurer-monster.png");
+        startCombat(monster);
+        setIsProcessing(false);
+        return;
+      }
+
+      // For non-monster cards, resolve normally
       const result = resolveCardLogic(card, playerStats.def, playerStats.hp);
 
-      // Add log entry and swap avatar based on card type
-      if (card.type === "MONSTER") {
-        if (result.defeated) {
-          addLogEntry(`Defeated Monster (ATK ${card.value})! Earned ${result.gold} gems.`, "monster");
-        } else {
-          addLogEntry(`Monster (ATK ${card.value}) attacks! Lost ${result.hpLost} HP.`, "monster");
-        }
-        setAvatarSrc("/avatars/adventurer-monster.png");
-      } else if (card.type === "TREASURE") {
-        addLogEntry(`Found treasure! Earned ${result.gold} gems.`, "treasure");
+      if (card.type === "TREASURE") {
+        addLogEntry(`💎 Found treasure! Earned ${result.gold} gems.`, "treasure");
         setAvatarSrc("/avatars/adventurer-gem.png");
       } else if (card.type === "TRAP") {
-        addLogEntry(`Trap triggered! Lost ${result.hpLost} HP.`, "trap");
+        addLogEntry(`🕸️ Trap triggered! Lost ${result.hpLost} HP.`, "trap");
         setAvatarSrc("/avatars/adventurer-trap.png");
       } else if (card.type === "POTION") {
-        addLogEntry(`Drank a potion! Restored ${result.hpGained} HP.`, "potion");
+        addLogEntry(`🧪 Drank a potion! Restored ${result.hpGained} HP.`, "potion");
         setAvatarSrc("/avatars/adventurer-potion.png");
       }
 
@@ -331,19 +373,19 @@ export default function GameBoard() {
             <div className="stat-box">
               <div className="text-xs text-gray-400">Your ATK</div>
               <div className="text-3xl font-bold text-red-400">
-                {GAME_CONFIG.BASIC_ATK}
+                {playerStats.atk}
               </div>
             </div>
             <div className="stat-box">
               <div className="text-xs text-gray-400">Your DEF</div>
               <div className="text-3xl font-bold text-purple-400">
-                {GAME_CONFIG.BASIC_DEF}
+                {playerStats.def}
               </div>
             </div>
             <div className="stat-box">
               <div className="text-xs text-gray-400">Your HP</div>
               <div className="text-3xl font-bold text-green-400">
-                {GAME_CONFIG.BASIC_HP}
+                {playerStats.hp}
               </div>
             </div>
           </div>
@@ -373,25 +415,30 @@ export default function GameBoard() {
   return (
     <>
       <div className="animate-fade-in">
-        {/* Cards Grid - Outside of card container */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 justify-items-center">
-          {currentDeck.map((card, index) => (
-            <div
-              key={card.id}
-              className="w-full flex justify-center"
-            >
-              <Card
-                card={card}
-                onClick={() => handleCardClick(index)}
-                disabled={
-                  awaitingDecision ||
-                  card.revealed !== CardRevealState.HIDDEN ||
-                  isProcessing
-                }
-              />
-            </div>
-          ))}
-        </div>
+        {/* Show combat screen OR cards grid */}
+        {combatState.inCombat ? (
+          <CombatScreen />
+        ) : (
+          /* Cards Grid */
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 justify-items-center">
+            {currentDeck.map((card, index) => (
+              <div
+                key={card.id}
+                className="w-full flex justify-center"
+              >
+                <Card
+                  card={card}
+                  onClick={() => handleCardClick(index)}
+                  disabled={
+                    awaitingDecision ||
+                    card.revealed !== CardRevealState.HIDDEN ||
+                    isProcessing
+                  }
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Floating Decision Modal con animaciones mejoradas */}

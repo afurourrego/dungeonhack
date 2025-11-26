@@ -19,9 +19,9 @@ module dungeon_flip::rewards_pool {
     /// Week duration in milliseconds (7 days)
     const WEEK_DURATION_MS: u64 = 604_800_000;
 
-    /// First season start: Friday, January 31, 2025 at 4:20 PM UTC
-    /// Timestamp: 1738342800000 milliseconds
-    const SEASON_START_TIME: u64 = 1738342800000;
+    /// First season start: Friday, November 22, 2025 at 4:20 PM UTC
+    /// Timestamp: 1763827200000 milliseconds
+    const SEASON_START_TIME: u64 = 1763827200000;
 
     /// Distribution percentages for top 10 (in basis points, 100 = 1%)
     const TOP_1_PCT: u64 = 3000;  // 30%

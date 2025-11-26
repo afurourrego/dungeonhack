@@ -53,8 +53,9 @@ export const getSuiClient = (): SuiClient => {
 };
 
 /**
- * Mint a basic Aventurer NFT
- * Requires MintRegistry object ID to enforce 1 NFT per address
+ * Mint a basic Aventurer NFT with random stats
+ * Stats: HP:4-6, ATK:1-2, DEF:1-2
+ * Requires MintRegistry object ID and Random object for randomness
  */
 export const mintAventurer = async (
   signAndExecuteTransactionBlock: any,
@@ -63,9 +64,13 @@ export const mintAventurer = async (
   try {
     const tx = new Transaction();
 
+    // The Random object is a special shared object on Sui at address 0x8
     tx.moveCall({
       target: `${PACKAGE_ID}::aventurer_nft::mint_basic_aventurer`,
-      arguments: [tx.object(MINT_REGISTRY_ID)],
+      arguments: [
+        tx.object(MINT_REGISTRY_ID),
+        tx.object("0x8"), // Random object
+      ],
     });
 
     console.log("Executing mint transaction...");
@@ -904,13 +909,23 @@ export const getRewardsPoolInfo = async (): Promise<RewardsPoolInfo | null> => {
     const poolBalanceMist = Number(fields.pool_balance?.value || fields.pool_balance) || 0;
     const poolBalanceSui = poolBalanceMist / 1_000_000_000; // Convert MIST to SUI
 
-    const currentWeek = Number(fields.current_week) || 1;
+    // Calculate current week based on Season 1 start: Friday, November 22, 2025 at 4:20 PM UTC
+    const SEASON_START_TIME = 1763827200000; // November 22, 2025, 4:20 PM UTC
+    const WEEK_DURATION_MS = 604_800_000; // 7 days
+    const now = Date.now();
+
+    let currentWeek = 1; // Default to week 1
+    if (now >= SEASON_START_TIME) {
+      const timeSinceStart = now - SEASON_START_TIME;
+      const weeksPassed = Math.floor(timeSinceStart / WEEK_DURATION_MS);
+      currentWeek = weeksPassed + 1; // Week 1, 2, 3, etc.
+    }
+
     const nextDistributionTime = Number(fields.next_distribution_time) || 0;
     const totalDistributedMist = Number(fields.total_distributed) || 0;
     const totalDistributedSui = totalDistributedMist / 1_000_000_000;
 
     // Calculate time until distribution
-    const now = Date.now();
     const timeUntilDistribution = nextDistributionTime > now
       ? nextDistributionTime - now
       : 0;

@@ -34,7 +34,6 @@ export default function TotalRunsBadge() {
       <div className="text-3xl font-extrabold text-amber-100 leading-none drop-shadow-lg dot-matrix">
         {loading && totalRuns === null ? "..." : totalRuns ?? 0}
       </div>
-      <div className="text-[10px] text-amber-100/70 dot-matrix">All runs played</div>
       <div className="run-counter-shine" aria-hidden />
     </div>
   );

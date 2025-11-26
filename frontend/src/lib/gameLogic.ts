@@ -1,7 +1,6 @@
 import {
   CardType,
   CARD_PROBABILITIES,
-  MONSTER_DIFFICULTIES,
   TREASURE_REWARDS,
   POTION_TYPES,
   GAME_CONFIG,
@@ -49,7 +48,7 @@ export const generateCard = (id: number): GameCard => {
   } else {
     // 50% Monster
     type = CardType.MONSTER;
-    value = MONSTER_DIFFICULTIES[Math.floor(Math.random() * MONSTER_DIFFICULTIES.length)];
+    value = 0; // Monster value is no longer used, combat is handled separately
   }
 
   return {
@@ -204,7 +203,7 @@ export const getCardDisplayInfo = (card: GameCard) => {
       return {
         icon: "👹",
         title: "Monster",
-        description: `ATK: ${card.value}`,
+        description: "",
         className: "card-monster",
       };
     case CardType.TREASURE:

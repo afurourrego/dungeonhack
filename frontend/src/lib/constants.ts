@@ -22,8 +22,37 @@ export enum CardType {
   POTION = "POTION",
 }
 
-// Monster difficulties (ATK values)
-export const MONSTER_DIFFICULTIES = [1, 2, 3] as const;
+// Monster configurations with HP and attack ranges
+export interface MonsterConfig {
+  name: string;
+  attackRange: [number, number]; // Min and max attack damage
+  hpRange: [number, number]; // Min and max HP
+  hitChance: number; // Probability to hit (0-1)
+}
+
+export const MONSTER_TYPES: MonsterConfig[] = [
+  {
+    name: "Goblin",
+    attackRange: [1, 2],
+    hpRange: [1, 2],
+    hitChance: 1.0, // Always hits
+  },
+  {
+    name: "Orc",
+    attackRange: [2, 3],
+    hpRange: [1, 2],
+    hitChance: 1.0,
+  },
+  {
+    name: "Troll",
+    attackRange: [1, 3],
+    hpRange: [1, 2],
+    hitChance: 1.0,
+  },
+] as const;
+
+// Player attack configuration
+export const PLAYER_HIT_CHANCE = 0.8; // 80% chance to hit
 
 // Treasure rewards (Gem amounts - off-chain for Phase 1)
 export const TREASURE_REWARDS = [10, 20, 30] as const;

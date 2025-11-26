@@ -28,17 +28,23 @@ export default function CharacterCard({ avatarSrc }: CharacterCardProps) {
 
         {/* Stats on the right */}
         <div className="flex-1 flex flex-col gap-2">
-          {/* HP and DEF side by side */}
-          <div className="grid grid-cols-2 gap-2">
+          {/* HP, ATK, and DEF in one row */}
+          <div className="grid grid-cols-3 gap-2">
             <div className="stat-box text-center">
               <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">HP</div>
-              <div className="text-2xl font-bold text-green-400 drop-shadow-md">
+              <div className="text-xl font-bold text-green-400 drop-shadow-md">
                 {playerStats.hp}
               </div>
             </div>
             <div className="stat-box text-center">
+              <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">ATK</div>
+              <div className="text-xl font-bold text-red-400 drop-shadow-md">
+                {playerStats.atk}
+              </div>
+            </div>
+            <div className="stat-box text-center">
               <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">DEF</div>
-              <div className="text-2xl font-bold text-purple-400 drop-shadow-md">
+              <div className="text-xl font-bold text-purple-400 drop-shadow-md">
                 {playerStats.def}
               </div>
             </div>
