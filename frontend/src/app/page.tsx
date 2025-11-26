@@ -6,7 +6,7 @@ import { useGameStore } from "@/store/gameStore";
 import WalletConnect from "@/components/WalletConnect";
 import MintAventurer from "@/components/MintAventurer";
 import Leaderboard from "@/components/Leaderboard";
-import { useWallet } from "@/hooks/useWallet";
+import TotalRunsBadge from "@/components/TotalRunsBadge";
 
 export default function Home() {
   const router = useRouter();
@@ -15,10 +15,7 @@ export default function Home() {
   // Navigate to game page when ready
   useEffect(() => {
     if (isConnected && hasNFT) {
-      // Auto-navigate after a short delay to show the mint success
-      const timer = setTimeout(() => {
-        // Don't auto-navigate, let user click button instead
-      }, 1000);
+      const timer = setTimeout(() => {}, 1000);
       return () => clearTimeout(timer);
     }
   }, [isConnected, hasNFT, router]);
@@ -28,14 +25,21 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div>
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold text-dungeon-gold text-glow">
-                ⚔️ Dungeon Flip Lite
+                Dungeon Flip Lite
               </h1>
               <p className="text-xs text-gray-400">Powered by OneChain</p>
             </div>
-            <WalletConnect />
+
+            <div className="flex-1 flex justify-center">
+              <TotalRunsBadge />
+            </div>
+
+            <div className="flex-shrink-0">
+              <WalletConnect />
+            </div>
           </div>
         </div>
       </header>
@@ -55,7 +59,7 @@ export default function Home() {
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-2xl mx-auto mb-8">
                 <div className="bg-gray-700/50 rounded-lg p-4">
-                  <div className="text-2xl mb-2">🎴</div>
+                  <div className="text-2xl mb-2">🗡️</div>
                   <h3 className="font-bold mb-1">Flip Cards</h3>
                   <p className="text-xs text-gray-400">
                     Reveal 4 mysterious cards each run
@@ -103,13 +107,13 @@ export default function Home() {
                 onClick={() => router.push("/game")}
                 className="btn-success text-lg py-4 px-8"
               >
-                🏰 Enter the Dungeon
+                Enter the Dungeon
               </button>
             </div>
           )}
 
           {/* Leaderboard Section */}
-          {isConnected && <Leaderboard />}
+          <Leaderboard showPersonal={isConnected} />
         </div>
       </div>
 
@@ -118,7 +122,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center text-sm text-gray-400">
           <p>
             Built for OneHack 2.0 Hackathon
-            <span className="mx-2">•</span>
+            <span className="mx-2">*</span>
             Powered by OneChain & OneWallet
           </p>
         </div>
