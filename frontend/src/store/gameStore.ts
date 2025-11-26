@@ -513,8 +513,8 @@ export const useGameStore = create<GameStore>((set) => ({
       // Roll for damage (random between min and max)
       const damage = Math.floor(Math.random() * (maxDmg - minDmg + 1)) + minDmg;
 
-      // Apply defense (reduce damage by DEF, min 1)
-      const actualDamage = Math.max(1, damage - state.playerStats.def);
+      // Apply defense (reduce damage by DEF, min 0)
+      const actualDamage = Math.max(0, damage - state.playerStats.def);
       const newPlayerHp = Math.max(0, state.playerStats.hp - actualDamage);
 
       if (newPlayerHp <= 0) {
