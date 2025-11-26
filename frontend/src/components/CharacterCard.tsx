@@ -38,7 +38,7 @@ export default function CharacterCard({ avatarSrc }: CharacterCardProps) {
             </div>
             <div className="stat-box text-center">
               <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">DEF</div>
-              <div className="text-2xl font-bold text-blue-400 drop-shadow-md">
+              <div className="text-2xl font-bold text-purple-400 drop-shadow-md">
                 {playerStats.def}
               </div>
             </div>

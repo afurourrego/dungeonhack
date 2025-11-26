@@ -15,8 +15,8 @@ module dungeon_flip::active_run {
     const EInvalidStats: u64 = 2;
     const EInvalidHP: u64 = 3;
 
-    // Entry fee: 0.05 SUI (50_000_000 MIST - SUI has 9 decimals)
-    const ENTRY_FEE: u64 = 50_000_000;
+    // Entry fee: 0.01 SUI (10_000_000 MIST - SUI has 9 decimals)
+    const ENTRY_FEE: u64 = 10_000_000;
 
     /// Admin capability for managing entry fees
     public struct AdminCap has key, store {

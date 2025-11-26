@@ -25,7 +25,7 @@ export default function AdventureLog() {
       case "potion":
         return "text-green-400 border-l-green-500";
       case "room":
-        return "text-blue-400 border-l-blue-500";
+        return "text-amber-400 border-l-amber-600";
       case "death":
         return "text-gray-300 border-l-gray-500";
       case "exit":
@@ -45,13 +45,13 @@ export default function AdventureLog() {
   };
 
   return (
-    <div className="card flex flex-col h-[250px]">
+    <div className="card flex flex-col h-full w-full">
       <div className="flex justify-between items-center mb-3 flex-shrink-0">
-        <h3 className="text-lg font-bold text-amber-400 drop-shadow-lg">
+        <h3 className="text-base font-bold text-amber-400 drop-shadow-lg">
           📜 Adventure Log <span className="text-amber-300/80">• Room {currentRoom}</span>
         </h3>
         {adventureLog.length > 0 && (
-          <span className="text-xs text-amber-300/60 uppercase tracking-wider">
+          <span className="text-[10px] text-amber-300/60 uppercase tracking-wider">
             {adventureLog.length} {adventureLog.length === 1 ? "entry" : "entries"}
           </span>
         )}
@@ -61,22 +61,22 @@ export default function AdventureLog() {
         {adventureLog.length === 0 ? (
           <div className="flex items-center justify-center h-full text-amber-300/50">
             <div className="text-center">
-              <p className="text-3xl mb-1">🏰</p>
-              <p className="text-sm">Your adventure begins here...</p>
+              <p className="text-2xl mb-1">🏰</p>
+              <p className="text-xs">Your adventure begins here...</p>
             </div>
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             {adventureLog.map((entry) => (
               <div
                 key={entry.id}
-                className={`text-sm border-l-4 pl-3 py-2 bg-gray-900/40 backdrop-blur-sm rounded ${getEntryStyle(
+                className={`text-xs border-l-4 pl-2 py-1.5 bg-gray-900/40 backdrop-blur-sm rounded ${getEntryStyle(
                   entry.type
                 )} animate-fade-in`}
               >
                 <div className="flex justify-between items-start gap-2">
-                  <p className="flex-1">{entry.message}</p>
-                  <span className="text-xs text-amber-300/40 whitespace-nowrap">
+                  <p className="flex-1 leading-snug">{entry.message}</p>
+                  <span className="text-[10px] text-amber-300/40 whitespace-nowrap">
                     {formatTime(entry.timestamp)}
                   </span>
                 </div>

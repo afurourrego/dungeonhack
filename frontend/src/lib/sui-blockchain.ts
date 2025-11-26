@@ -630,3 +630,300 @@ export const formatAddress = (address: string): string => {
   if (!address) return "";
   return `${address.slice(0, 6)}...${address.slice(-4)}`;
 };
+
+/**
+ * Get current week number from ProgressRegistry
+ */
+export const getCurrentWeek = async (): Promise<number> => {
+  if (!PACKAGE_ID || !PROGRESS_REGISTRY_ID) return 1;
+
+  try {
+    const client = getSuiClient();
+
+    const registryObject = await client.getObject({
+      id: PROGRESS_REGISTRY_ID,
+      options: {
+        showContent: true,
+      },
+    });
+
+    if (!registryObject.data || !registryObject.data.content) return 1;
+
+    const content = registryObject.data.content;
+    if (content.dataType !== "moveObject") return 1;
+
+    const fields = content.fields as any;
+    return Number(fields.current_week) || 1;
+  } catch (error) {
+    console.error("Error getting current week:", error);
+    return 1;
+  }
+};
+
+/**
+ * Get weekly leaderboard (top scores for a specific week)
+ * Filters RunCompleted events by week number from ProgressRegistry
+ */
+export const getWeeklyLeaderboard = async (weekNumber?: number): Promise<LeaderboardEntry[]> => {
+  if (!PACKAGE_ID || !PROGRESS_REGISTRY_ID) return [];
+
+  try {
+    const client = getSuiClient();
+
+    // Get current week if not specified
+    const targetWeek = weekNumber || await getCurrentWeek();
+
+    // Get the ProgressRegistry to find week boundaries
+    const registryObject = await client.getObject({
+      id: PROGRESS_REGISTRY_ID,
+      options: {
+        showContent: true,
+      },
+    });
+
+    if (!registryObject.data || !registryObject.data.content) return [];
+
+    const content = registryObject.data.content;
+    if (content.dataType !== "moveObject") return [];
+
+    const fields = content.fields as any;
+    const currentWeek = Number(fields.current_week) || 1;
+    const weekStartTime = Number(fields.week_start_time) || 0;
+
+    // Calculate week boundaries (7 days = 604,800,000 ms)
+    const WEEK_MS = 604_800_000;
+    const weeksAgo = currentWeek - targetWeek;
+    const weekEndTime = weekStartTime - (weeksAgo * WEEK_MS);
+    const weekStartBoundary = weekEndTime - WEEK_MS;
+
+    // Query RunCompleted events
+    const eventType = `${PACKAGE_ID}::dungeon_progress::RunCompleted`;
+    const weekScores = new Map<string, number>();
+
+    let cursor: any = null;
+    const pageLimit = 50;
+    const maxPages = 20;
+    let pagesFetched = 0;
+
+    while (pagesFetched < maxPages) {
+      const events = await client.queryEvents({
+        query: { MoveEventType: eventType },
+        cursor: cursor ?? undefined,
+        limit: pageLimit,
+        order: "descending",
+      });
+
+      for (const ev of events.data) {
+        const timestamp = Number(ev.timestampMs) || 0;
+
+        // Only include events from target week
+        if (timestamp < weekStartBoundary || timestamp >= weekEndTime) {
+          continue;
+        }
+
+        const parsed = (ev as any).parsedJson;
+        if (!parsed) continue;
+
+        const player = parsed.player as string | undefined;
+        const gemsCollected = Number(parsed.gems_collected ?? parsed.gems ?? parsed.gemsCollected ?? 0);
+
+        if (!player || gemsCollected === 0) continue;
+
+        const currentBest = weekScores.get(player);
+        if (!currentBest || gemsCollected > currentBest) {
+          weekScores.set(player, gemsCollected);
+        }
+      }
+
+      cursor = events.nextCursor ?? null;
+      pagesFetched += 1;
+      if (!events.hasNextPage || !cursor) {
+        break;
+      }
+    }
+
+    // Build leaderboard entries
+    const entries: LeaderboardEntry[] = await Promise.all(
+      Array.from(weekScores.entries()).map(async ([address, maxGemsCollected]) => {
+        const progress = await getPlayerProgress(address);
+        return {
+          address,
+          maxRoomsCleared: progress.maxRoomReached,
+          maxGemsCollected,
+          successfulRuns: progress.successfulRuns,
+          totalRuns: progress.totalRuns,
+          monstersDefeated: progress.monstersDefeated,
+        };
+      })
+    );
+
+    return entries
+      .filter((entry) => entry.maxGemsCollected > 0)
+      .sort((a, b) => {
+        if (b.maxGemsCollected !== a.maxGemsCollected) {
+          return b.maxGemsCollected - a.maxGemsCollected;
+        }
+        if (b.maxRoomsCleared !== a.maxRoomsCleared) {
+          return b.maxRoomsCleared - a.maxRoomsCleared;
+        }
+        return b.successfulRuns - a.successfulRuns;
+      })
+      .slice(0, 10);
+  } catch (error) {
+    console.error("Error getting weekly leaderboard:", error);
+    return [];
+  }
+};
+
+/**
+ * Get player's best score for the current week
+ */
+export const getPlayerWeeklyScore = async (address: string): Promise<{ score: number; rooms: number }> => {
+  if (!PACKAGE_ID || !PROGRESS_REGISTRY_ID || !address) {
+    return { score: 0, rooms: 0 };
+  }
+
+  try {
+    const client = getSuiClient();
+    const currentWeek = await getCurrentWeek();
+
+    // Get the ProgressRegistry to find week boundaries
+    const registryObject = await client.getObject({
+      id: PROGRESS_REGISTRY_ID,
+      options: {
+        showContent: true,
+      },
+    });
+
+    if (!registryObject.data || !registryObject.data.content) {
+      return { score: 0, rooms: 0 };
+    }
+
+    const content = registryObject.data.content;
+    if (content.dataType !== "moveObject") {
+      return { score: 0, rooms: 0 };
+    }
+
+    const fields = content.fields as any;
+    const weekStartTime = Number(fields.week_start_time) || 0;
+
+    // Calculate current week boundaries
+    const now = Date.now();
+    const WEEK_MS = 604_800_000;
+    const weekEndTime = weekStartTime + WEEK_MS;
+
+    // Query RunCompleted events for this player this week
+    const eventType = `${PACKAGE_ID}::dungeon_progress::RunCompleted`;
+    let bestScore = 0;
+    let bestRooms = 0;
+
+    let cursor: any = null;
+    const pageLimit = 50;
+    const maxPages = 10;
+    let pagesFetched = 0;
+
+    while (pagesFetched < maxPages) {
+      const events = await client.queryEvents({
+        query: { MoveEventType: eventType },
+        cursor: cursor ?? undefined,
+        limit: pageLimit,
+        order: "descending",
+      });
+
+      for (const ev of events.data) {
+        const timestamp = Number(ev.timestampMs) || 0;
+
+        // Only include events from current week
+        if (timestamp < weekStartTime || timestamp >= weekEndTime) {
+          continue;
+        }
+
+        const parsed = (ev as any).parsedJson;
+        if (!parsed) continue;
+
+        const player = parsed.player as string | undefined;
+        if (player !== address) continue;
+
+        const gemsCollected = Number(parsed.gems_collected ?? parsed.gems ?? parsed.gemsCollected ?? 0);
+        const roomsReached = Number(parsed.rooms_reached ?? parsed.rooms ?? parsed.roomsReached ?? 0);
+
+        if (gemsCollected > bestScore) {
+          bestScore = gemsCollected;
+          bestRooms = roomsReached;
+        }
+      }
+
+      cursor = events.nextCursor ?? null;
+      pagesFetched += 1;
+      if (!events.hasNextPage || !cursor) {
+        break;
+      }
+    }
+
+    return { score: bestScore, rooms: bestRooms };
+  } catch (error) {
+    console.error("Error getting player weekly score:", error);
+    return { score: 0, rooms: 0 };
+  }
+};
+
+/**
+ * Get rewards pool information
+ */
+export interface RewardsPoolInfo {
+  poolBalance: number; // Balance in SUI (not MIST)
+  currentWeek: number;
+  nextDistributionTime: number; // Timestamp in milliseconds
+  totalDistributed: number; // Total in SUI
+  timeUntilDistribution: number; // Milliseconds remaining
+}
+
+export const getRewardsPoolInfo = async (): Promise<RewardsPoolInfo | null> => {
+  if (!PACKAGE_ID || !REWARDS_POOL_ID) return null;
+
+  try {
+    const client = getSuiClient();
+
+    // Get the RewardsPool object
+    const poolObject = await client.getObject({
+      id: REWARDS_POOL_ID,
+      options: {
+        showContent: true,
+      },
+    });
+
+    if (!poolObject.data || !poolObject.data.content) return null;
+
+    const content = poolObject.data.content;
+    if (content.dataType !== "moveObject") return null;
+
+    const fields = content.fields as any;
+
+    // Extract pool balance from Balance<SUI> struct
+    // Balance<SUI> has a 'value' field that contains the actual balance in MIST
+    const poolBalanceMist = Number(fields.pool_balance?.value || fields.pool_balance) || 0;
+    const poolBalanceSui = poolBalanceMist / 1_000_000_000; // Convert MIST to SUI
+
+    const currentWeek = Number(fields.current_week) || 1;
+    const nextDistributionTime = Number(fields.next_distribution_time) || 0;
+    const totalDistributedMist = Number(fields.total_distributed) || 0;
+    const totalDistributedSui = totalDistributedMist / 1_000_000_000;
+
+    // Calculate time until distribution
+    const now = Date.now();
+    const timeUntilDistribution = nextDistributionTime > now
+      ? nextDistributionTime - now
+      : 0;
+
+    return {
+      poolBalance: poolBalanceSui,
+      currentWeek,
+      nextDistributionTime,
+      totalDistributed: totalDistributedSui,
+      timeUntilDistribution,
+    };
+  } catch (error) {
+    console.error("Error getting rewards pool info:", error);
+    return null;
+  }
+};

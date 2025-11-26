@@ -19,6 +19,10 @@ module dungeon_flip::rewards_pool {
     /// Week duration in milliseconds (7 days)
     const WEEK_DURATION_MS: u64 = 604_800_000;
 
+    /// First season start: Friday, January 31, 2025 at 4:20 PM UTC
+    /// Timestamp: 1738342800000 milliseconds
+    const SEASON_START_TIME: u64 = 1738342800000;
+
     /// Distribution percentages for top 10 (in basis points, 100 = 1%)
     const TOP_1_PCT: u64 = 3000;  // 30%
     const TOP_2_PCT: u64 = 2000;  // 20%
@@ -58,14 +62,32 @@ module dungeon_flip::rewards_pool {
         timestamp: u64,
     }
 
+    /// Calculate current week number and next distribution time based on SEASON_START_TIME
+    /// Returns (week_number, next_distribution_timestamp)
+    fun calculate_week_info(current_time: u64): (u64, u64) {
+        if (current_time < SEASON_START_TIME) {
+            // Before season starts, return week 0 and season start time
+            return (0, SEASON_START_TIME)
+        };
+
+        let time_since_start = current_time - SEASON_START_TIME;
+        let weeks_passed = time_since_start / WEEK_DURATION_MS;
+        let week_number = weeks_passed + 1; // Week 1, 2, 3, etc.
+
+        // Next distribution is at the end of current week (start of next week)
+        let next_distribution = SEASON_START_TIME + ((weeks_passed + 1) * WEEK_DURATION_MS);
+
+        (week_number, next_distribution)
+    }
+
     /// Initialize rewards pool
     fun init(ctx: &mut TxContext) {
         let pool = RewardsPool {
             id: object::new(ctx),
             pool_balance: balance::zero(),
-            current_week: 1,
+            current_week: 0, // Will be set to actual week on first transaction
             last_distribution: 0,
-            next_distribution_time: 0, // Will be set on first deposit
+            next_distribution_time: SEASON_START_TIME, // Fixed: First distribution at season start
             total_distributed: 0,
         };
 
@@ -85,18 +107,23 @@ module dungeon_flip::rewards_pool {
         ctx: &mut TxContext
     ) {
         let amount = coin::value(&tokens);
+        let current_time = clock::timestamp_ms(clock);
         balance::join(&mut pool.pool_balance, coin::into_balance(tokens));
 
-        // Initialize distribution time on first deposit
-        if (pool.next_distribution_time == 0) {
-            pool.next_distribution_time = clock::timestamp_ms(clock) + WEEK_DURATION_MS;
+        // Calculate current week based on fixed schedule (Fridays 4:20 PM UTC)
+        let (current_week, next_dist) = calculate_week_info(current_time);
+
+        // Update pool week info if needed
+        if (pool.current_week != current_week) {
+            pool.current_week = current_week;
+            pool.next_distribution_time = next_dist;
         };
 
         event::emit(TokensAddedToPool {
             week: pool.current_week,
             amount,
             new_balance: balance::value(&pool.pool_balance),
-            timestamp: clock::timestamp_ms(clock),
+            timestamp: current_time,
         });
     }
 
@@ -175,11 +202,12 @@ module dungeon_flip::rewards_pool {
             i = i + 1;
         };
 
-        // Update pool state
+        // Update pool state based on fixed schedule
+        let (new_week, next_dist) = calculate_week_info(current_time);
         pool.total_distributed = pool.total_distributed + total_sent;
         pool.last_distribution = current_time;
-        pool.next_distribution_time = current_time + WEEK_DURATION_MS;
-        pool.current_week = pool.current_week + 1;
+        pool.current_week = new_week;
+        pool.next_distribution_time = next_dist;
 
         // Emit event
         event::emit(WeeklyDistributionCompleted {

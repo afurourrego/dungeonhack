@@ -49,7 +49,7 @@ export default function GamePage() {
     } else if (normalized.includes("success") || normalized.includes("escaped") || normalized.includes("claimed")) {
       return { bg: "bg-green-900/95", border: "border-green-500", text: "text-green-400" };
     } else if (normalized.includes("advancing") || normalized.includes("entering") || normalized.includes("room")) {
-      return { bg: "bg-blue-900/95", border: "border-blue-500", text: "text-blue-400" };
+      return { bg: "bg-amber-900/95", border: "border-amber-600", text: "text-amber-400" };
     } else if (normalized.includes("died") || normalized.includes("death")) {
       return { bg: "bg-gray-900/95", border: "border-gray-500", text: "text-gray-300" };
     } else {
@@ -98,7 +98,7 @@ export default function GamePage() {
 
       {/* Main Content */}
       <div className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {/* Global Error Display */}
           {error && (
             <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 text-center animate-slide-up mb-6">
@@ -106,27 +106,25 @@ export default function GamePage() {
             </div>
           )}
 
-          {/* Main Layout: Top (Game + Character) + Bottom (Log) */}
+          {/* Main Layout: Top (Game Board full width) + Bottom (Character + Log) */}
           <div className="space-y-4">
-            {/* Top Section: Game Board + Character Card (side by side on desktop) */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-start">
-              {/* Game Board */}
-              <div>
-                <GameBoard />
-              </div>
-
-              {/* Character Card - Only show during active gameplay */}
-              {gameState === GameState.IN_PROGRESS && (
-                <div>
-                  <CharacterCard avatarSrc={avatarSrc} />
-                </div>
-              )}
+            {/* Top Section: Game Board - Full width */}
+            <div className="w-full">
+              <GameBoard />
             </div>
 
-            {/* Bottom Section: Adventure Log (horizontal, full width) */}
+            {/* Bottom Section: Character Card + Adventure Log (side by side) - Only show during active gameplay */}
             {gameState === GameState.IN_PROGRESS && (
-              <div className="w-full">
-                <AdventureLog />
+              <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-4 items-stretch">
+                {/* Character Card - Left side */}
+                <div className="flex">
+                  <CharacterCard avatarSrc={avatarSrc} />
+                </div>
+
+                {/* Adventure Log - Right side, takes remaining space, matches height */}
+                <div className="flex">
+                  <AdventureLog />
+                </div>
               </div>
             )}
           </div>

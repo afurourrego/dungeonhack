@@ -22,7 +22,7 @@ export default function MintAventurer() {
           </div>
           <div className="stat-box">
             <div className="text-xs text-gray-400">DEF</div>
-            <div className="text-3xl font-bold text-blue-400">{GAME_CONFIG.BASIC_DEF}</div>
+            <div className="text-3xl font-bold text-purple-400">{GAME_CONFIG.BASIC_DEF}</div>
           </div>
           <div className="stat-box">
             <div className="text-xs text-gray-400">HP</div>
@@ -56,7 +56,7 @@ export default function MintAventurer() {
         </div>
         <div className="stat-box opacity-50">
           <div className="text-xs text-gray-400">DEF</div>
-          <div className="text-3xl font-bold text-blue-400">{GAME_CONFIG.BASIC_DEF}</div>
+          <div className="text-3xl font-bold text-purple-400">{GAME_CONFIG.BASIC_DEF}</div>
         </div>
         <div className="stat-box opacity-50">
           <div className="text-xs text-gray-400">HP</div>

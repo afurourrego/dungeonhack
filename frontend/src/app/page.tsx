@@ -7,6 +7,8 @@ import WalletConnect from "@/components/WalletConnect";
 import MintAventurer from "@/components/MintAventurer";
 import Leaderboard from "@/components/Leaderboard";
 import TotalRunsBadge from "@/components/TotalRunsBadge";
+import WeeklyTreasure from "@/components/WeeklyTreasure";
+import PastSeasons from "@/components/PastSeasons";
 import { useWallet } from "@/hooks/useWallet";
 
 export default function Home() {
@@ -111,8 +113,14 @@ export default function Home() {
             </div>
           )}
 
+          {/* Weekly Treasure Pool */}
+          <WeeklyTreasure />
+
           {/* Leaderboard Section */}
           <Leaderboard showPersonal={isConnected} />
+
+          {/* Past Seasons Winners */}
+          <PastSeasons />
         </div>
       </div>
 

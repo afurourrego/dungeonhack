@@ -22,6 +22,7 @@ import {
   exitDungeonRun,
 } from "@/lib/sui-blockchain";
 import Leaderboard from "./Leaderboard";
+import WeeklyTreasure from "./WeeklyTreasure";
 
 export default function GameBoard() {
   const {
@@ -304,60 +305,66 @@ export default function GameBoard() {
   // Render game start screen
   if (gameState === GameState.NOT_STARTED) {
     return (
-      <div className="card text-center animate-fade-in max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold text-dungeon-gold mb-4">
-          Enter the Infinite Dungeon
-        </h2>
+      <div className="space-y-6 mx-auto">
+        {/* Entry Fee Card */}
+        <div className="card text-center animate-fade-in">
+          <h2 className="text-2xl font-bold text-dungeon-gold mb-4">
+            Enter the Infinite Dungeon
+          </h2>
 
-        <p className="text-gray-300 mb-4">
-          Pay an entry fee of <span className="text-dungeon-gold font-bold">{ENTRY_FEE_SUI} SUI</span> to
-          enter the dungeon and compete for weekly prizes!
-        </p>
+          <p className="text-gray-300 mb-4">
+            Pay an entry fee of <span className="text-dungeon-gold font-bold">{ENTRY_FEE_SUI} SUI</span> to
+            enter the dungeon and compete for weekly prizes!
+          </p>
 
-        <p className="text-gray-400 text-sm mb-6">
-          Each room has 4 cards. Choose 1 to reveal.
-          <br />
-          50% Monster | 30% Treasure | 10% Trap | 10% Potion
-          <br />
-          After each room: Continue (risk death) or Exit (claim rewards).
-          <br />
-          Your score = gems collected!
-        </p>
+          <p className="text-gray-400 text-sm mb-6">
+            Each room has 4 cards. Choose 1 to reveal.
+            <br />
+            50% Monster | 30% Treasure | 10% Trap | 10% Potion
+            <br />
+            After each room: Continue (risk death) or Exit (claim rewards).
+            <br />
+            Your score = gems collected!
+          </p>
 
-        <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-6">
-          <div className="stat-box">
-            <div className="text-xs text-gray-400">Your ATK</div>
-            <div className="text-3xl font-bold text-red-400">
-              {GAME_CONFIG.BASIC_ATK}
+          <div className="grid grid-cols-3 gap-4 max-w-md mx-auto mb-6">
+            <div className="stat-box">
+              <div className="text-xs text-gray-400">Your ATK</div>
+              <div className="text-3xl font-bold text-red-400">
+                {GAME_CONFIG.BASIC_ATK}
+              </div>
+            </div>
+            <div className="stat-box">
+              <div className="text-xs text-gray-400">Your DEF</div>
+              <div className="text-3xl font-bold text-purple-400">
+                {GAME_CONFIG.BASIC_DEF}
+              </div>
+            </div>
+            <div className="stat-box">
+              <div className="text-xs text-gray-400">Your HP</div>
+              <div className="text-3xl font-bold text-green-400">
+                {GAME_CONFIG.BASIC_HP}
+              </div>
             </div>
           </div>
-          <div className="stat-box">
-            <div className="text-xs text-gray-400">Your DEF</div>
-            <div className="text-3xl font-bold text-blue-400">
-              {GAME_CONFIG.BASIC_DEF}
-            </div>
-          </div>
-          <div className="stat-box">
-            <div className="text-xs text-gray-400">Your HP</div>
-            <div className="text-3xl font-bold text-green-400">
-              {GAME_CONFIG.BASIC_HP}
-            </div>
-          </div>
+
+          <button
+            onClick={handleStartGame}
+            disabled={isProcessing}
+            className="btn-success"
+          >
+            {isProcessing ? "Starting..." : `Pay ${ENTRY_FEE_SUI} SUI & Enter`}
+          </button>
+
+          {DEV_MODE && (
+            <p className="text-yellow-500 text-xs mt-4">
+              Dev Mode: Entry fee skipped
+            </p>
+          )}
         </div>
 
-        <button
-          onClick={handleStartGame}
-          disabled={isProcessing}
-          className="btn-success"
-        >
-          {isProcessing ? "Starting..." : `Pay ${ENTRY_FEE_SUI} SUI & Enter`}
-        </button>
-
-        {DEV_MODE && (
-          <p className="text-yellow-500 text-xs mt-4">
-            Dev Mode: Entry fee skipped
-          </p>
-        )}
+        {/* Weekly Treasure Pool */}
+        <WeeklyTreasure />
       </div>
     );
   }

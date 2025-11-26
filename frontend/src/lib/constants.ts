@@ -54,8 +54,8 @@ export const REWARDS_POOL_ID = process.env.NEXT_PUBLIC_REWARDS_POOL_ID || "";
 export const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
 // Entry fee for dungeon runs in SUI (native token)
-export const ENTRY_FEE_SUI = 0.05; // 0.05 SUI
-export const ENTRY_FEE_MIST = 50_000_000; // 0.05 SUI in MIST (SUI has 9 decimals)
+export const ENTRY_FEE_SUI = 0.01; // 0.01 SUI
+export const ENTRY_FEE_MIST = 10_000_000; // 0.01 SUI in MIST (SUI has 9 decimals)
 
 // Fee distribution (automatic on entry):
 // 70% → Weekly Rewards Pool (distributed to top 10 players)

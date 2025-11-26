@@ -3,11 +3,11 @@
 import { useState, useEffect } from "react";
 import { useGameStore } from "@/store/gameStore";
 import {
-  getPlayerProgress,
-  getGlobalLeaderboard,
+  getPlayerWeeklyScore,
+  getWeeklyLeaderboard,
+  getCurrentWeek,
   formatAddress,
   LeaderboardEntry,
-  PlayerProgress,
 } from "@/lib/sui-blockchain";
 
 interface LeaderboardProps {
@@ -21,6 +21,11 @@ interface LeaderboardTableProps {
   onRefresh: () => void;
   variant: "full" | "compact";
   error: string | null;
+  currentWeek: number;
+  playerWeeklyScore: { score: number; rooms: number };
+  loadingPlayer: boolean;
+  onRefreshPlayer: () => void;
+  playerAddress: string | null;
 }
 
 function LeaderboardTable({
@@ -29,6 +34,11 @@ function LeaderboardTable({
   onRefresh,
   variant,
   error,
+  currentWeek,
+  playerWeeklyScore,
+  loadingPlayer,
+  onRefreshPlayer,
+  playerAddress,
 }: LeaderboardTableProps) {
   const hasData = entries.length > 0;
   const padding = variant === "compact" ? "p-4" : "p-6";
@@ -39,13 +49,13 @@ function LeaderboardTable({
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-amber-500/50 bg-amber-500/10 text-amber-200 text-[11px] uppercase tracking-[0.2em]">
-              <span className="royal-dot" /> Top 10 Adventurers
+              <span className="royal-dot" /> Week {currentWeek} • Top 10
             </div>
             <h2 className="text-xl md:text-2xl font-bold text-amber-100 drop-shadow-sm mt-2">
-              Best victories by rooms cleared
+              Weekly Leaderboard - Best Scores
             </h2>
             <p className="text-amber-100/70 text-xs md:text-sm">
-              On-chain data - Successful runs only - Testnet
+              This week's top performers • Resets every 7 days
             </p>
             <div className="royal-divider mt-2" />
           </div>
@@ -57,6 +67,54 @@ function LeaderboardTable({
             {loading ? "Refreshing..." : "Refresh table"}
           </button>
         </div>
+
+        {/* Personal Best Score - Show if player is connected */}
+        {playerAddress && (
+          <div className="bg-gradient-to-r from-amber-900/20 via-amber-800/10 to-transparent rounded-lg border border-amber-700/40 p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="text-3xl">👤</div>
+                <div>
+                  <div className="text-sm text-amber-300/70 uppercase tracking-wider">
+                    Your Best This Week
+                  </div>
+                  <div className="font-mono text-xs text-amber-400/80">
+                    {formatAddress(playerAddress)}
+                  </div>
+                </div>
+              </div>
+
+              {loadingPlayer ? (
+                <div className="text-sm text-gray-400">Loading...</div>
+              ) : playerWeeklyScore.score > 0 ? (
+                <div className="flex items-center gap-6">
+                  <div className="text-center">
+                    <div className="text-xs text-amber-300/60 uppercase tracking-wider">Score</div>
+                    <div className="text-2xl font-bold text-dungeon-gold dot-matrix">
+                      {playerWeeklyScore.score}
+                    </div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-xs text-amber-300/60 uppercase tracking-wider">Rooms</div>
+                    <div className="text-xl font-bold text-purple-400">
+                      {playerWeeklyScore.rooms}
+                    </div>
+                  </div>
+                  <button
+                    onClick={onRefreshPlayer}
+                    className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-amber-500/60 bg-amber-500/10 text-amber-200 hover:bg-amber-500/20 transition"
+                  >
+                    Refresh
+                  </button>
+                </div>
+              ) : (
+                <div className="text-sm text-gray-400">
+                  No runs this week yet
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="text-red-200 text-sm bg-red-900/30 border border-red-700/50 rounded-lg px-3 py-2">
@@ -152,11 +210,12 @@ export default function Leaderboard({
   variant = "full",
 }: LeaderboardProps) {
   const { address } = useGameStore();
-  const [playerStats, setPlayerStats] = useState<PlayerProgress | null>(null);
+  const [playerWeeklyScore, setPlayerWeeklyScore] = useState<{ score: number; rooms: number }>({ score: 0, rooms: 0 });
   const [loadingPlayer, setLoadingPlayer] = useState(false);
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
+  const [currentWeek, setCurrentWeek] = useState(1);
 
   useEffect(() => {
     loadGlobal();
@@ -166,7 +225,7 @@ export default function Leaderboard({
     if (showPersonal && address) {
       loadPlayerStats();
     } else {
-      setPlayerStats(null);
+      setPlayerWeeklyScore({ score: 0, rooms: 0 });
     }
   }, [address, showPersonal]);
 
@@ -175,8 +234,8 @@ export default function Leaderboard({
 
     setLoadingPlayer(true);
     try {
-      const progress = await getPlayerProgress(address);
-      setPlayerStats(progress);
+      const weeklyScore = await getPlayerWeeklyScore(address);
+      setPlayerWeeklyScore(weeklyScore);
     } catch (error) {
       console.error("Error loading player stats:", error);
     } finally {
@@ -188,82 +247,30 @@ export default function Leaderboard({
     setGlobalLoading(true);
     setGlobalError(null);
     try {
-      const data = await getGlobalLeaderboard();
+      const week = await getCurrentWeek();
+      setCurrentWeek(week);
+      const data = await getWeeklyLeaderboard(); // Use weekly instead of global
       setEntries(data);
     } catch (error) {
-      console.error("Error loading global leaderboard:", error);
-      setGlobalError("Failed to load global leaderboard.");
+      console.error("Error loading weekly leaderboard:", error);
+      setGlobalError("Failed to load weekly leaderboard.");
     } finally {
       setGlobalLoading(false);
     }
   };
 
   return (
-    <div className="space-y-4">
-      <LeaderboardTable
-        entries={entries}
-        loading={globalLoading}
-        onRefresh={loadGlobal}
-        variant={variant}
-        error={globalError}
-      />
-
-      {showPersonal && (
-        <div className="card">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-lg font-bold text-dungeon-gold">Your runs</h3>
-            <button
-              onClick={loadPlayerStats}
-              disabled={loadingPlayer || !address}
-              className="px-3 py-1 bg-dungeon-gold/20 hover:bg-dungeon-gold/30 border border-dungeon-gold/50 rounded-lg text-dungeon-gold text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loadingPlayer ? "Refreshing..." : "Refresh"}
-            </button>
-          </div>
-
-          {!address ? (
-            <p className="text-gray-400 text-center">
-              Connect your wallet to see your progress.
-            </p>
-          ) : loadingPlayer ? (
-            <p className="text-gray-400 text-center">Loading...</p>
-          ) : playerStats ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="stat-box">
-                <div className="text-xs text-gray-400">Rooms (best run)</div>
-                <div className="text-2xl font-bold text-purple-400">
-                  {playerStats.maxRoomReached}
-                </div>
-              </div>
-
-              <div className="stat-box">
-                <div className="text-xs text-gray-400">Max gems</div>
-                <div className="text-2xl font-bold text-yellow-400">
-                  {playerStats.maxGemsCollected}
-                </div>
-              </div>
-
-              <div className="stat-box">
-                <div className="text-xs text-gray-400">Successful runs</div>
-                <div className="text-2xl font-bold text-green-400">
-                  {playerStats.successfulRuns}
-                </div>
-              </div>
-
-              <div className="stat-box">
-                <div className="text-xs text-gray-400">Total runs</div>
-                <div className="text-2xl font-bold text-blue-400">
-                  {playerStats.totalRuns}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <p className="text-gray-400 text-center">
-              You have no runs yet.
-            </p>
-          )}
-        </div>
-      )}
-    </div>
+    <LeaderboardTable
+      entries={entries}
+      loading={globalLoading}
+      onRefresh={loadGlobal}
+      variant={variant}
+      error={globalError}
+      currentWeek={currentWeek}
+      playerWeeklyScore={playerWeeklyScore}
+      loadingPlayer={loadingPlayer}
+      onRefreshPlayer={loadPlayerStats}
+      playerAddress={showPersonal ? address : null}
+    />
   );
 }

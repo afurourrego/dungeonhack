@@ -11,6 +11,10 @@ module dungeon_flip::dungeon_progress {
     /// Week duration in milliseconds (7 days)
     const WEEK_DURATION_MS: u64 = 604_800_000;
 
+    /// First season start: Friday, January 31, 2025 at 4:20 PM UTC
+    /// Timestamp: 1738342800000 milliseconds
+    const SEASON_START_TIME: u64 = 1738342800000;
+
     /// Shared object to track all players' progress
     public struct ProgressRegistry has key {
         id: UID,
@@ -61,14 +65,30 @@ module dungeon_flip::dungeon_progress {
         monsters_defeated: u64,
     }
 
+    /// Calculate current week number and week start time based on SEASON_START_TIME
+    /// Returns (week_number, week_start_timestamp)
+    fun calculate_current_week(current_time: u64): (u64, u64) {
+        if (current_time < SEASON_START_TIME) {
+            // Before season starts, return week 0 (pre-season)
+            return (0, SEASON_START_TIME)
+        };
+
+        let time_since_start = current_time - SEASON_START_TIME;
+        let weeks_passed = time_since_start / WEEK_DURATION_MS;
+        let week_number = weeks_passed + 1; // Week 1, 2, 3, etc.
+        let week_start = SEASON_START_TIME + (weeks_passed * WEEK_DURATION_MS);
+
+        (week_number, week_start)
+    }
+
     /// Initialize the progress registry (called once on deployment)
     fun init(ctx: &mut TxContext) {
         let registry = ProgressRegistry {
             id: object::new(ctx),
             player_progress: table::new(ctx),
             weekly_scores: table::new(ctx),
-            current_week: 1,
-            week_start_time: 0, // Will be set on first run
+            current_week: 0, // Will be calculated on first run
+            week_start_time: SEASON_START_TIME, // Fixed start time
         };
 
         transfer::share_object(registry);
@@ -126,16 +146,13 @@ module dungeon_flip::dungeon_progress {
         assert!(run_player == player, 1);
         assert!(run_rooms == rooms_reached, 1);
 
-        // Initialize week start time on first run
-        if (registry.week_start_time == 0) {
-            registry.week_start_time = current_time;
-        };
+        // Calculate current week based on fixed schedule (Fridays 4:20 PM UTC)
+        let (current_week, week_start) = calculate_current_week(current_time);
 
-        // Check if we need to advance to next week
-        let time_elapsed = current_time - registry.week_start_time;
-        if (time_elapsed >= WEEK_DURATION_MS) {
-            registry.current_week = registry.current_week + 1;
-            registry.week_start_time = current_time;
+        // Update registry if week has changed
+        if (current_week != registry.current_week) {
+            registry.current_week = current_week;
+            registry.week_start_time = week_start;
         };
 
         // Update all-time player progress
