@@ -1,7 +1,14 @@
 import type { Metadata } from "next";
 import "@/styles/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
+import { Press_Start_2P } from "next/font/google";
 import { Providers } from "@/components/Providers";
+
+const pressStart = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Dungeon Flip Lite - Web3 Roguelite on OneChain",
@@ -15,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-dungeon-dark text-white">
+      <body className={`${pressStart.className} min-h-screen bg-dungeon-dark text-white`}>
         <Providers>{children}</Providers>
       </body>
     </html>
