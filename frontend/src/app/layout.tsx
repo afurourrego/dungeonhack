@@ -3,6 +3,7 @@ import "@/styles/globals.css";
 import "@mysten/dapp-kit/dist/index.css";
 import { Press_Start_2P } from "next/font/google";
 import { Providers } from "@/components/Providers";
+import BackgroundAudio from "@/components/BackgroundAudio";
 
 const pressStart = Press_Start_2P({
   weight: "400",
@@ -24,6 +25,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${pressStart.className} min-h-screen bg-dungeon-dark text-white`}>
         <Providers>{children}</Providers>
+        <BackgroundAudio />
       </body>
     </html>
   );
