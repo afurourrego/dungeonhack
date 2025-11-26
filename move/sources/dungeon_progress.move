@@ -260,4 +260,90 @@ module dungeon_flip::dungeon_progress {
             WEEK_DURATION_MS - time_elapsed
         }
     }
+
+    /// Get the number of players in a specific week's leaderboard
+    public fun get_weekly_leaderboard_size(registry: &ProgressRegistry, week: u64): u64 {
+        if (table::contains(&registry.weekly_scores, week)) {
+            let weekly_board = table::borrow(&registry.weekly_scores, week);
+            vec_map::size(&weekly_board.player_scores)
+        } else {
+            0
+        }
+    }
+
+    /// Get all player scores for a specific week (returns vectors of addresses and scores)
+    /// This is a view function that returns the full leaderboard for frontend display
+    public fun get_weekly_leaderboard(
+        registry: &ProgressRegistry,
+        week: u64
+    ): (vector<address>, vector<u64>) {
+        let mut addresses = vector::empty<address>();
+        let mut scores = vector::empty<u64>();
+
+        if (table::contains(&registry.weekly_scores, week)) {
+            let weekly_board = table::borrow(&registry.weekly_scores, week);
+            let player_scores = &weekly_board.player_scores;
+
+            // Get all keys (addresses) from the VecMap
+            let keys = vec_map::keys(player_scores);
+            let size = vector::length(&keys);
+
+            let mut i = 0;
+            while (i < size) {
+                let addr = *vector::borrow(&keys, i);
+                let score = *vec_map::get(player_scores, &addr);
+
+                vector::push_back(&mut addresses, addr);
+                vector::push_back(&mut scores, score);
+
+                i = i + 1;
+            };
+        };
+
+        (addresses, scores)
+    }
+
+    /// Get the current week's leaderboard (convenience function)
+    public fun get_current_week_leaderboard(
+        registry: &ProgressRegistry
+    ): (vector<address>, vector<u64>) {
+        get_weekly_leaderboard(registry, registry.current_week)
+    }
+
+    /// Sort leaderboard entries by score (highest first)
+    /// Note: This is a simple bubble sort - for production, consider off-chain sorting
+    public fun sort_leaderboard_scores(
+        addresses: vector<address>,
+        scores: vector<u64>
+    ): (vector<address>, vector<u64>) {
+        let size = vector::length(&addresses);
+        if (size <= 1) {
+            return (addresses, scores)
+        };
+
+        let mut i = 0;
+        while (i < size - 1) {
+            let mut j = 0;
+            while (j < size - i - 1) {
+                let score_j = *vector::borrow(&scores, j);
+                let score_j1 = *vector::borrow(&scores, j + 1);
+
+                if (score_j < score_j1) {
+                    // Swap scores
+                    let temp_score = vector::remove(&mut scores, j);
+                    vector::insert(&mut scores, vector::remove(&mut scores, j), j);
+                    vector::insert(&mut scores, temp_score, j + 1);
+
+                    // Swap addresses
+                    let temp_addr = vector::remove(&mut addresses, j);
+                    vector::insert(&mut addresses, vector::remove(&mut addresses, j), j);
+                    vector::insert(&mut addresses, temp_addr, j + 1);
+                };
+                j = j + 1;
+            };
+            i = i + 1;
+        };
+
+        (addresses, scores)
+    }
 }
