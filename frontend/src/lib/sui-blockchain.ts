@@ -484,6 +484,44 @@ export const exitDungeonRun = async (
 };
 
 /**
+ * Get total runs ever recorded (counts RunCompleted events)
+ */
+export const getTotalRuns = async (): Promise<number> => {
+  if (!PACKAGE_ID) return 0;
+
+  try {
+    const client = getSuiClient();
+    const eventType = `${PACKAGE_ID}::dungeon_progress::RunCompleted`;
+
+    let cursor: any = null; // EventId type is not string; use any for pagination
+    let total = 0;
+    const pageLimit = 50;
+    const maxPages = 50;
+
+    while (true) {
+      const events = await client.queryEvents({
+        query: { MoveEventType: eventType },
+        cursor: cursor ?? undefined,
+        limit: pageLimit,
+      });
+
+      total += events.data.length;
+
+      if (!events.hasNextPage || !events.nextCursor || total >= pageLimit * maxPages) {
+        break;
+      }
+
+      cursor = events.nextCursor as any;
+    }
+
+    return total;
+  } catch (error) {
+    console.error("Error counting total runs:", error);
+    return 0;
+  }
+};
+
+/**
  * Format address for display
  */
 export const formatAddress = (address: string): string => {

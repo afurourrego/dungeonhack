@@ -57,6 +57,44 @@
   .stat-box {
     @apply bg-gray-900/70 backdrop-blur-sm rounded-lg p-2 text-center border border-amber-800/40;
   }
+
+  .run-counter {
+    @apply relative overflow-hidden rounded-xl border border-amber-400/70 px-5 py-3 text-center;
+    background-image: linear-gradient(to bottom right, rgba(120, 53, 15, 0.7), rgba(146, 64, 14, 0.5), rgba(120, 53, 15, 0.3));
+    box-shadow:
+      0 0 18px rgba(251, 191, 36, 0.45),
+      0 0 35px rgba(251, 191, 36, 0.25),
+      inset 0 0 12px rgba(0, 0, 0, 0.45);
+    min-width: 180px;
+  }
+
+  .run-counter::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    background-image:
+      radial-gradient(circle at 0 0, rgba(255, 193, 7, 0.08) 1px, transparent 0),
+      radial-gradient(circle at 6px 6px, rgba(255, 193, 7, 0.05) 1px, transparent 0);
+    background-size: 12px 12px;
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .run-counter-shine {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.12) 45%, rgba(255, 255, 255, 0.02) 55%, transparent 100%);
+    animation: runShine 3s linear infinite;
+    pointer-events: none;
+  }
+
+  .royal-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: radial-gradient(circle, #facc15 0%, #f59e0b 50%, #b45309 100%);
+    box-shadow: 0 0 8px rgba(250, 204, 21, 0.6);
+  }
 }
 
 @layer utilities {
@@ -154,5 +192,18 @@
 
   .animate-fade-in {
     animation: fade-in 0.3s ease-out;
+  }
+
+  @keyframes runShine {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(120%); }
+  }
+
+  .dot-matrix {
+    font-family: "Share Tech Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    letter-spacing: 0.08em;
+    text-shadow:
+      0 0 6px rgba(250, 204, 21, 0.6),
+      0 0 2px rgba(0, 0, 0, 0.8);
   }
 }

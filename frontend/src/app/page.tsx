@@ -6,6 +6,7 @@ import { useGameStore } from "@/store/gameStore";
 import WalletConnect from "@/components/WalletConnect";
 import MintAventurer from "@/components/MintAventurer";
 import Leaderboard from "@/components/Leaderboard";
+import TotalRunsBadge from "@/components/TotalRunsBadge";
 import { useWallet } from "@/hooks/useWallet";
 
 export default function Home() {
@@ -28,14 +29,19 @@ export default function Home() {
       {/* Header */}
       <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div>
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold text-dungeon-gold text-glow">
                 ⚔️ Dungeon Flip Lite
               </h1>
               <p className="text-xs text-gray-400">Powered by OneChain</p>
             </div>
-            <WalletConnect />
+            <div className="flex-1 flex justify-center">
+              <TotalRunsBadge />
+            </div>
+            <div className="flex-shrink-0">
+              <WalletConnect />
+            </div>
           </div>
         </div>
       </header>

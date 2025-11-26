@@ -6,6 +6,7 @@ import { useGameStore } from "@/store/gameStore";
 import WalletConnect from "@/components/WalletConnect";
 import GameBoard from "@/components/GameBoard";
 import AdventureLog from "@/components/AdventureLog";
+import TotalRunsBadge from "@/components/TotalRunsBadge";
 
 export default function GamePage() {
   const router = useRouter();
@@ -72,8 +73,8 @@ export default function GamePage() {
       {/* Header */}
       <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div>
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
               <button
                 onClick={() => router.push("/")}
                 className="text-2xl font-bold text-dungeon-gold text-glow hover:text-yellow-300 transition-colors"
@@ -82,7 +83,12 @@ export default function GamePage() {
               </button>
               <p className="text-xs text-gray-400">Powered by OneChain</p>
             </div>
-            <WalletConnect />
+            <div className="flex-1 flex justify-center">
+              <TotalRunsBadge />
+            </div>
+            <div className="flex-shrink-0">
+              <WalletConnect />
+            </div>
           </div>
         </div>
       </header>
@@ -98,14 +104,14 @@ export default function GamePage() {
           )}
 
           {/* Grid Layout: Game Board + Adventure Log */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Game Board - Takes 2 columns on large screens */}
-            <div className="lg:col-span-2">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(0,1fr)_auto] gap-2 xl:gap-4 items-start px-2">
+            {/* Game Board */}
+            <div className="lg:col-span-1">
               <GameBoard />
             </div>
 
-            {/* Adventure Log - Takes 1 column on large screens, full width on mobile */}
-            <div className="lg:col-span-1">
+            {/* Adventure Log */}
+            <div className="lg:col-span-1 xl:w-[320px] 2xl:w-[340px]">
               <AdventureLog />
             </div>
           </div>

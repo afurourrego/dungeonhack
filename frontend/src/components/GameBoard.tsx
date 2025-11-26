@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useGameStore } from "@/store/gameStore";
 import { useWallet } from "@/hooks/useWallet";
 import Card from "./Card";
@@ -51,6 +52,14 @@ export default function GameBoard() {
 
   const { refreshBalance, signAndExecuteTransaction } = useWallet();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [avatarSrc, setAvatarSrc] = useState("/avatars/adventurer-idle.png");
+
+  // Ensure avatar resets to idle when no run is active
+  useEffect(() => {
+    if (gameState === GameState.NOT_STARTED) {
+      setAvatarSrc("/avatars/adventurer-idle.png");
+    }
+  }, [gameState]);
 
   // Start a new dungeon run with entry fee
   const handleStartGame = async () => {
@@ -60,7 +69,6 @@ export default function GameBoard() {
     try {
       let runId = null;
 
-      // In production mode, pay entry fee and create ActiveRun
       if (!DEV_MODE && signAndExecuteTransaction) {
         try {
           runId = await startDungeonRun(
@@ -79,13 +87,12 @@ export default function GameBoard() {
         setMessage("Dev mode: Skipping entry fee");
       }
 
-      // Generate first room deck and start game
       const deck = generateDeck();
       startGame(deck);
+      setAvatarSrc("/avatars/adventurer-idle.png");
 
-      // Log start of adventure
-      addLogEntry("🏰 You enter the dark dungeon. The air is thick with mystery...", "start");
-      addLogEntry(`💪 Starting stats: ${GAME_CONFIG.BASIC_HP} HP, ${GAME_CONFIG.BASIC_ATK} ATK`, "start");
+      addLogEntry("You enter the dark dungeon. The air is thick with mystery...", "start");
+      addLogEntry(`Starting stats: ${GAME_CONFIG.BASIC_HP} HP, ${GAME_CONFIG.BASIC_ATK} ATK`, "start");
     } catch (error: any) {
       console.error("Error starting game:", error);
       setError(error.message || "Failed to start game");
@@ -97,61 +104,50 @@ export default function GameBoard() {
   // Reveal and resolve a card
   const handleCardClick = async (index: number) => {
     if (currentDeck[index].revealed !== CardRevealState.HIDDEN) return;
-    if (awaitingDecision) return; // Don't allow card clicks while waiting for decision
-    if (isProcessing) return; // Prevent multiple clicks
+    if (awaitingDecision) return;
+    if (isProcessing) return;
 
-    // Block further clicks immediately
     setIsProcessing(true);
-
-    // Reveal the card
     revealCard(index);
 
-    // Wait for animation
     setTimeout(() => {
       const card = currentDeck[index];
       const result = resolveCardLogic(card, playerStats.def, playerStats.hp);
 
-      console.log("Card resolved:", {
-        cardType: card.type,
-        cardValue: card.value,
-        goldEarned: result.gold,
-        currentGold: playerStats.gold
-      });
-
-      // Add log entry based on card type
+      // Add log entry and swap avatar based on card type
       if (card.type === "MONSTER") {
         if (result.defeated) {
-          addLogEntry(`⚔️ Defeated Monster (ATK ${card.value})! Earned ${result.gold} gems.`, "monster");
+          addLogEntry(`Defeated Monster (ATK ${card.value})! Earned ${result.gold} gems.`, "monster");
         } else {
-          addLogEntry(`⚔️ Monster (ATK ${card.value}) attacks! Lost ${result.hpLost} HP.`, "monster");
+          addLogEntry(`Monster (ATK ${card.value}) attacks! Lost ${result.hpLost} HP.`, "monster");
         }
+        setAvatarSrc("/avatars/adventurer-monster.png");
       } else if (card.type === "TREASURE") {
-        addLogEntry(`💎 Found treasure! Earned ${result.gold} gems.`, "treasure");
+        addLogEntry(`Found treasure! Earned ${result.gold} gems.`, "treasure");
+        setAvatarSrc("/avatars/adventurer-gem.png");
       } else if (card.type === "TRAP") {
-        addLogEntry(`🕸️ Trap triggered! Lost ${result.hpLost} HP.`, "trap");
+        addLogEntry(`Trap triggered! Lost ${result.hpLost} HP.`, "trap");
+        setAvatarSrc("/avatars/adventurer-trap.png");
       } else if (card.type === "POTION") {
-        addLogEntry(`🧪 Drank a potion! Restored ${result.hpGained} HP.`, "potion");
+        addLogEntry(`Drank a potion! Restored ${result.hpGained} HP.`, "potion");
+        setAvatarSrc("/avatars/adventurer-potion.png");
       }
 
-      // Update game state
       resolveCard(index, result.newHP, result.gold, result.defeated);
       setMessage(result.message);
 
-      // Check if game over (death)
       if (isGameOver(result.newHP)) {
         setTimeout(() => {
           handleDeath();
         }, 1500);
       } else {
-        // Card resolved successfully, show Continue/Exit decision
         setTimeout(() => {
           setAwaitingDecision(true);
-          setIsProcessing(false); // Re-enable for decision buttons
+          setIsProcessing(false);
           setMessage(null);
         }, 1500);
       }
 
-      // Clear message after delay
       setTimeout(() => setMessage(null), 3000);
     }, 500);
   };
@@ -159,19 +155,18 @@ export default function GameBoard() {
   // Handle death (HP = 0)
   const handleDeath = async () => {
     setIsProcessing(true);
-    setMessage("💀 You died! Recording your progress...");
-    addLogEntry(`💀 Your adventure ends at Room ${currentRoom}. Final score: ${playerStats.gold} gems.`, "death");
+    setMessage("You died! Recording your progress...");
+    addLogEntry(`Your adventure ends at Room ${currentRoom}. Final score: ${playerStats.gold} gems.`, "death");
 
-    try{
-      // Exit dungeon run on blockchain
+    try {
       if (!DEV_MODE && signAndExecuteTransaction && activeRunId) {
         await exitDungeonRun(
           signAndExecuteTransaction,
           activeRunId,
-          false, // survived = false
+          false,
           currentRunMonsters,
           currentRoom,
-          playerStats.gold // gems collected
+          playerStats.gold
         );
         setMessage(`Run recorded! Reached Room ${currentRoom}`);
         refreshBalance();
@@ -184,16 +179,16 @@ export default function GameBoard() {
       endGame(false);
       setActiveRunId(null);
       setAwaitingDecision(false);
+      setAvatarSrc("/avatars/adventurer-idle.png");
     }
   };
 
   // Continue to next room
   const handleContinue = async () => {
     setIsProcessing(true);
-    setMessage("⏳ Advancing to next room...");
+    setMessage("Advancing to next room...");
 
     try {
-      // Advance room on blockchain
       if (!DEV_MODE && signAndExecuteTransaction && activeRunId) {
         await advanceRoomBlockchain(
           signAndExecuteTransaction,
@@ -202,11 +197,11 @@ export default function GameBoard() {
         );
       }
 
-      // Generate new deck for next room
       const newDeck = generateDeck();
       advanceToNextRoom(newDeck);
+      setAvatarSrc("/avatars/adventurer-idle.png");
       setMessage(`Entering Room ${currentRoom + 1}...`);
-      addLogEntry(`🚪 Survived Room ${currentRoom}! Entering Room ${currentRoom + 1}...`, "room");
+      addLogEntry(`Survived Room ${currentRoom}! Entering Room ${currentRoom + 1}...`, "room");
 
       setTimeout(() => setMessage(null), 2000);
     } catch (error: any) {
@@ -220,27 +215,23 @@ export default function GameBoard() {
   // Exit dungeon and claim rewards
   const handleExit = async () => {
     setIsProcessing(true);
-    setMessage("⏳ Exiting dungeon and claiming rewards...");
-    addLogEntry(`✅ Successfully escaped! Cleared ${currentRoom} rooms with ${playerStats.gold} gems!`, "exit");
+    setMessage("Exiting dungeon and claiming rewards...");
+    addLogEntry(`Successfully escaped! Cleared ${currentRoom} rooms with ${playerStats.gold} gems!`, "exit");
 
     try {
-      // Calculate total monsters including current room
       const totalMonsters = currentRunMonsters + currentRoomMonsters;
 
-      // Exit dungeon run and claim rewards
       if (!DEV_MODE && signAndExecuteTransaction && activeRunId) {
         await exitDungeonRun(
           signAndExecuteTransaction,
           activeRunId,
-          true, // survived = true
+          true,
           totalMonsters,
           currentRoom,
-          playerStats.gold // gems collected
+          playerStats.gold
         );
         setMessage(
-          `✅ Success! Defeated ${totalMonsters} monster${
-            totalMonsters > 1 ? "s" : ""
-          }! Score recorded.`
+          `Success! Defeated ${totalMonsters} monster${totalMonsters > 1 ? "s" : ""}! Score recorded.`
         );
         refreshBalance();
       } else if (DEV_MODE) {
@@ -253,6 +244,7 @@ export default function GameBoard() {
         endGame(true);
         setActiveRunId(null);
         setAwaitingDecision(false);
+        setAvatarSrc("/avatars/adventurer-idle.png");
       }, 2000);
     } catch (error: any) {
       console.error("Error exiting dungeon:", error);
@@ -267,9 +259,9 @@ export default function GameBoard() {
       <div className="card text-center animate-fade-in max-w-2xl mx-auto">
         <h2 className="text-3xl font-bold mb-6">
           {gameState === GameState.COMPLETED ? (
-            <span className="text-green-400">🎉 Run Complete!</span>
+            <span className="text-green-400">Run Complete!</span>
           ) : (
-            <span className="text-red-400">💀 You Died</span>
+            <span className="text-red-400">You Died</span>
           )}
         </h2>
 
@@ -310,7 +302,7 @@ export default function GameBoard() {
     return (
       <div className="card text-center animate-fade-in max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold text-dungeon-gold mb-4">
-          🏰 Enter the Infinite Dungeon
+          Enter the Infinite Dungeon
         </h2>
 
         <p className="text-gray-300 mb-4">
@@ -359,7 +351,7 @@ export default function GameBoard() {
 
         {DEV_MODE && (
           <p className="text-yellow-500 text-xs mt-4">
-            🚧 Dev Mode: Entry fee skipped
+            Dev Mode: Entry fee skipped
           </p>
         )}
       </div>
@@ -369,60 +361,85 @@ export default function GameBoard() {
   // Render active game
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Room & Player Stats */}
-      <div className="card">
-        <div className="flex justify-between items-center mb-3">
-          <div className="text-xl font-bold text-amber-400 drop-shadow-lg">
-            🏰 Room {currentRoom}
+      <div className="grid grid-cols-1 2xl:grid-cols-[clamp(160px,15vw,190px),1fr] gap-2 xl:gap-4 items-stretch">
+        <div className="card relative h-full flex flex-col gap-3 bg-gradient-to-b from-amber-900/50 to-gray-900/60">
+          <div className="text-xs uppercase tracking-widest text-amber-200/80">Adventurer</div>
+          <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg border border-amber-800/60 bg-gradient-to-b from-gray-800/70 to-black/80 shadow-inner">
+            <Image
+              src={avatarSrc}
+              alt="Adventurer portrait"
+              fill
+              className="object-cover scale-103"
+              priority
+            />
+            <div className="absolute inset-0 pointer-events-none border-2 border-amber-900/70 rounded-lg shadow-inner" />
+          </div>
+          <div className="grid grid-cols-3 gap-3 text-center">
+            <div className="stat-box">
+              <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">HP</div>
+              <div className="text-2xl font-bold text-green-400 drop-shadow-md">
+                {playerStats.hp}
+              </div>
+            </div>
+            <div className="stat-box">
+              <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">DEF</div>
+              <div className="text-2xl font-bold text-blue-400 drop-shadow-md">
+                {playerStats.def}
+              </div>
+            </div>
+            <div className="stat-box">
+              <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">Gems</div>
+              <div className="text-2xl font-bold text-dungeon-gold drop-shadow-md">
+                {playerStats.gold}
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-amber-100/70 text-center">
+            Ready for the next flip? Pick a card to reveal your fate.
+          </p>
+        </div>
+
+        <div className="card h-full flex flex-col gap-3">
+          <div className="flex justify-between items-center flex-wrap gap-2">
+            <div className="text-xl font-bold text-amber-400 drop-shadow-lg">
+              Room {currentRoom}
+            </div>
+            <div className="flex items-center gap-2 text-[11px] text-amber-200/80">
+              <span className="px-2 py-1 rounded-full border border-amber-700/60 bg-amber-900/30">
+                HP {playerStats.hp}
+              </span>
+              <span className="px-2 py-1 rounded-full border border-amber-700/60 bg-amber-900/30">
+                DEF {playerStats.def}
+              </span>
+              <span className="px-2 py-1 rounded-full border border-amber-700/60 bg-amber-900/30">
+                Gems {playerStats.gold}
+              </span>
+            </div>
           </div>
           <div className="text-xs text-amber-200/80">
-            {awaitingDecision
-              ? "Choose: Continue or Exit"
-              : `Choose 1 of 4 cards`}
+            {awaitingDecision ? "Choose: Continue or Exit" : `Choose 1 of 4 cards`}
           </div>
-        </div>
-
-        <div className="flex gap-3">
-          <div className="stat-box flex-1">
-            <div className="text-xs text-amber-300/70 uppercase tracking-wider">HP</div>
-            <div className="text-2xl font-bold text-green-400 drop-shadow-md">
-              {playerStats.hp}
-            </div>
-          </div>
-          <div className="stat-box flex-1">
-            <div className="text-xs text-amber-300/70 uppercase tracking-wider">DEF</div>
-            <div className="text-2xl font-bold text-blue-400 drop-shadow-md">
-              {playerStats.def}
-            </div>
-          </div>
-          <div className="stat-box flex-1">
-            <div className="text-xs text-amber-300/70 uppercase tracking-wider">Gems</div>
-            <div className="text-2xl font-bold text-dungeon-gold drop-shadow-md">
-              {playerStats.gold}
-            </div>
+          <div className="flex justify-center gap-1 flex-wrap overflow-x-auto px-0 py-1">
+            {currentDeck.map((card, index) => (
+              <div
+                key={card.id}
+                className="shrink-0 scale-[0.62] sm:scale-[0.7] md:scale-[0.78] lg:scale-[0.84] 2xl:scale-[0.88] origin-top"
+              >
+                <Card
+                  card={card}
+                  onClick={() => handleCardClick(index)}
+                  disabled={
+                    awaitingDecision ||
+                    card.revealed !== CardRevealState.HIDDEN ||
+                    isProcessing
+                  }
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Cards */}
-      <div>
-        <div className="flex justify-center gap-4 flex-wrap">
-          {currentDeck.map((card, index) => (
-            <Card
-              key={card.id}
-              card={card}
-              onClick={() => handleCardClick(index)}
-              disabled={
-                awaitingDecision ||
-                card.revealed !== CardRevealState.HIDDEN ||
-                isProcessing
-              }
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* Continue/Exit Decision */}
       {awaitingDecision && !isProcessing && (
         <div className="card text-center animate-fade-in">
           <h3 className="text-xl font-bold text-dungeon-gold mb-4">
@@ -443,7 +460,7 @@ export default function GameBoard() {
               className="btn-primary"
               disabled={isProcessing}
             >
-              ⚔️ Continue (Room {currentRoom + 1})
+              Continue (Room {currentRoom + 1})
             </button>
 
             <button
@@ -451,12 +468,11 @@ export default function GameBoard() {
               className="btn-success"
               disabled={isProcessing}
             >
-              ✅ Exit & Claim Rewards ({playerStats.gold} gems)
+              Exit & Claim Rewards ({playerStats.gold} gems)
             </button>
           </div>
         </div>
       )}
-
     </div>
   );
 }
