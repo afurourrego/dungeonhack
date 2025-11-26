@@ -70,7 +70,7 @@ export default function Card({ card, onClick, disabled }: CardProps) {
       <button
         onClick={onClick}
         disabled={disabled}
-        className={`relative w-48 h-80 rounded-2xl transition-all duration-300
+        className={`relative w-56 h-96 rounded-2xl transition-all duration-300
           ${disabled ? "opacity-80 cursor-not-allowed" : "hover:scale-105 hover:shadow-2xl cursor-pointer"}
           ${isFlipping ? "animate-flip-3d" : ""}`}
       >
@@ -87,7 +87,7 @@ export default function Card({ card, onClick, disabled }: CardProps) {
 
   return (
     <div
-      className={`relative w-48 h-80 rounded-2xl transition-all duration-300 bg-gray-900
+      className={`relative w-56 h-96 rounded-2xl transition-all duration-300 bg-gray-900
         ${isFlipping ? "animate-flip-3d" : "animate-fade-in"}
         ${displayInfo ? getEffectClass(card.type) : ""}`}
     >

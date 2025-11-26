@@ -3,14 +3,16 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/store/gameStore";
+import { GameState } from "@/lib/constants";
 import WalletConnect from "@/components/WalletConnect";
 import GameBoard from "@/components/GameBoard";
+import CharacterCard from "@/components/CharacterCard";
 import AdventureLog from "@/components/AdventureLog";
 import TotalRunsBadge from "@/components/TotalRunsBadge";
 
 export default function GamePage() {
   const router = useRouter();
-  const { isConnected, hasNFT, error, message } = useGameStore();
+  const { isConnected, hasNFT, error, message, gameState, avatarSrc } = useGameStore();
 
   // Redirect if not connected or no NFT
   useEffect(() => {
@@ -103,17 +105,29 @@ export default function GamePage() {
             </div>
           )}
 
-          {/* Grid Layout: Game Board + Adventure Log */}
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(0,1fr)_auto] gap-2 xl:gap-4 items-start px-2">
-            {/* Game Board */}
-            <div className="lg:col-span-1">
-              <GameBoard />
+          {/* Main Layout: Top (Game + Character) + Bottom (Log) */}
+          <div className="space-y-4">
+            {/* Top Section: Game Board + Character Card (side by side on desktop) */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-start">
+              {/* Game Board */}
+              <div>
+                <GameBoard />
+              </div>
+
+              {/* Character Card - Only show during active gameplay */}
+              {gameState === GameState.IN_PROGRESS && (
+                <div>
+                  <CharacterCard avatarSrc={avatarSrc} />
+                </div>
+              )}
             </div>
 
-            {/* Adventure Log */}
-            <div className="lg:col-span-1 xl:w-[320px] 2xl:w-[340px]">
-              <AdventureLog />
-            </div>
+            {/* Bottom Section: Adventure Log (horizontal, full width) */}
+            {gameState === GameState.IN_PROGRESS && (
+              <div className="w-full">
+                <AdventureLog />
+              </div>
+            )}
           </div>
         </div>
       </div>

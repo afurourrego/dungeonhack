@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { useGameStore } from "@/store/gameStore";
 import { useWallet } from "@/hooks/useWallet";
 import Card from "./Card";
@@ -48,18 +47,18 @@ export default function GameBoard() {
     advanceToNextRoom,
     setAwaitingDecision,
     addLogEntry,
+    setAvatarSrc,
   } = useGameStore();
 
   const { refreshBalance, signAndExecuteTransaction } = useWallet();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [avatarSrc, setAvatarSrc] = useState("/avatars/adventurer-idle.png");
 
   // Ensure avatar resets to idle when no run is active
   useEffect(() => {
     if (gameState === GameState.NOT_STARTED) {
       setAvatarSrc("/avatars/adventurer-idle.png");
     }
-  }, [gameState]);
+  }, [gameState, setAvatarSrc]);
 
   // Start a new dungeon run with entry fee
   const handleStartGame = async () => {
@@ -360,119 +359,79 @@ export default function GameBoard() {
 
   // Render active game
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="grid grid-cols-1 2xl:grid-cols-[clamp(160px,15vw,190px),1fr] gap-2 xl:gap-4 items-stretch">
-        <div className="card relative h-full flex flex-col gap-3 bg-gradient-to-b from-amber-900/50 to-gray-900/60">
-          <div className="text-xs uppercase tracking-widest text-amber-200/80">Adventurer</div>
-          <div className="relative w-full aspect-[3/4] overflow-hidden rounded-lg border border-amber-800/60 bg-gradient-to-b from-gray-800/70 to-black/80 shadow-inner">
-            <Image
-              src={avatarSrc}
-              alt="Adventurer portrait"
-              fill
-              className="object-cover scale-103"
-              priority
-            />
-            <div className="absolute inset-0 pointer-events-none border-2 border-amber-900/70 rounded-lg shadow-inner" />
-          </div>
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="stat-box">
-              <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">HP</div>
-              <div className="text-2xl font-bold text-green-400 drop-shadow-md">
-                {playerStats.hp}
-              </div>
+    <>
+      <div className="animate-fade-in">
+        {/* Cards Grid - Outside of card container */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-3 justify-items-center">
+          {currentDeck.map((card, index) => (
+            <div
+              key={card.id}
+              className="w-full flex justify-center"
+            >
+              <Card
+                card={card}
+                onClick={() => handleCardClick(index)}
+                disabled={
+                  awaitingDecision ||
+                  card.revealed !== CardRevealState.HIDDEN ||
+                  isProcessing
+                }
+              />
             </div>
-            <div className="stat-box">
-              <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">DEF</div>
-              <div className="text-2xl font-bold text-blue-400 drop-shadow-md">
-                {playerStats.def}
-              </div>
-            </div>
-            <div className="stat-box">
-              <div className="text-[10px] text-amber-300/70 uppercase tracking-wider">Gems</div>
-              <div className="text-2xl font-bold text-dungeon-gold drop-shadow-md">
-                {playerStats.gold}
-              </div>
-            </div>
-          </div>
-          <p className="text-xs text-amber-100/70 text-center">
-            Ready for the next flip? Pick a card to reveal your fate.
-          </p>
-        </div>
-
-        <div className="card h-full flex flex-col gap-3">
-          <div className="flex justify-between items-center flex-wrap gap-2">
-            <div className="text-xl font-bold text-amber-400 drop-shadow-lg">
-              Room {currentRoom}
-            </div>
-            <div className="flex items-center gap-2 text-[11px] text-amber-200/80">
-              <span className="px-2 py-1 rounded-full border border-amber-700/60 bg-amber-900/30">
-                HP {playerStats.hp}
-              </span>
-              <span className="px-2 py-1 rounded-full border border-amber-700/60 bg-amber-900/30">
-                DEF {playerStats.def}
-              </span>
-              <span className="px-2 py-1 rounded-full border border-amber-700/60 bg-amber-900/30">
-                Gems {playerStats.gold}
-              </span>
-            </div>
-          </div>
-          <div className="text-xs text-amber-200/80">
-            {awaitingDecision ? "Choose: Continue or Exit" : `Choose 1 of 4 cards`}
-          </div>
-          <div className="flex justify-center gap-1 flex-wrap overflow-x-auto px-0 py-1">
-            {currentDeck.map((card, index) => (
-              <div
-                key={card.id}
-                className="shrink-0 scale-[0.62] sm:scale-[0.7] md:scale-[0.78] lg:scale-[0.84] 2xl:scale-[0.88] origin-top"
-              >
-                <Card
-                  card={card}
-                  onClick={() => handleCardClick(index)}
-                  disabled={
-                    awaitingDecision ||
-                    card.revealed !== CardRevealState.HIDDEN ||
-                    isProcessing
-                  }
-                />
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       </div>
 
+      {/* Floating Decision Modal */}
       {awaitingDecision && !isProcessing && (
-        <div className="card text-center animate-fade-in">
-          <h3 className="text-xl font-bold text-dungeon-gold mb-4">
-            What will you do?
-          </h3>
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 animate-fade-in pb-8">
+          <div className="card w-full max-w-2xl mx-4 animate-slide-up shadow-2xl border-2 border-amber-600/50">
+            {/* Header with Icon + Title */}
+            <div className="flex items-center gap-4 mb-6">
+              <div className="text-6xl">🏰</div>
+              <div className="text-left">
+                <h3 className="text-2xl md:text-3xl font-bold text-dungeon-gold leading-tight">
+                  Room {currentRoom} Clear!
+                </h3>
+                <p className="text-sm text-gray-400 mt-1">
+                  Continue deeper or exit with your rewards
+                </p>
+              </div>
+            </div>
 
-          <p className="text-gray-300 mb-6">
-            You survived Room {currentRoom}!
-            <br />
-            <span className="text-sm text-gray-400">
-              Continue for more rewards or exit to claim what you have.
-            </span>
-          </p>
+            {/* Buttons - Stack on mobile, side by side on desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button
+                onClick={handleContinue}
+                className="btn-primary px-4 py-3 text-center"
+                disabled={isProcessing}
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-4xl">⚔️</span>
+                  <div className="text-left">
+                    <div className="text-lg font-bold">Continue</div>
+                    <div className="text-xs opacity-80">Enter Room {currentRoom + 1}</div>
+                  </div>
+                </div>
+              </button>
 
-          <div className="flex gap-4 justify-center">
-            <button
-              onClick={handleContinue}
-              className="btn-primary"
-              disabled={isProcessing}
-            >
-              Continue (Room {currentRoom + 1})
-            </button>
-
-            <button
-              onClick={handleExit}
-              className="btn-success"
-              disabled={isProcessing}
-            >
-              Exit & Claim Rewards ({playerStats.gold} gems)
-            </button>
+              <button
+                onClick={handleExit}
+                className="btn-success px-4 py-3 text-center"
+                disabled={isProcessing}
+              >
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-4xl">💰</span>
+                  <div className="text-left">
+                    <div className="text-lg font-bold">Exit & Claim</div>
+                    <div className="text-xs opacity-80">Collect {playerStats.gold} gems</div>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

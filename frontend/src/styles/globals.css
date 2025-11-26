@@ -3,6 +3,10 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-size: 14px; /* Reduce base font size from default 16px to 14px */
+  }
+
   body {
     @apply bg-dungeon-dark text-white;
     background-image: url('/backgrounds/dungeon.png');

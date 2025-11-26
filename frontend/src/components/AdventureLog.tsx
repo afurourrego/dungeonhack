@@ -4,7 +4,7 @@ import { useGameStore, AdventureLogEntry } from "@/store/gameStore";
 import { useEffect, useRef } from "react";
 
 export default function AdventureLog() {
-  const { adventureLog } = useGameStore();
+  const { adventureLog, currentRoom } = useGameStore();
   const logEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new entries are added
@@ -45,10 +45,10 @@ export default function AdventureLog() {
   };
 
   return (
-    <div className="card flex flex-col h-[600px]">
-      <div className="flex justify-between items-center mb-4 flex-shrink-0">
-        <h3 className="text-2xl font-bold text-amber-400 drop-shadow-lg">
-          📜 Adventure Log
+    <div className="card flex flex-col h-[250px]">
+      <div className="flex justify-between items-center mb-3 flex-shrink-0">
+        <h3 className="text-lg font-bold text-amber-400 drop-shadow-lg">
+          📜 Adventure Log <span className="text-amber-300/80">• Room {currentRoom}</span>
         </h3>
         {adventureLog.length > 0 && (
           <span className="text-xs text-amber-300/60 uppercase tracking-wider">
@@ -57,14 +57,16 @@ export default function AdventureLog() {
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2">
         {adventureLog.length === 0 ? (
-          <div className="text-center text-amber-300/50 py-8">
-            <p className="text-4xl mb-2">🏰</p>
-            <p>Your adventure begins here...</p>
+          <div className="flex items-center justify-center h-full text-amber-300/50">
+            <div className="text-center">
+              <p className="text-3xl mb-1">🏰</p>
+              <p className="text-sm">Your adventure begins here...</p>
+            </div>
           </div>
         ) : (
-          <>
+          <div className="space-y-2">
             {adventureLog.map((entry) => (
               <div
                 key={entry.id}
@@ -81,7 +83,7 @@ export default function AdventureLog() {
               </div>
             ))}
             <div ref={logEndRef} />
-          </>
+          </div>
         )}
       </div>
     </div>
