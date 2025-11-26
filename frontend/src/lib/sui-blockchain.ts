@@ -35,6 +35,15 @@ export interface PlayerProgress {
   maxGemsCollected: number;
 }
 
+export interface LeaderboardEntry {
+  address: string;
+  maxRoomsCleared: number;
+  maxGemsCollected: number;
+  successfulRuns: number;
+  totalRuns: number;
+  monstersDefeated: number;
+}
+
 /**
  * Get Sui client for the configured network
  */
@@ -297,6 +306,137 @@ export const getPlayerProgress = async (
       maxRoomReached: 0,
       maxGemsCollected: 0,
     };
+  }
+};
+
+/**
+ * Build global leaderboard from real on-chain data.
+ * We read RunCompleted events and only keep successful runs,
+ * then enrich entries with the latest player progress snapshot.
+ */
+export const getGlobalLeaderboard = async (): Promise<LeaderboardEntry[]> => {
+  if (!PACKAGE_ID || !PROGRESS_REGISTRY_ID) return [];
+
+  try {
+    const client = getSuiClient();
+    const eventType = `${PACKAGE_ID}::dungeon_progress::RunCompleted`;
+
+    // Track each wallet's best successful room count.
+    const successMap = new Map<string, number>();
+
+    let cursor: any = null;
+    const pageLimit = 50;
+    const maxPages = 20; // safety guard to avoid unbounded scans
+    let pagesFetched = 0;
+
+    while (pagesFetched < maxPages) {
+      const events = await client.queryEvents({
+        query: { MoveEventType: eventType },
+        cursor: cursor ?? undefined,
+        limit: pageLimit,
+        order: "descending",
+      });
+
+      for (const ev of events.data) {
+        const parsed = (ev as any).parsedJson;
+        if (!parsed) continue;
+
+        const success =
+          parsed.success === true ||
+          parsed.success === "true" ||
+          parsed.success === 1 ||
+          parsed.success === "1";
+
+        if (!success) continue;
+
+        const player = parsed.player as string | undefined;
+        const roomsReached = Number(
+          parsed.rooms_reached ?? parsed.rooms ?? parsed.roomsReached ?? 0
+        );
+
+        if (!player || !roomsReached) continue;
+
+        const currentBest = successMap.get(player);
+        if (!currentBest || roomsReached > currentBest) {
+          successMap.set(player, roomsReached);
+        }
+      }
+
+      cursor = events.nextCursor ?? null;
+      pagesFetched += 1;
+      if (!events.hasNextPage || !cursor) {
+        break;
+      }
+    }
+
+    const baseEntries: LeaderboardEntry[] = await Promise.all(
+      Array.from(successMap.entries()).map(async ([address, maxRoomsCleared]) => {
+        const progress = await getPlayerProgress(address);
+
+        return {
+          address,
+          maxRoomsCleared,
+          maxGemsCollected: progress.maxGemsCollected,
+          successfulRuns: progress.successfulRuns,
+          totalRuns: progress.totalRuns,
+          monstersDefeated: progress.monstersDefeated,
+        };
+      })
+    );
+
+    return baseEntries
+      .filter((entry) => entry.maxRoomsCleared > 0)
+      .sort((a, b) => {
+        if (b.maxRoomsCleared !== a.maxRoomsCleared) {
+          return b.maxRoomsCleared - a.maxRoomsCleared;
+        }
+        if (b.maxGemsCollected !== a.maxGemsCollected) {
+          return b.maxGemsCollected - a.maxGemsCollected;
+        }
+        return b.successfulRuns - a.successfulRuns;
+      })
+      .slice(0, 10);
+  } catch (error) {
+    console.error("Error building global leaderboard:", error);
+    return [];
+  }
+};
+
+/**
+ * Get total runs ever recorded (success or fail) by counting RunCompleted events.
+ */
+export const getTotalRuns = async (): Promise<number> => {
+  if (!PACKAGE_ID) return 0;
+
+  try {
+    const client = getSuiClient();
+    const eventType = `${PACKAGE_ID}::dungeon_progress::RunCompleted`;
+
+    let cursor: any = null;
+    const pageLimit = 50;
+    const maxPages = 50; // safety cap
+    let pagesFetched = 0;
+    let total = 0;
+
+    while (pagesFetched < maxPages) {
+      const events = await client.queryEvents({
+        query: { MoveEventType: eventType },
+        cursor: cursor ?? undefined,
+        limit: pageLimit,
+        order: "descending",
+      });
+
+      total += events.data.length;
+      cursor = events.nextCursor ?? null;
+      pagesFetched += 1;
+
+      if (!events.hasNextPage || !cursor) break;
+    }
+
+    return total;
+  } catch (error) {
+    console.error("Error counting total runs:", error);
+    return 0;
   }
 };
 

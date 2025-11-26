@@ -6,6 +6,7 @@ import { useGameStore } from "@/store/gameStore";
 import WalletConnect from "@/components/WalletConnect";
 import GameBoard from "@/components/GameBoard";
 import AdventureLog from "@/components/AdventureLog";
+import TotalRunsBadge from "@/components/TotalRunsBadge";
 
 export default function GamePage() {
   const router = useRouter();
@@ -23,7 +24,7 @@ export default function GamePage() {
     return (
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="text-4xl mb-4">⏳</div>
+          <div className="text-4xl mb-4">...</div>
           <p className="text-gray-400">Loading...</p>
         </div>
       </main>
@@ -32,21 +33,22 @@ export default function GamePage() {
 
   // Helper function to get message styling based on content
   const getMessageStyle = (msg: string) => {
-    if (msg.includes("⚔️") || msg.includes("defeated")) {
+    const normalized = msg.toLowerCase();
+    if (normalized.includes("monster") || normalized.includes("defeated")) {
       return { bg: "bg-red-900/95", border: "border-red-500", text: "text-red-400" };
-    } else if (msg.includes("💎") || msg.includes("gems")) {
+    } else if (normalized.includes("gem") || normalized.includes("treasure")) {
       return { bg: "bg-yellow-900/95", border: "border-yellow-500", text: "text-yellow-400" };
-    } else if (msg.includes("🕸️") || msg.includes("Trap")) {
+    } else if (normalized.includes("trap")) {
       return { bg: "bg-purple-900/95", border: "border-purple-500", text: "text-purple-400" };
-    } else if (msg.includes("🧪") || msg.includes("Potion") || msg.includes("HP")) {
+    } else if (normalized.includes("potion") || normalized.includes("hp") || normalized.includes("heal")) {
       return { bg: "bg-green-900/95", border: "border-green-500", text: "text-green-400" };
-    } else if (msg.includes("💔") || msg.includes("lose") || msg.includes("too strong")) {
+    } else if (normalized.includes("lose") || normalized.includes("too strong")) {
       return { bg: "bg-red-900/95", border: "border-red-500", text: "text-red-400" };
-    } else if (msg.includes("✅") || msg.includes("Success")) {
+    } else if (normalized.includes("success") || normalized.includes("escaped") || normalized.includes("claimed")) {
       return { bg: "bg-green-900/95", border: "border-green-500", text: "text-green-400" };
-    } else if (msg.includes("⏳") || msg.includes("Advancing") || msg.includes("Entering")) {
+    } else if (normalized.includes("advancing") || normalized.includes("entering") || normalized.includes("room")) {
       return { bg: "bg-blue-900/95", border: "border-blue-500", text: "text-blue-400" };
-    } else if (msg.includes("💀") || msg.includes("died")) {
+    } else if (normalized.includes("died") || normalized.includes("death")) {
       return { bg: "bg-gray-900/95", border: "border-gray-500", text: "text-gray-300" };
     } else {
       return { bg: "bg-gray-900/95", border: "border-dungeon-gold", text: "text-dungeon-gold" };
@@ -72,17 +74,24 @@ export default function GamePage() {
       {/* Header */}
       <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex justify-between items-center">
-            <div>
+          <div className="flex items-center gap-4">
+            <div className="flex-shrink-0">
               <button
                 onClick={() => router.push("/")}
                 className="text-2xl font-bold text-dungeon-gold text-glow hover:text-yellow-300 transition-colors"
               >
-                ⚔️ Dungeon Flip Lite
+                Dungeon Flip Lite
               </button>
               <p className="text-xs text-gray-400">Powered by OneChain</p>
             </div>
-            <WalletConnect />
+
+            <div className="flex-1 flex justify-center">
+              <TotalRunsBadge />
+            </div>
+
+            <div className="flex-shrink-0">
+              <WalletConnect />
+            </div>
           </div>
         </div>
       </header>
@@ -117,7 +126,7 @@ export default function GamePage() {
         <div className="container mx-auto px-4 text-center text-sm text-gray-400">
           <p>
             Built for OneHack 2.0 Hackathon
-            <span className="mx-2">•</span>
+            <span className="mx-2">*</span>
             Powered by OneChain & OneWallet
           </p>
         </div>

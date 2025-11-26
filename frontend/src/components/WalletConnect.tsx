@@ -9,7 +9,7 @@ export default function WalletConnect() {
 
   if (isConnected && address) {
     return (
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 sm:gap-4">
         <div className="stat-box">
           <div className="text-xs text-gray-400">Wallet</div>
           <div className="text-sm font-mono">{formatAddress(address)}</div>

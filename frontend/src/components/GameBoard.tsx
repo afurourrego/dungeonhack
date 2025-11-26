@@ -21,6 +21,7 @@ import {
   advanceToNextRoom as advanceRoomBlockchain,
   exitDungeonRun,
 } from "@/lib/sui-blockchain";
+import Leaderboard from "./Leaderboard";
 
 export default function GameBoard() {
   const {
@@ -301,6 +302,10 @@ export default function GameBoard() {
         <button onClick={resetGame} className="btn-primary">
           New Run (Pay {ENTRY_FEE_SUI} SUI)
         </button>
+
+        <div className="mt-6">
+          <Leaderboard showPersonal={false} variant="compact" />
+        </div>
       </div>
     );
   }
