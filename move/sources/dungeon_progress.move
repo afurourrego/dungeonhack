@@ -11,9 +11,9 @@ module dungeon_flip::dungeon_progress {
     /// Week duration in milliseconds (7 days)
     const WEEK_DURATION_MS: u64 = 604_800_000;
 
-    /// First season start: Friday, January 31, 2025 at 4:20 PM UTC
-    /// Timestamp: 1738342800000 milliseconds
-    const SEASON_START_TIME: u64 = 1738342800000;
+    /// First season start: Friday, November 22, 2025 at 4:20 PM UTC
+    /// Timestamp: 1763827200000 milliseconds (Nov 22, 2025)
+    const SEASON_START_TIME: u64 = 1763827200000;
 
     /// Shared object to track all players' progress
     public struct ProgressRegistry has key {
@@ -45,6 +45,7 @@ module dungeon_flip::dungeon_progress {
         success: bool,
         total_runs: u64,
         rooms_reached: u64,
+        gems_collected: u64,
     }
 
     /// Event emitted when a new room record is set
@@ -220,6 +221,7 @@ module dungeon_flip::dungeon_progress {
             success,
             total_runs: progress.total_runs,
             rooms_reached,
+            gems_collected,
         });
     }
 

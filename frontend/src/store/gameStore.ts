@@ -4,6 +4,7 @@ import { GameState, CardRevealState } from "@/lib/constants";
 
 interface PlayerStats {
   hp: number;
+  maxHP: number; // Maximum HP from NFT (frontend only, for healing limits)
   atk: number;
   def: number;
   gold: number; // Actually gems, but keeping variable name for compatibility
@@ -124,6 +125,7 @@ interface GameStore {
 
 const initialPlayerStats: PlayerStats = {
   hp: 4,
+  maxHP: 4,
   atk: 1,
   def: 1,
   gold: 0,
@@ -214,9 +216,10 @@ export const useGameStore = create<GameStore>((set) => ({
       currentRoomMonsters: 0,
       currentRoom: 1, // Always start at room 1
       awaitingDecision: false,
-      // Preserve HP, ATK, DEF from NFT stats, reset gold
+      // Reset HP to maxHP, preserve ATK, DEF, maxHP from NFT, reset gold
       playerStats: {
         ...state.playerStats,
+        hp: state.playerStats.maxHP, // Start each run with full HP
         gold: 0
       },
       message: null,
@@ -263,7 +266,7 @@ export const useGameStore = create<GameStore>((set) => ({
     })),
 
   resetGame: () =>
-    set({
+    set((state) => ({
       gameState: GameState.NOT_STARTED,
       currentDeck: [],
       currentCardIndex: 0,
@@ -272,11 +275,16 @@ export const useGameStore = create<GameStore>((set) => ({
       currentRoom: 1,
       activeRunId: null,
       awaitingDecision: false,
-      playerStats: initialPlayerStats,
+      // Preserve NFT stats (atk, def, maxHP) but reset HP to maxHP and gold to 0
+      playerStats: {
+        ...state.playerStats,
+        hp: state.playerStats.maxHP,
+        gold: 0
+      },
       adventureLog: [],
       message: null,
       error: null,
-    }),
+    })),
 
   // Infinite dungeon actions
   setActiveRunId: (runId) =>

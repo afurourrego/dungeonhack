@@ -34,19 +34,19 @@ export const MONSTER_TYPES: MonsterConfig[] = [
   {
     name: "Goblin",
     attackRange: [1, 2],
-    hpRange: [1, 2],
+    hpRange: [1, 3],
     hitChance: 1.0, // Always hits
   },
   {
     name: "Orc",
     attackRange: [2, 3],
-    hpRange: [1, 2],
+    hpRange: [1, 3],
     hitChance: 1.0,
   },
   {
     name: "Troll",
     attackRange: [1, 3],
-    hpRange: [1, 2],
+    hpRange: [1, 3],
     hitChance: 1.0,
   },
 ] as const;

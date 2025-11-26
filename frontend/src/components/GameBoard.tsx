@@ -112,8 +112,8 @@ export default function GameBoard() {
         try {
           runId = await startDungeonRun(
             signAndExecuteTransaction,
-            GAME_CONFIG.BASIC_HP,
-            GAME_CONFIG.BASIC_ATK
+            playerStats.maxHP,
+            playerStats.atk
           );
           setActiveRunId(runId);
           setMessage(`Entry fee paid! (${ENTRY_FEE_SUI} SUI)`);
@@ -163,7 +163,7 @@ export default function GameBoard() {
       }
 
       // For non-monster cards, resolve normally
-      const result = resolveCardLogic(card, playerStats.def, playerStats.hp);
+      const result = resolveCardLogic(card, playerStats.def, playerStats.hp, playerStats.maxHP);
 
       if (card.type === "TREASURE") {
         addLogEntry(`💎 Found treasure! Earned ${result.gold} gems.`, "treasure");
@@ -385,7 +385,7 @@ export default function GameBoard() {
             <div className="stat-box">
               <div className="text-xs text-gray-400">Your HP</div>
               <div className="text-3xl font-bold text-green-400">
-                {playerStats.hp}
+                {playerStats.maxHP}
               </div>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/store/gameStore";
+import { useWallet } from "@/hooks/useWallet";
 import { GameState } from "@/lib/constants";
 import WalletConnect from "@/components/WalletConnect";
 import GameBoard from "@/components/GameBoard";
@@ -13,6 +14,14 @@ import TotalRunsBadge from "@/components/TotalRunsBadge";
 export default function GamePage() {
   const router = useRouter();
   const { isConnected, hasNFT, error, message, gameState, avatarSrc } = useGameStore();
+  const { refreshNFT } = useWallet();
+
+  // Load NFT stats when page mounts
+  useEffect(() => {
+    if (isConnected && hasNFT) {
+      refreshNFT();
+    }
+  }, [isConnected, hasNFT, refreshNFT]);
 
   // Redirect if not connected or no NFT
   useEffect(() => {

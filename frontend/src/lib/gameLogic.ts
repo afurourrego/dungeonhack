@@ -79,7 +79,8 @@ export const generateDeck = (): GameCard[] => {
 export const resolveCard = (
   card: GameCard,
   playerDEF: number,
-  currentHP: number
+  currentHP: number,
+  maxHP: number
 ): {
   newHP: number;
   gold: number;
@@ -121,14 +122,14 @@ export const resolveCard = (
 
     case CardType.POTION:
       if (card.value === 999) {
-        // Full restore potion
-        const hpRestored = GAME_CONFIG.BASIC_HP - currentHP;
-        newHP = GAME_CONFIG.BASIC_HP;
+        // Full restore potion - use maxHP from NFT
+        const hpRestored = maxHP - currentHP;
+        newHP = maxHP;
         hpGained = hpRestored;
         message = `🧪 Full Restore Potion! HP fully restored (+${hpRestored} HP)!`;
       } else {
-        // Small potion
-        newHP = Math.min(currentHP + card.value, GAME_CONFIG.BASIC_HP);
+        // Small potion - use maxHP from NFT
+        newHP = Math.min(currentHP + card.value, maxHP);
         const actualRestore = newHP - currentHP;
         hpGained = actualRestore;
         message = `🧪 Small Potion! Restored ${actualRestore} HP.`;

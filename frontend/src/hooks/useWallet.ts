@@ -68,6 +68,7 @@ export const useWallet = () => {
           // Set player stats from NFT
           setPlayerStats({
             hp: nftData.hp,
+            maxHP: nftData.hp, // NFT HP is the maximum HP
             atk: nftData.atk,
             def: nftData.def,
           });
@@ -116,6 +117,7 @@ export const useWallet = () => {
           // Update player stats from NFT
           setPlayerStats({
             hp: nftData.hp,
+            maxHP: nftData.hp, // NFT HP is the maximum HP
             atk: nftData.atk,
             def: nftData.def,
           });

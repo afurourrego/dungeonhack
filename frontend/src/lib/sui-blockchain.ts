@@ -691,15 +691,14 @@ export const getWeeklyLeaderboard = async (weekNumber?: number): Promise<Leaderb
     const content = registryObject.data.content;
     if (content.dataType !== "moveObject") return [];
 
-    const fields = content.fields as any;
-    const currentWeek = Number(fields.current_week) || 1;
-    const weekStartTime = Number(fields.week_start_time) || 0;
+    // ✅ FIX: Calculate week boundaries directly from SEASON_START_TIME
+    // Season start: Friday, November 22, 2025 at 4:20 PM UTC
+    const SEASON_START_TIME = 1763827200000;
+    const WEEK_MS = 604_800_000; // 7 days
 
-    // Calculate week boundaries (7 days = 604,800,000 ms)
-    const WEEK_MS = 604_800_000;
-    const weeksAgo = currentWeek - targetWeek;
-    const weekEndTime = weekStartTime - (weeksAgo * WEEK_MS);
-    const weekStartBoundary = weekEndTime - WEEK_MS;
+    // Calculate boundaries for the target week
+    const weekStartBoundary = SEASON_START_TIME + ((targetWeek - 1) * WEEK_MS);
+    const weekEndTime = weekStartBoundary + WEEK_MS;
 
     // Query RunCompleted events
     const eventType = `${PACKAGE_ID}::dungeon_progress::RunCompleted`;
@@ -730,13 +729,17 @@ export const getWeeklyLeaderboard = async (weekNumber?: number): Promise<Leaderb
         if (!parsed) continue;
 
         const player = parsed.player as string | undefined;
+        // ✅ FIX: Use gems_collected if available, otherwise use rooms_reached as fallback
+        // This handles both old contract (no gems_collected) and new contract (with gems_collected)
         const gemsCollected = Number(parsed.gems_collected ?? parsed.gems ?? parsed.gemsCollected ?? 0);
+        const roomsReached = Number(parsed.rooms_reached ?? parsed.rooms ?? parsed.roomsReached ?? 0);
+        const score = gemsCollected > 0 ? gemsCollected : roomsReached;
 
-        if (!player || gemsCollected === 0) continue;
+        if (!player || score === 0) continue;
 
         const currentBest = weekScores.get(player);
-        if (!currentBest || gemsCollected > currentBest) {
-          weekScores.set(player, gemsCollected);
+        if (!currentBest || score > currentBest) {
+          weekScores.set(player, score);
         }
       }
 
@@ -849,11 +852,13 @@ export const getPlayerWeeklyScore = async (address: string): Promise<{ score: nu
         const player = parsed.player as string | undefined;
         if (player !== address) continue;
 
+        // ✅ FIX: Use gems_collected if available, otherwise use rooms_reached as fallback
         const gemsCollected = Number(parsed.gems_collected ?? parsed.gems ?? parsed.gemsCollected ?? 0);
         const roomsReached = Number(parsed.rooms_reached ?? parsed.rooms ?? parsed.roomsReached ?? 0);
+        const score = gemsCollected > 0 ? gemsCollected : roomsReached;
 
-        if (gemsCollected > bestScore) {
-          bestScore = gemsCollected;
+        if (score > bestScore) {
+          bestScore = score;
           bestRooms = roomsReached;
         }
       }

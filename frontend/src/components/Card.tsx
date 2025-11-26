@@ -134,6 +134,7 @@ export default function Card({ card, onClick, disabled }: CardProps) {
           src="/cards/reverse.png"
           alt="Card Back"
           fill
+          sizes="224px"
           className="object-contain"
           priority
         />
@@ -172,6 +173,7 @@ export default function Card({ card, onClick, disabled }: CardProps) {
         src={getCardImage(card.type)}
         alt={displayInfo?.title || "Card"}
         fill
+        sizes="224px"
         className="object-contain"
         priority
       />
