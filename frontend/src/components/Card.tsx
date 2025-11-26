@@ -36,6 +36,13 @@ export default function Card({ card, onClick, disabled }: CardProps) {
     setIsHovered(false);
   }, [card.id]);
 
+  // Reset hover when disabled
+  useEffect(() => {
+    if (disabled) {
+      setIsHovered(false);
+    }
+  }, [disabled]);
+
   // Trigger flip animation and particles when card is revealed
   useEffect(() => {
     if (isRevealed && !showFront) {
@@ -114,12 +121,14 @@ export default function Card({ card, onClick, disabled }: CardProps) {
       <button
         onClick={onClick}
         disabled={disabled}
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={() => !disabled && setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        onBlur={() => setIsHovered(false)}
         className={`relative w-56 h-96 rounded-2xl transition-all duration-300
-          ${disabled ? "opacity-80 cursor-not-allowed" : "hover:scale-110 hover:shadow-2xl hover:brightness-110 cursor-pointer"}
+          ${disabled ? "opacity-80 cursor-not-allowed" : "cursor-pointer"}
+          ${!disabled && !isFlipping ? "hover:scale-110 hover:shadow-2xl hover:brightness-110" : ""}
           ${isFlipping ? "animate-flip-3d" : ""}
-          ${isHovered && !disabled ? "shadow-lg shadow-amber-500/50" : ""}`}
+          ${isHovered && !disabled && !isFlipping ? "shadow-lg shadow-amber-500/50" : ""}`}
       >
         <Image
           src="/cards/reverse.png"
