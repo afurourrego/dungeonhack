@@ -47,11 +47,11 @@ export default function AdventureLog() {
   return (
     <div className="card flex flex-col h-[600px]">
       <div className="flex justify-between items-center mb-4 flex-shrink-0">
-        <h3 className="text-xl font-bold text-dungeon-gold">
+        <h3 className="text-2xl font-bold text-amber-400 drop-shadow-lg">
           📜 Adventure Log
         </h3>
         {adventureLog.length > 0 && (
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-amber-300/60 uppercase tracking-wider">
             {adventureLog.length} {adventureLog.length === 1 ? "entry" : "entries"}
           </span>
         )}
@@ -59,7 +59,7 @@ export default function AdventureLog() {
 
       <div className="flex-1 overflow-y-auto space-y-2 pr-2">
         {adventureLog.length === 0 ? (
-          <div className="text-center text-gray-500 py-8">
+          <div className="text-center text-amber-300/50 py-8">
             <p className="text-4xl mb-2">🏰</p>
             <p>Your adventure begins here...</p>
           </div>
@@ -68,13 +68,13 @@ export default function AdventureLog() {
             {adventureLog.map((entry) => (
               <div
                 key={entry.id}
-                className={`text-sm border-l-4 pl-3 py-2 bg-gray-800/30 rounded ${getEntryStyle(
+                className={`text-sm border-l-4 pl-3 py-2 bg-gray-900/40 backdrop-blur-sm rounded ${getEntryStyle(
                   entry.type
                 )} animate-fade-in`}
               >
                 <div className="flex justify-between items-start gap-2">
                   <p className="flex-1">{entry.message}</p>
-                  <span className="text-xs text-gray-600 whitespace-nowrap">
+                  <span className="text-xs text-amber-300/40 whitespace-nowrap">
                     {formatTime(entry.timestamp)}
                   </span>
                 </div>

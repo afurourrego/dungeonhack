@@ -121,9 +121,9 @@ export default function GameBoard() {
       // Add log entry based on card type
       if (card.type === "MONSTER") {
         if (result.defeated) {
-          addLogEntry(`⚔️ Defeated ${card.name}! Earned ${result.gold} gems.`, "monster");
+          addLogEntry(`⚔️ Defeated Monster (ATK ${card.value})! Earned ${result.gold} gems.`, "monster");
         } else {
-          addLogEntry(`⚔️ ${card.name} attacks! Lost ${result.hpLost} HP.`, "monster");
+          addLogEntry(`⚔️ Monster (ATK ${card.value}) attacks! Lost ${result.hpLost} HP.`, "monster");
         }
       } else if (card.type === "TREASURE") {
         addLogEntry(`💎 Found treasure! Earned ${result.gold} gems.`, "treasure");
@@ -371,33 +371,33 @@ export default function GameBoard() {
     <div className="space-y-6 animate-fade-in">
       {/* Room & Player Stats */}
       <div className="card">
-        <div className="flex justify-between items-center mb-4">
-          <div className="text-lg font-bold text-purple-400">
+        <div className="flex justify-between items-center mb-3">
+          <div className="text-xl font-bold text-amber-400 drop-shadow-lg">
             🏰 Room {currentRoom}
           </div>
-          <div className="text-sm text-gray-400">
+          <div className="text-xs text-amber-200/80">
             {awaitingDecision
               ? "Choose: Continue or Exit"
               : `Choose 1 of 4 cards`}
           </div>
         </div>
 
-        <div className="flex gap-4">
-          <div className="stat-box">
-            <div className="text-xs text-gray-400">HP</div>
-            <div className="text-2xl font-bold text-green-400">
+        <div className="flex gap-3">
+          <div className="stat-box flex-1">
+            <div className="text-xs text-amber-300/70 uppercase tracking-wider">HP</div>
+            <div className="text-2xl font-bold text-green-400 drop-shadow-md">
               {playerStats.hp}
             </div>
           </div>
-          <div className="stat-box">
-            <div className="text-xs text-gray-400">DEF</div>
-            <div className="text-2xl font-bold text-blue-400">
+          <div className="stat-box flex-1">
+            <div className="text-xs text-amber-300/70 uppercase tracking-wider">DEF</div>
+            <div className="text-2xl font-bold text-blue-400 drop-shadow-md">
               {playerStats.def}
             </div>
           </div>
-          <div className="stat-box">
-            <div className="text-xs text-gray-400">Score (Gems)</div>
-            <div className="text-2xl font-bold text-dungeon-gold">
+          <div className="stat-box flex-1">
+            <div className="text-xs text-amber-300/70 uppercase tracking-wider">Gems</div>
+            <div className="text-2xl font-bold text-dungeon-gold drop-shadow-md">
               {playerStats.gold}
             </div>
           </div>
@@ -405,7 +405,7 @@ export default function GameBoard() {
       </div>
 
       {/* Cards */}
-      <div className="card">
+      <div>
         <div className="flex justify-center gap-4 flex-wrap">
           {currentDeck.map((card, index) => (
             <Card

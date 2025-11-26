@@ -86,11 +86,15 @@ export const resolveCard = (
   gold: number;
   message: string;
   defeated: boolean;
+  hpLost: number;
+  hpGained: number;
 } => {
   let newHP = currentHP;
   let gold = 0;
   let message = "";
   let defeated = false;
+  let hpLost = 0;
+  let hpGained = 0;
 
   switch (card.type) {
     case CardType.MONSTER:
@@ -100,6 +104,7 @@ export const resolveCard = (
       } else {
         const damage = card.value - playerDEF;
         newHP -= damage;
+        hpLost = damage;
         message = `💔 Monster (ATK ${card.value}) broke through your defense! You lose ${damage} HP.`;
       }
       break;
@@ -111,6 +116,7 @@ export const resolveCard = (
 
     case CardType.TRAP:
       newHP -= 1;
+      hpLost = 1;
       message = `🕸️ Trap triggered! You lose 1 HP.`;
       break;
 
@@ -119,17 +125,19 @@ export const resolveCard = (
         // Full restore potion
         const hpRestored = GAME_CONFIG.BASIC_HP - currentHP;
         newHP = GAME_CONFIG.BASIC_HP;
+        hpGained = hpRestored;
         message = `🧪 Full Restore Potion! HP fully restored (+${hpRestored} HP)!`;
       } else {
         // Small potion
         newHP = Math.min(currentHP + card.value, GAME_CONFIG.BASIC_HP);
         const actualRestore = newHP - currentHP;
+        hpGained = actualRestore;
         message = `🧪 Small Potion! Restored ${actualRestore} HP.`;
       }
       break;
   }
 
-  return { newHP, gold, message, defeated };
+  return { newHP, gold, message, defeated, hpLost, hpGained };
 };
 
 /**
