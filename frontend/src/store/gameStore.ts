@@ -9,6 +9,13 @@ interface PlayerStats {
   gold: number; // Actually gems, but keeping variable name for compatibility
 }
 
+export interface AdventureLogEntry {
+  id: string;
+  message: string;
+  type: "start" | "monster" | "treasure" | "trap" | "potion" | "room" | "death" | "exit";
+  timestamp: number;
+}
+
 interface GameStore {
   // Wallet state
   isConnected: boolean;
@@ -32,6 +39,9 @@ interface GameStore {
   currentRoom: number;
   activeRunId: string | null;
   awaitingDecision: boolean; // true when waiting for Continue/Exit choice
+
+  // Adventure log
+  adventureLog: AdventureLogEntry[];
 
   // UI state
   isLoading: boolean;
@@ -64,6 +74,10 @@ interface GameStore {
   // Actions - Player
   updatePlayerHP: (hp: number) => void;
   addGold: (amount: number) => void;
+
+  // Actions - Adventure log
+  addLogEntry: (message: string, type: AdventureLogEntry["type"]) => void;
+  clearLog: () => void;
 }
 
 const initialPlayerStats: PlayerStats = {
@@ -96,6 +110,9 @@ export const useGameStore = create<GameStore>((set) => ({
   currentRoom: 1,
   activeRunId: null,
   awaitingDecision: false,
+
+  // Initial state - Adventure log
+  adventureLog: [],
 
   // Initial state - UI
   isLoading: false,
@@ -198,6 +215,7 @@ export const useGameStore = create<GameStore>((set) => ({
       activeRunId: null,
       awaitingDecision: false,
       playerStats: initialPlayerStats,
+      adventureLog: [],
       message: null,
       error: null,
     }),
@@ -257,4 +275,23 @@ export const useGameStore = create<GameStore>((set) => ({
         gold: state.playerStats.gold + amount,
       },
     })),
+
+  // Adventure log actions
+  addLogEntry: (message, type) =>
+    set((state) => ({
+      adventureLog: [
+        ...state.adventureLog,
+        {
+          id: `${Date.now()}-${Math.random()}`,
+          message,
+          type,
+          timestamp: Date.now(),
+        },
+      ],
+    })),
+
+  clearLog: () =>
+    set({
+      adventureLog: [],
+    }),
 }));

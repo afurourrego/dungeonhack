@@ -36,6 +36,7 @@ module dungeon_flip::active_run {
         player: address,
         current_room: u64,
         hp: u64,
+        max_hp: u64, // Maximum HP (from NFT stats, for potion cap)
         atk: u64,
         started_at: u64,
     }
@@ -115,6 +116,7 @@ module dungeon_flip::active_run {
             player: sender,
             current_room: 1, // Always start at room 1
             hp: initial_hp,
+            max_hp: initial_hp, // Store max HP for potion validation
             atk: initial_atk,
             started_at: tx_context::epoch(ctx),
         };
@@ -140,11 +142,11 @@ module dungeon_flip::active_run {
         let sender = tx_context::sender(ctx);
         assert!(run.player == sender, EInvalidRun);
 
-        // ✅ SECURITY: Validate HP can only decrease or stay the same
-        assert!(new_hp <= run.hp, EInvalidHP);
-
         // ✅ SECURITY: HP must remain positive (if 0, should call end_run instead)
         assert!(new_hp > 0, EInvalidHP);
+
+        // ✅ SECURITY: Allow HP to increase (potions) but cap at max_hp from NFT
+        assert!(new_hp <= run.max_hp, EInvalidHP);
 
         // Update run state
         run.current_room = run.current_room + 1;
@@ -173,6 +175,7 @@ module dungeon_flip::active_run {
             player,
             current_room,
             hp: _,
+            max_hp: _,
             atk: _,
             started_at: _,
         } = run;

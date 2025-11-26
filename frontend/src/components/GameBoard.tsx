@@ -46,6 +46,7 @@ export default function GameBoard() {
     setActiveRunId,
     advanceToNextRoom,
     setAwaitingDecision,
+    addLogEntry,
   } = useGameStore();
 
   const { refreshBalance, signAndExecuteTransaction } = useWallet();
@@ -81,6 +82,10 @@ export default function GameBoard() {
       // Generate first room deck and start game
       const deck = generateDeck();
       startGame(deck);
+
+      // Log start of adventure
+      addLogEntry("🏰 You enter the dark dungeon. The air is thick with mystery...", "start");
+      addLogEntry(`💪 Starting stats: ${GAME_CONFIG.BASIC_HP} HP, ${GAME_CONFIG.BASIC_ATK} ATK`, "start");
     } catch (error: any) {
       console.error("Error starting game:", error);
       setError(error.message || "Failed to start game");
@@ -113,6 +118,21 @@ export default function GameBoard() {
         currentGold: playerStats.gold
       });
 
+      // Add log entry based on card type
+      if (card.type === "MONSTER") {
+        if (result.defeated) {
+          addLogEntry(`⚔️ Defeated ${card.name}! Earned ${result.gold} gems.`, "monster");
+        } else {
+          addLogEntry(`⚔️ ${card.name} attacks! Lost ${result.hpLost} HP.`, "monster");
+        }
+      } else if (card.type === "TREASURE") {
+        addLogEntry(`💎 Found treasure! Earned ${result.gold} gems.`, "treasure");
+      } else if (card.type === "TRAP") {
+        addLogEntry(`🕸️ Trap triggered! Lost ${result.hpLost} HP.`, "trap");
+      } else if (card.type === "POTION") {
+        addLogEntry(`🧪 Drank a potion! Restored ${result.hpGained} HP.`, "potion");
+      }
+
       // Update game state
       resolveCard(index, result.newHP, result.gold, result.defeated);
       setMessage(result.message);
@@ -140,8 +160,9 @@ export default function GameBoard() {
   const handleDeath = async () => {
     setIsProcessing(true);
     setMessage("💀 You died! Recording your progress...");
+    addLogEntry(`💀 Your adventure ends at Room ${currentRoom}. Final score: ${playerStats.gold} gems.`, "death");
 
-    try {
+    try{
       // Exit dungeon run on blockchain
       if (!DEV_MODE && signAndExecuteTransaction && activeRunId) {
         await exitDungeonRun(
@@ -185,6 +206,7 @@ export default function GameBoard() {
       const newDeck = generateDeck();
       advanceToNextRoom(newDeck);
       setMessage(`Entering Room ${currentRoom + 1}...`);
+      addLogEntry(`🚪 Survived Room ${currentRoom}! Entering Room ${currentRoom + 1}...`, "room");
 
       setTimeout(() => setMessage(null), 2000);
     } catch (error: any) {
@@ -199,6 +221,7 @@ export default function GameBoard() {
   const handleExit = async () => {
     setIsProcessing(true);
     setMessage("⏳ Exiting dungeon and claiming rewards...");
+    addLogEntry(`✅ Successfully escaped! Cleared ${currentRoom} rooms with ${playerStats.gold} gems!`, "exit");
 
     try {
       // Calculate total monsters including current room

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useGameStore } from "@/store/gameStore";
 import WalletConnect from "@/components/WalletConnect";
 import GameBoard from "@/components/GameBoard";
+import AdventureLog from "@/components/AdventureLog";
 
 export default function GamePage() {
   const router = useRouter();
@@ -88,7 +89,7 @@ export default function GamePage() {
 
       {/* Main Content */}
       <div className="flex-1 container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Global Error Display */}
           {error && (
             <div className="bg-red-900/30 border border-red-500 rounded-lg p-4 text-center animate-slide-up mb-6">
@@ -96,8 +97,18 @@ export default function GamePage() {
             </div>
           )}
 
-          {/* Game Board */}
-          <GameBoard />
+          {/* Grid Layout: Game Board + Adventure Log */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Game Board - Takes 2 columns on large screens */}
+            <div className="lg:col-span-2">
+              <GameBoard />
+            </div>
+
+            {/* Adventure Log - Takes 1 column on large screens, full width on mobile */}
+            <div className="lg:col-span-1">
+              <AdventureLog />
+            </div>
+          </div>
         </div>
       </div>
 
