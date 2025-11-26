@@ -3,14 +3,16 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useGameStore } from "@/store/gameStore";
+import { GameState } from "@/lib/constants";
 import WalletConnect from "@/components/WalletConnect";
 import GameBoard from "@/components/GameBoard";
+import CharacterCard from "@/components/CharacterCard";
 import AdventureLog from "@/components/AdventureLog";
 import TotalRunsBadge from "@/components/TotalRunsBadge";
 
 export default function GamePage() {
   const router = useRouter();
-  const { isConnected, hasNFT, error, message } = useGameStore();
+  const { isConnected, hasNFT, error, message, gameState, avatarSrc } = useGameStore();
 
   // Redirect if not connected or no NFT
   useEffect(() => {
@@ -84,11 +86,9 @@ export default function GamePage() {
               </button>
               <p className="text-xs text-gray-400">Powered by OneChain</p>
             </div>
-
             <div className="flex-1 flex justify-center">
               <TotalRunsBadge />
             </div>
-
             <div className="flex-shrink-0">
               <WalletConnect />
             </div>
@@ -106,17 +106,29 @@ export default function GamePage() {
             </div>
           )}
 
-          {/* Grid Layout: Game Board + Adventure Log */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Game Board - Takes 2 columns on large screens */}
-            <div className="lg:col-span-2">
-              <GameBoard />
+          {/* Main Layout: Top (Game + Character) + Bottom (Log) */}
+          <div className="space-y-4">
+            {/* Top Section: Game Board + Character Card (side by side on desktop) */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4 items-start">
+              {/* Game Board */}
+              <div>
+                <GameBoard />
+              </div>
+
+              {/* Character Card - Only show during active gameplay */}
+              {gameState === GameState.IN_PROGRESS && (
+                <div>
+                  <CharacterCard avatarSrc={avatarSrc} />
+                </div>
+              )}
             </div>
 
-            {/* Adventure Log - Takes 1 column on large screens, full width on mobile */}
-            <div className="lg:col-span-1">
-              <AdventureLog />
-            </div>
+            {/* Bottom Section: Adventure Log (horizontal, full width) */}
+            {gameState === GameState.IN_PROGRESS && (
+              <div className="w-full">
+                <AdventureLog />
+              </div>
+            )}
           </div>
         </div>
       </div>

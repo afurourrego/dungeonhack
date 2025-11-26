@@ -22,6 +22,14 @@ module.exports = {
         'slide-down': 'slideDown 0.4s ease-out',
         'slide-down-center': 'slideDownCenter 0.4s ease-out',
         'bounce-slow': 'bounce 2s infinite',
+        'flip-3d': 'flip-3d 0.7s cubic-bezier(0.4, 0, 0.2, 1)',
+        'shine': 'shine 2s ease-in-out infinite',
+        'shake': 'shake 0.6s cubic-bezier(0.36, 0.07, 0.19, 0.97)',
+        'glow-red': 'glow-red 1.5s ease-in-out infinite',
+        'bubble': 'bubble 2s ease-in-out infinite',
+        'particle-burst': 'particle-burst 0.8s ease-out forwards',
+        'hover-float': 'hover-float 2s ease-in-out infinite',
+        'energy-pulse': 'energy-pulse 2s ease-in-out infinite',
       },
       keyframes: {
         fadeIn: {

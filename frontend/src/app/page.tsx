@@ -7,6 +7,7 @@ import WalletConnect from "@/components/WalletConnect";
 import MintAventurer from "@/components/MintAventurer";
 import Leaderboard from "@/components/Leaderboard";
 import TotalRunsBadge from "@/components/TotalRunsBadge";
+import { useWallet } from "@/hooks/useWallet";
 
 export default function Home() {
   const router = useRouter();
@@ -32,11 +33,9 @@ export default function Home() {
               </h1>
               <p className="text-xs text-gray-400">Powered by OneChain</p>
             </div>
-
             <div className="flex-1 flex justify-center">
               <TotalRunsBadge />
             </div>
-
             <div className="flex-shrink-0">
               <WalletConnect />
             </div>

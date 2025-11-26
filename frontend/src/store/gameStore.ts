@@ -43,6 +43,9 @@ interface GameStore {
   // Adventure log
   adventureLog: AdventureLogEntry[];
 
+  // Avatar state
+  avatarSrc: string;
+
   // UI state
   isLoading: boolean;
   error: string | null;
@@ -78,6 +81,9 @@ interface GameStore {
   // Actions - Adventure log
   addLogEntry: (message: string, type: AdventureLogEntry["type"]) => void;
   clearLog: () => void;
+
+  // Actions - Avatar
+  setAvatarSrc: (src: string) => void;
 }
 
 const initialPlayerStats: PlayerStats = {
@@ -113,6 +119,9 @@ export const useGameStore = create<GameStore>((set) => ({
 
   // Initial state - Adventure log
   adventureLog: [],
+
+  // Initial state - Avatar
+  avatarSrc: "/avatars/adventurer-idle.png",
 
   // Initial state - UI
   isLoading: false,
@@ -293,5 +302,11 @@ export const useGameStore = create<GameStore>((set) => ({
   clearLog: () =>
     set({
       adventureLog: [],
+    }),
+
+  // Avatar actions
+  setAvatarSrc: (src: string) =>
+    set({
+      avatarSrc: src,
     }),
 }));
