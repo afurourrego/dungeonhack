@@ -31,7 +31,7 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <div className="flex-shrink-0">
               <h1 className="text-2xl font-bold text-dungeon-gold text-glow">
-                Dungeon Flip Lite
+                Dungeon Flip
               </h1>
               <p className="text-xs text-gray-400">Powered by OneChain</p>
             </div>
@@ -52,7 +52,7 @@ export default function Home() {
           {!isConnected && (
             <div className="card text-center animate-fade-in">
               <h2 className="text-3xl font-bold text-dungeon-gold mb-4">
-                Welcome to Dungeon Flip Lite!
+                Welcome to Dungeon Flip!
               </h2>
               <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
                 A Web3 roguelite mini-game built for OneHack 2.0. Connect your OneWallet

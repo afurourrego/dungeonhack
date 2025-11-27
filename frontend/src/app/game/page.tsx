@@ -91,7 +91,7 @@ export default function GamePage() {
                 onClick={() => router.push("/")}
                 className="text-xl font-bold text-dungeon-gold text-glow hover:text-yellow-300 transition-colors"
               >
-                Dungeon Flip Lite
+                Dungeon Flip
               </button>
               <p className="text-[10px] text-gray-400">Powered by OneChain</p>
             </div>
