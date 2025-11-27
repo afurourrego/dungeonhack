@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - Dungeon Flip Lite
+# 🚀 Quick Start Guide - Dungeon Flip
 
 Get your game running in 5 minutes!
 

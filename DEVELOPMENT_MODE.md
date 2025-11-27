@@ -1,6 +1,6 @@
 # 🚧 Development Mode - Testing Without Blockchain
 
-This guide explains how to test **Dungeon Flip Lite** locally without deploying smart contracts.
+This guide explains how to test **Dungeon Flip** locally without deploying smart contracts.
 
 ---
 

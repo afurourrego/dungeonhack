@@ -1,4 +1,4 @@
-# ✅ Dungeon Flip Lite - Complete Checklist
+# ✅ Dungeon Flip - Complete Checklist
 
 Use this checklist to ensure everything is ready for OneHack 2.0 submission.
 

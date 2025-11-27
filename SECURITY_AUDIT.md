@@ -1,4 +1,4 @@
-# 🔒 Security Audit Report - Dungeon Flip Lite
+# 🔒 Security Audit Report - Dungeon Flip
 
 **Date**: 2025-11-21
 **Version**: 1.0.0

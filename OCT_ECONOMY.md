@@ -1,8 +1,8 @@
-# 💰 SUI Economy System
+# 💰 ONECHAIN Economy System
 
 ## Overview
 
-Dungeon Flip uses **SUI native token** for its reward economy. Players pay a 0.05 SUI entry fee per run which is automatically distributed across three destinations:
+Dungeon Flip uses **Onechain native token** for its reward economy. Players pay a 0.01 OCT entry fee per run which is automatically distributed across three destinations:
 
 - **70%** → Weekly Rewards Pool (distributed to top 10 players)
 - **20%** → Dev Treasury (accumulated, withdrawable by admin)
@@ -13,18 +13,18 @@ Dungeon Flip uses **SUI native token** for its reward economy. Players pay a 0.0
 ## Entry Fee
 
 ### Cost
-- **0.05 SUI** per dungeon run
-- Equals 50,000,000 MIST (SUI has 9 decimals)
+- **0.01 OCT** per dungeon run
+
 
 ### Payment Flow
 ```
-Player pays 0.05 SUI
+Player pays 0.01 OCT
        ↓
 [fee_distributor.move]
        ↓
-├─ 0.035 SUI → Rewards Pool (for weekly distribution)
-├─ 0.010 SUI → Dev Balance (accumulates)
-└─ 0.005 SUI → Marketing Balance (accumulates)
+├─ 0.007 OCT → Rewards Pool (for weekly distribution)
+├─ 0.002 OCT → Dev Balance (accumulates)
+└─ 0.001 OCT → Marketing Balance (accumulates)
 ```
 
 ### Automatic Distribution
@@ -45,19 +45,19 @@ The fee is split **instantly** when a player enters a dungeon. No manual interve
 
 ### Prize Distribution
 
-| Rank | Percentage | Example (10 SUI pool) |
+| Rank | Percentage | Example (100 OCT pool) |
 |------|------------|-----------------------|
-| 🥇 1st | 30% | 3.0 SUI |
-| 🥈 2nd | 20% | 2.0 SUI |
-| 🥉 3rd | 15% | 1.5 SUI |
-| 4th | 10% | 1.0 SUI |
-| 5th | 8% | 0.8 SUI |
-| 6th | 6% | 0.6 SUI |
-| 7th | 4% | 0.4 SUI |
-| 8th | 3% | 0.3 SUI |
-| 9th | 2% | 0.2 SUI |
-| 10th | 2% | 0.2 SUI |
-| **Total** | **100%** | **10 SUI** |
+| 🥇 1st | 30% | 30.0 OCT |
+| 🥈 2nd | 20% | 20.0 OCT |
+| 🥉 3rd | 15% | 15.0 OCT |
+| 4th | 10% | 10.0 OCT |
+| 5th | 8% | 8.0 OCT |
+| 6th | 6% | 0.6.0 OCT |
+| 7th | 4% | 0.4.0 OCT |
+| 8th | 3% | 0.3.0 OCT |
+| 9th | 2% | 0.2.0 OCT |
+| 10th | 2% | 0.2.0 OCT |
+| **Total** | **100%** | **100 OCT** |
 
 ### How Distribution Works
 
@@ -135,8 +135,8 @@ distributeWeeklyRewards();
 
 ### Accumulation
 Funds accumulate automatically with each entry fee:
-- **Dev Balance**: 20% of each 0.05 SUI fee = 0.01 SUI per entry
-- **Marketing Balance**: 10% of each 0.05 SUI fee = 0.005 SUI per entry
+- **Dev Balance**: 20% of each 0.01 OCT fee = 0.002 OCT per entry
+- **Marketing Balance**: 10% of each 0.01 OCT fee = 0.001 OCT per entry
 
 ### Withdrawal (Admin Only)
 
@@ -193,37 +193,37 @@ Anyone can view withdrawal history on-chain using Sui Explorer.
 
 ## Example Calculations
 
-### Scenario: 100 Players in Week 1
+### Scenario: 1000 runs in Week 1
 
 **Entry Fees Collected:**
-- 100 players × 0.05 SUI = 5 SUI total
+- 1000 runs × 0.01 OCT = 10 OCT total
 
 **Automatic Distribution:**
-- Rewards Pool: 3.5 SUI (goes to top 10 players after 1 week)
-- Dev Treasury: 1 SUI (accumulated, withdrawable)
-- Marketing: 0.5 SUI (accumulated, withdrawable)
+- Rewards Pool: 7 OCT (goes to top 10 players after 1 week)
+- Dev Treasury: 2 OCT (accumulated, withdrawable)
+- Marketing: 1 OCT (accumulated, withdrawable)
 
 **Winner Payouts (After 1 Week):**
-- 1st place: 1.05 SUI (30% of 3.5 SUI)
-- 2nd place: 0.70 SUI
-- 3rd place: 0.525 SUI
+- 1st place: 2.1 OCT (30% of 7 OCT)
+- 2nd place: 1.4 OCT
+- 3rd place: 1.05 OCT
 - 4th-10th: Decreasing amounts
-- Total distributed: 3.5 SUI
+- Total distributed: 7 OCT
 
 **Admin Can Withdraw:**
-- Dev: 1 SUI anytime
-- Marketing: 0.5 SUI anytime
+- Dev: 2 OCT anytime
+- Marketing: 1 OCT anytime
 
-### Scenario: 1,000 Players in Week 2
+### Scenario: 10,000 runs in Week 2
 
-**Entry Fees:** 50 SUI
+**Entry Fees:** 100 OCT
 
 **Distribution:**
-- Rewards Pool: 35 SUI
-  - 1st place wins 10.5 SUI (30%)
-  - Top 10 split 35 SUI
-- Dev: 10 SUI accumulated
-- Marketing: 5 SUI accumulated
+- Rewards Pool: 70 OCT
+  - 1st place wins 21 OCT (30%)
+  - Top 10 split 70 OCT
+- Dev: 20 OCT accumulated
+- Marketing: 10 OCT accumulated
 
 ---
 
@@ -232,7 +232,7 @@ Anyone can view withdrawal history on-chain using Sui Explorer.
 ```
 ┌─────────────────┐
 │  Player Entry   │
-│   (0.05 SUI)    │
+│   (0.01 OCT)    │
 └────────┬────────┘
          │
          ↓
@@ -297,7 +297,7 @@ const timeRemaining = await contract.time_until_distribution(POOL_ID, CLOCK_ID);
 A: Yes, admin can call `update_entry_fee()` in active_run.move
 
 **Q: What happens if no one plays for a week?**
-A: Pool stays at 0 SUI, distribution still happens but winners get 0
+A: Pool stays at 0 OCT, distribution still happens but winners get 0
 
 **Q: Can the same person win multiple ranks?**
 A: No, duplicate address check prevents this
@@ -321,7 +321,7 @@ See [SECURITY_AUDIT.md](SECURITY_AUDIT.md) for full report.
 - ✅ Fee distribution math is correct (70/20/10 split)
 - ✅ AdminCap pattern properly restricts withdrawals
 - ✅ No reentrancy vulnerabilities (Sui Move protections)
-- ✅ SUI native token integration is secure
+- ✅ OCT native token integration is secure
 - ✅ Weekly distribution requires admin trust (acceptable for hackathon)
 - ✅ Duplicate address check prevents basic fraud
 - ✅ Time-lock prevents premature distributions

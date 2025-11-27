@@ -55,7 +55,7 @@ export default function Home() {
                 Welcome to Dungeon Flip!
               </h2>
               <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-                A Web3 roguelite mini-game built for OneHack 2.0. Connect your OneWallet
+                A Web3 game built for OneHack 2.0. Connect your OneWallet
                 to mint your Adventurer NFT and start exploring the dungeon!
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-2xl mx-auto mb-8">

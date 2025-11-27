@@ -1,4 +1,4 @@
-# 🎬 Demo Guide - Dungeon Flip Lite
+# 🎬 Demo Guide - Dungeon Flip
 
 Complete guide for demoing the project at OneHack 2.0.
 
@@ -32,7 +32,7 @@ npm run frontend:dev
 
 ### Opening (15 seconds)
 
-> "Hi! I'm presenting **Dungeon Flip Lite**, a Web3 roguelite game built on OneChain for the OneHack 2.0 hackathon.
+> "Hi! I'm presenting **Dungeon Flip**, a Web3 game built on OneChain for the OneHack 2.0 hackathon.
 >
 > This project demonstrates complete Web3 gaming integration: NFT minting, token rewards, and on-chain progress tracking—all using OneChain and OneWallet."
 
@@ -129,7 +129,7 @@ npm run frontend:dev
 
 ### Closing (15 seconds)
 
-> "To summarize: Dungeon Flip Lite is a complete Web3 game with NFTs, tokens, and on-chain stats—all built on OneChain with OneWallet integration.
+> "To summarize: Dungeon Flip is a complete Web3 game with NFTs, tokens, and on-chain stats—all built on OneChain with OneWallet integration.
 >
 > The code is modular, well-documented, and ready for expansion with features like PvP, equipment, and leaderboards.
 >
@@ -186,7 +186,7 @@ npm run frontend:dev
 
 Use if time is limited:
 
-1. **Show landing page** → "Web3 roguelite on OneChain"
+1. **Show landing page** → "Web3 game on OneChain"
 2. **Connect wallet** → "OneWallet integration"
 3. **Show already-minted NFT** → "ERC-721 with stats"
 4. **Play one card** → "Defeat monster"

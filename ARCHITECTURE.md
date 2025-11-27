@@ -1,4 +1,4 @@
-# 🏗️ Architecture Documentation - Dungeon Flip Lite
+# 🏗️ Architecture Documentation - Dungeon Flip 
 
 Technical overview of the project structure and design decisions.
 
@@ -16,7 +16,7 @@ Technical overview of the project structure and design decisions.
 
 ## Overview
 
-**Dungeon Flip Lite** is a Web3 roguelite game with a clear separation between:
+**Dungeon Flip** is a Web3 game with a clear separation between:
 - **On-chain logic** (Smart contracts on OneChain)
 - **Off-chain logic** (Frontend game mechanics)
 - **Hybrid rewards** (On-chain token distribution for achievements)
