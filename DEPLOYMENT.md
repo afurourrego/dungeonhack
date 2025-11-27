@@ -1,6 +1,6 @@
-# 🚀 Deployment Guide - Dungeon Flip Lite
+# 🚀 Deployment Guide - Dungeon Flip
 
-Complete guide for deploying Dungeon Flip Lite to OneChain.
+Complete guide for deploying Dungeon Flip to OneChain.
 
 ---
 
@@ -96,7 +96,7 @@ npm run deploy:onechain
 
 **Expected output**:
 ```
-🎮 Starting Dungeon Flip Lite deployment...
+🎮 Starting Dungeon Flip deployment...
 
 📍 Deploying contracts with account: 0x...
 💰 Account balance: X.XX ETH
@@ -433,7 +433,7 @@ If you encounter issues during deployment:
 
 ## 🎉 Deployment Complete!
 
-Congratulations! Your Dungeon Flip Lite game is now live on OneChain.
+Congratulations! Your Dungeon Flip game is now live on OneChain.
 
 **Next Steps**:
 1. Test thoroughly

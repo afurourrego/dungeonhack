@@ -1,12 +1,12 @@
-# 📊 Project Summary - Dungeon Flip Lite
+# 📊 Project Summary - Dungeon Flip
 
 Quick overview for judges, developers, and stakeholders.
 
 ---
 
-## 🎯 What is Dungeon Flip Lite?
+## 🎯 What is Dungeon Flip?
 
-A **Web3 roguelite card game** where players:
+A **Web3 card game** where players:
 - Connect **OneWallet**
 - Mint an **Adventurer NFT** (OneChain Move object)
 - Play infinite dungeon runs with **4 random cards per room**
@@ -26,7 +26,7 @@ A **Web3 roguelite card game** where players:
 - **Simple**: Click to flip cards, easy to understand
 - **Fast**: 2-3 minutes per room
 - **Engaging**: Risk/reward decisions (Continue or Exit)
-- **Roguelite**: Randomized encounters, permanent consequences
+- **Exploration**: Randomized encounters, permanent consequences
 - **Turn-based Combat**: Strategic battles with dice rolls
 
 ### 🔗 Blockchain Integration
@@ -271,7 +271,7 @@ npm run dev
 
 ## 🏁 Conclusion
 
-**Dungeon Flip Lite** is a complete, production-ready Web3 game that demonstrates:
+**Dungeon Flip** is a complete, production-ready Web3 game that demonstrates:
 
 ✅ **Full OneChain integration** (contracts + frontend)
 ✅ **OneWallet support** (connect, sign, track)
@@ -285,6 +285,6 @@ npm run dev
 
 ---
 
-**⚔️ Dungeon Flip Lite - Gaming on OneChain, simplified.**
+**⚔️ Dungeon Flip - Gaming on OneChain, simplified.**
 
 *Version 1.0.0 | November 2025 | MIT License*

@@ -1,4 +1,4 @@
-# ⚔️ Dungeon Flip Lite
+# ⚔️ Dungeon Flip
 
 A Web3 game built for **OneHack 2.0 Hackathon**, featuring NFT adventurers, on-chain rewards, and progress tracking on **OneChain**.
 

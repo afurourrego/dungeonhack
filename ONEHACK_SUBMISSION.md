@@ -1,4 +1,4 @@
-# 🏆 OneHack 2.0 Submission - Dungeon Flip Lite
+# 🏆 OneHack 2.0 Submission - Dungeon Flip
 
 Official submission document for the OneHack 2.0 hackathon.
 
@@ -6,13 +6,13 @@ Official submission document for the OneHack 2.0 hackathon.
 
 ## 📌 Project Information
 
-**Project Name**: Dungeon Flip Lite
+**Project Name**: Dungeon Flip
 
 **Category**: Web3 Gaming / DeFi + Gaming
 
 **Team Name**: [Your Team Name]
 
-**Tagline**: A Web3 roguelite mini-game with NFTs and on-chain rewards on OneChain
+**Tagline**: A Web3 game with NFTs and on-chain rewards on OneChain
 
 ---
 
@@ -381,7 +381,7 @@ MIT License - See LICENSE file
 
 ## 🚀 Future Vision
 
-Dungeon Flip Lite is more than a hackathon project—it's a foundation for a full-featured Web3 gaming platform on OneChain.
+Dungeon Flip is more than a hackathon project—it's a foundation for a full-featured Web3 gaming platform on OneChain.
 
 **Long-term goals**:
 1. Mobile app with zkLogin (iOS/Android)

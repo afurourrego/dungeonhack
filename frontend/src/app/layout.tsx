@@ -12,8 +12,8 @@ const pressStart = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-  title: "Dungeon Flip - Web3 Roguelite on OneChain",
-  description: "A mini roguelite game built for OneHack 2.0 hackathon featuring NFTs, tokens, and on-chain progress tracking on OneChain.",
+  title: "Dungeon Flip - Web3 game on OneChain",
+  description: "A game built for OneHack 2.0 hackathon featuring NFTs, tokens, and on-chain progress tracking on OneChain.",
 };
 
 export default function RootLayout({

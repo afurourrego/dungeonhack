@@ -1,7 +1,7 @@
 {
   "name": "dungeon-flip-lite",
   "version": "1.0.0",
-  "description": "Web3 Roguelite Game for OneHack 2.0 - OneChain Integration",
+  "description": "Web3 Game for OneHack 2.0 - OneChain Integration",
   "scripts": {
     "setup": "bash scripts/setup.sh",
     "compile": "hardhat compile",
@@ -25,7 +25,7 @@
     "onechain",
     "nft",
     "game",
-    "roguelite"
+    "Exploration"
   ],
   "author": "",
   "license": "MIT",
