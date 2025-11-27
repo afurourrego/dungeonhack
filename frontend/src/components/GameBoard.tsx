@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { useWallet } from "@/hooks/useWallet";
 import Card from "./Card";
@@ -59,6 +59,8 @@ export default function GameBoard() {
 
   const { refreshBalance, signAndExecuteTransaction } = useWallet();
   const [isProcessing, setIsProcessing] = useState(false);
+  const COMBAT_REVIEW_BUFFER_MS = 2000;
+  const combatResultHandledRef = useRef(false);
 
   // Ensure avatar resets to idle when no run is active
   useEffect(() => {
@@ -69,7 +71,19 @@ export default function GameBoard() {
 
   // Handle combat results
   useEffect(() => {
+    if (!combatState.combatResult) {
+      combatResultHandledRef.current = false;
+      return;
+    }
+
+    if (combatResultHandledRef.current) {
+      return;
+    }
+    combatResultHandledRef.current = true;
+
     if (combatState.combatResult) {
+      setIsProcessing(true);
+      setAwaitingDecision(true);
       const timer = setTimeout(() => {
         if (combatState.combatResult === "victory") {
           // Victory: Award gems and resolve monster card
@@ -79,20 +93,20 @@ export default function GameBoard() {
           // Resolve the monster card
           resolveCard(currentCardIndex, playerStats.hp, gemsEarned, true);
 
-          // Reset combat and allow player to continue
-          resetCombat();
-          setAvatarSrc("/avatars/adventurer-idle.png");
-
-          // Show decision after a brief moment
+          // Show decision after a brief moment (extra buffer so players can read the log)
           setTimeout(() => {
+            resetCombat();
+            setAvatarSrc("/avatars/adventurer-idle.png");
             setAwaitingDecision(true);
             setIsProcessing(false);
-          }, 1000);
+          }, 1000 + COMBAT_REVIEW_BUFFER_MS);
         } else {
           // Defeat: Trigger death sequence
-          resetCombat();
-          setAvatarSrc("/avatars/adventurer-idle.png");
-          handleDeath();
+          setTimeout(() => {
+            resetCombat();
+            setAvatarSrc("/avatars/adventurer-idle.png");
+            handleDeath();
+          }, COMBAT_REVIEW_BUFFER_MS);
         }
       }, 500); // Small delay after combat ends
 
@@ -144,6 +158,7 @@ export default function GameBoard() {
   const handleCardClick = async (index: number) => {
     if (currentDeck[index].revealed !== CardRevealState.HIDDEN) return;
     if (awaitingDecision) return;
+    if (combatState.combatResult) return;
     if (isProcessing) return;
 
     setIsProcessing(true);
@@ -191,7 +206,7 @@ export default function GameBoard() {
         }, 1500);
       }
 
-      setTimeout(() => setMessage(null), 3000);
+      setTimeout(() => setMessage(null), 4000);
     }, 500);
   };
 
@@ -246,7 +261,7 @@ export default function GameBoard() {
       setMessage(`Entering Room ${currentRoom + 1}...`);
       addLogEntry(`Survived Room ${currentRoom}! Entering Room ${currentRoom + 1}...`, "room");
 
-      setTimeout(() => setMessage(null), 2000);
+      setTimeout(() => setMessage(null), 4000);
     } catch (error: any) {
       console.error("Error advancing room:", error);
       setError(error.message || "Failed to advance room");
@@ -432,7 +447,9 @@ export default function GameBoard() {
                   disabled={
                     awaitingDecision ||
                     card.revealed !== CardRevealState.HIDDEN ||
-                    isProcessing
+                    isProcessing ||
+                    combatState.inCombat ||
+                    !!combatState.combatResult
                   }
                 />
               </div>

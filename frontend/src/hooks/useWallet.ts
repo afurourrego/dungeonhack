@@ -92,7 +92,7 @@ export const useWallet = () => {
     // Connection is handled by @mysten/dapp-kit ConnectButton
     // This function exists for backwards compatibility
     setMessage("Please use the Connect Wallet button");
-    setTimeout(() => setMessage(null), 3000);
+    setTimeout(() => setMessage(null), 4000);
   }, [setMessage]);
 
   // Disconnect wallet
@@ -100,7 +100,7 @@ export const useWallet = () => {
     disconnect();
     disconnectWallet();
     setMessage("Wallet disconnected");
-    setTimeout(() => setMessage(null), 3000);
+    setTimeout(() => setMessage(null), 4000);
   }, [disconnect, disconnectWallet, setMessage]);
 
   // Refresh NFT status
@@ -147,7 +147,7 @@ export const useWallet = () => {
       );
       setHasNFT(true, newTokenId);
       setMessage("Aventurer minted successfully!");
-      setTimeout(() => setMessage(null), 3000);
+      setTimeout(() => setMessage(null), 4000);
 
       // Wait a bit for the blockchain to process the transaction
       await new Promise(resolve => setTimeout(resolve, 2000));
