@@ -1,11 +1,11 @@
 module dungeon_flip::aventurer_nft {
-    use sui::object::{Self, UID};
-    use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
-    use sui::event;
-    use sui::table::{Self, Table};
+    use one::object::{Self, UID};
+    use one::transfer;
+    use one::tx_context::{Self, TxContext};
+    use one::event;
+    use one::table::{Self, Table};
     use std::string::{Self, String};
-    use sui::random::{Self, Random};
+    use one::random::{Self, Random};
 
     /// Shared registry to track which addresses have minted
     public struct MintRegistry has key {

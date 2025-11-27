@@ -6,7 +6,7 @@ import {
   getCurrentWeek,
   formatAddress,
   LeaderboardEntry,
-} from "@/lib/sui-blockchain";
+} from "@/lib/onechain-blockchain";
 
 interface WeekWinner {
   weekNumber: number;

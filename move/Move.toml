@@ -4,7 +4,9 @@ version = "1.0.0"
 edition = "2024.beta"
 
 [dependencies]
-Sui = { git = "https://github.com/MystenLabs/sui.git", subdir = "crates/sui-framework/packages/sui-framework", rev = "framework/testnet" }
+# OneChain reuses the Sui framework under the one-framework package.
+# Point to the official OneChain repo and branch.
+One = { git = "https://github.com/one-chain-labs/onechain.git", subdir = "crates/sui-framework/packages/one-framework", rev = "main" }
 
 [addresses]
 dungeon_flip = "0x0"

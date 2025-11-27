@@ -2,7 +2,7 @@
 
 import { ConnectButton } from "@mysten/dapp-kit";
 import { useWallet } from "@/hooks/useWallet";
-import { formatAddress } from "@/lib/sui-blockchain";
+import { formatAddress } from "@/lib/onechain-blockchain";
 
 export default function WalletConnect() {
   const { isConnected, address, disconnect } = useWallet();

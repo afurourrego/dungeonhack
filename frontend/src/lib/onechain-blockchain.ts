@@ -1,4 +1,4 @@
-import { SuiClient, getFullnodeUrl } from "@mysten/sui/client";
+import { SuiClient } from "@mysten/sui/client";
 import { Transaction } from "@mysten/sui/transactions";
 import { bcs } from "@mysten/bcs";
 import {
@@ -9,10 +9,34 @@ import {
   FEE_CONFIG_ID,
   FEE_DISTRIBUTOR_ID,
   REWARDS_POOL_ID,
-  ENTRY_FEE_MIST,
+  ENTRY_FEE_OCT_BASE,
+  ONECHAIN_NETWORK_CONFIG,
 } from "./constants";
 
-// Type definitions for Sui
+// Hard-block known Sui package IDs to avoid signing against the wrong chain.
+const KNOWN_OLD_SUI_PACKAGE_IDS = ["0x6e18ac0bcb9a33b451849f5658fa6a9c6a6393bd96a46a0c59af14c7e0c96307"];
+
+const assertOneChainConfig = () => {
+  if (!PACKAGE_ID || KNOWN_OLD_SUI_PACKAGE_IDS.includes(PACKAGE_ID.toLowerCase())) {
+    throw new Error(
+      "Set NEXT_PUBLIC_PACKAGE_ID to your OneChain deployment (not the old Sui package)."
+    );
+  }
+
+  if (!MINT_REGISTRY_ID) {
+    throw new Error("Set NEXT_PUBLIC_MINT_REGISTRY_ID to the OneChain MintRegistry object.");
+  }
+};
+
+const assertRunConfig = () => {
+  if (!FEE_CONFIG_ID || !FEE_DISTRIBUTOR_ID || !REWARDS_POOL_ID || !PROGRESS_REGISTRY_ID) {
+    throw new Error(
+      "Set NEXT_PUBLIC_FEE_CONFIG_ID, NEXT_PUBLIC_FEE_DISTRIBUTOR_ID, NEXT_PUBLIC_REWARDS_POOL_ID, and NEXT_PUBLIC_PROGRESS_REGISTRY_ID from your OneChain deployment."
+    );
+  }
+};
+
+// Type definitions for OneChain
 export interface WalletConnection {
   address: string;
   network: string;
@@ -45,11 +69,10 @@ export interface LeaderboardEntry {
 }
 
 /**
- * Get Sui client for the configured network
+ * Get OneChain client for the configured network
  */
-export const getSuiClient = (): SuiClient => {
-  // For now use testnet, will be configured for OneChain later
-  return new SuiClient({ url: getFullnodeUrl("testnet") });
+export const getOneChainClient = (): SuiClient => {
+  return new SuiClient({ url: ONECHAIN_NETWORK_CONFIG.rpcUrl });
 };
 
 /**
@@ -62,9 +85,10 @@ export const mintAventurer = async (
   address: string
 ): Promise<string> => {
   try {
+    assertOneChainConfig();
     const tx = new Transaction();
 
-    // The Random object is a special shared object on Sui at address 0x8
+    // The Random object is a special shared object on OneChain at address 0x8
     tx.moveCall({
       target: `${PACKAGE_ID}::aventurer_nft::mint_basic_aventurer`,
       arguments: [
@@ -103,7 +127,7 @@ export const mintAventurer = async (
 
       // Query for all NFTs owned by this address
       console.log("Querying for all Aventurer NFTs...");
-      const client = getSuiClient();
+      const client = getOneChainClient();
       const objects = await client.getOwnedObjects({
         owner: address,
         filter: {
@@ -152,7 +176,7 @@ export const hasAventurer = async (address: string): Promise<boolean> => {
       return false;
     }
 
-    const client = getSuiClient();
+    const client = getOneChainClient();
 
     const objects = await client.getOwnedObjects({
       owner: address,
@@ -180,7 +204,7 @@ export const getAventurerNFT = async (
       return null;
     }
 
-    const client = getSuiClient();
+    const client = getOneChainClient();
 
     const objects = await client.getOwnedObjects({
       owner: address,
@@ -257,7 +281,7 @@ export const getPlayerProgress = async (
   address: string
 ): Promise<PlayerProgress> => {
   try {
-    const client = getSuiClient();
+    const client = getOneChainClient();
 
     // Call the view function
     const tx = new Transaction();
@@ -323,7 +347,7 @@ export const getGlobalLeaderboard = async (): Promise<LeaderboardEntry[]> => {
   if (!PACKAGE_ID || !PROGRESS_REGISTRY_ID) return [];
 
   try {
-    const client = getSuiClient();
+    const client = getOneChainClient();
     const eventType = `${PACKAGE_ID}::dungeon_progress::RunCompleted`;
 
     // Track each wallet's best successful room count.
@@ -414,7 +438,7 @@ export const getTotalRuns = async (): Promise<number> => {
   if (!PACKAGE_ID) return 0;
 
   try {
-    const client = getSuiClient();
+    const client = getOneChainClient();
     const eventType = `${PACKAGE_ID}::dungeon_progress::RunCompleted`;
 
     let cursor: any = null;
@@ -455,10 +479,12 @@ export const startDungeonRun = async (
   initialATK: number
 ): Promise<string> => {
   try {
+    assertOneChainConfig();
+    assertRunConfig();
     const tx = new Transaction();
 
-    // Split SUI coins to get exact entry fee amount
-    const [coin] = tx.splitCoins(tx.gas, [ENTRY_FEE_MIST]);
+    // Split OCT coins to get exact entry fee amount
+    const [coin] = tx.splitCoins(tx.gas, [ENTRY_FEE_OCT_BASE]);
 
     // ✅ FIX: Call start_run with ALL required arguments
     tx.moveCall({
@@ -489,7 +515,7 @@ export const startDungeonRun = async (
 
     // ✅ FIX: dapp-kit returns minimal response, we need to fetch full transaction details
     // With OneWallet, transaction may take time to propagate, so retry with delays
-    const client = getSuiClient();
+    const client = getOneChainClient();
     let txDetails = null;
     let retries = 0;
     const maxRetries = 5;
@@ -562,6 +588,7 @@ export const advanceToNextRoom = async (
   newHP: number
 ): Promise<void> => {
   try {
+    assertOneChainConfig();
     const tx = new Transaction();
 
     tx.moveCall({
@@ -598,6 +625,8 @@ export const exitDungeonRun = async (
   gemsCollected: number
 ): Promise<void> => {
   try {
+    assertOneChainConfig();
+    assertRunConfig();
     const tx = new Transaction();
 
     // ✅ FIX: Pass ActiveRun object directly to record_run
@@ -643,7 +672,7 @@ export const getCurrentWeek = async (): Promise<number> => {
   if (!PACKAGE_ID || !PROGRESS_REGISTRY_ID) return 1;
 
   try {
-    const client = getSuiClient();
+    const client = getOneChainClient();
 
     const registryObject = await client.getObject({
       id: PROGRESS_REGISTRY_ID,
@@ -673,7 +702,7 @@ export const getWeeklyLeaderboard = async (weekNumber?: number): Promise<Leaderb
   if (!PACKAGE_ID || !PROGRESS_REGISTRY_ID) return [];
 
   try {
-    const client = getSuiClient();
+    const client = getOneChainClient();
 
     // Get current week if not specified
     const targetWeek = weekNumber || await getCurrentWeek();
@@ -792,7 +821,7 @@ export const getPlayerWeeklyScore = async (address: string): Promise<{ score: nu
   }
 
   try {
-    const client = getSuiClient();
+    const client = getOneChainClient();
     const currentWeek = await getCurrentWeek();
 
     // Get the ProgressRegistry to find week boundaries
@@ -881,10 +910,10 @@ export const getPlayerWeeklyScore = async (address: string): Promise<{ score: nu
  * Get rewards pool information
  */
 export interface RewardsPoolInfo {
-  poolBalance: number; // Balance in SUI (not MIST)
+  poolBalance: number; // Balance in OCT (base units converted)
   currentWeek: number;
   nextDistributionTime: number; // Timestamp in milliseconds
-  totalDistributed: number; // Total in SUI
+  totalDistributed: number; // Total in OCT
   timeUntilDistribution: number; // Milliseconds remaining
 }
 
@@ -892,7 +921,7 @@ export const getRewardsPoolInfo = async (): Promise<RewardsPoolInfo | null> => {
   if (!PACKAGE_ID || !REWARDS_POOL_ID) return null;
 
   try {
-    const client = getSuiClient();
+    const client = getOneChainClient();
 
     // Get the RewardsPool object
     const poolObject = await client.getObject({
@@ -909,10 +938,10 @@ export const getRewardsPoolInfo = async (): Promise<RewardsPoolInfo | null> => {
 
     const fields = content.fields as any;
 
-    // Extract pool balance from Balance<SUI> struct
-    // Balance<SUI> has a 'value' field that contains the actual balance in MIST
-    const poolBalanceMist = Number(fields.pool_balance?.value || fields.pool_balance) || 0;
-    const poolBalanceSui = poolBalanceMist / 1_000_000_000; // Convert MIST to SUI
+    // Extract pool balance from Balance<OCT> struct
+    // Balance<OCT> has a 'value' field that contains the actual balance in base units
+    const poolBalanceBase = Number(fields.pool_balance?.value || fields.pool_balance) || 0;
+    const poolBalanceOct = poolBalanceBase / 1_000_000_000; // Convert base units to OCT
 
     // Calculate current week based on Season 1 start: Friday, November 22, 2025 at 4:20 PM UTC
     const SEASON_START_TIME = 1763827200000; // November 22, 2025, 4:20 PM UTC
@@ -927,8 +956,8 @@ export const getRewardsPoolInfo = async (): Promise<RewardsPoolInfo | null> => {
     }
 
     const nextDistributionTime = Number(fields.next_distribution_time) || 0;
-    const totalDistributedMist = Number(fields.total_distributed) || 0;
-    const totalDistributedSui = totalDistributedMist / 1_000_000_000;
+    const totalDistributedBase = Number(fields.total_distributed) || 0;
+    const totalDistributedOct = totalDistributedBase / 1_000_000_000;
 
     // Calculate time until distribution
     const timeUntilDistribution = nextDistributionTime > now
@@ -936,10 +965,10 @@ export const getRewardsPoolInfo = async (): Promise<RewardsPoolInfo | null> => {
       : 0;
 
     return {
-      poolBalance: poolBalanceSui,
+      poolBalance: poolBalanceOct,
       currentWeek,
       nextDistributionTime,
-      totalDistributed: totalDistributedSui,
+      totalDistributed: totalDistributedOct,
       timeUntilDistribution,
     };
   } catch (error) {

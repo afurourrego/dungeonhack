@@ -1,11 +1,11 @@
 module dungeon_flip::dungeon_progress {
-    use sui::object::{Self, UID};
-    use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
-    use sui::table::{Self, Table};
-    use sui::event;
-    use sui::clock::{Self, Clock};
-    use sui::vec_map::{Self, VecMap};
+    use one::object::{Self, UID};
+    use one::transfer;
+    use one::tx_context::{Self, TxContext};
+    use one::table::{Self, Table};
+    use one::event;
+    use one::clock::{Self, Clock};
+    use one::vec_map::{Self, VecMap};
     use dungeon_flip::active_run::{Self, ActiveRun};
 
     /// Week duration in milliseconds (7 days)

@@ -1,13 +1,13 @@
 module dungeon_flip::active_run {
-    use sui::coin::{Self, Coin};
-    use sui::clock::{Self, Clock};
-    use sui::event;
-    use sui::object;
-    use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
+    use one::coin::{Self, Coin};
+    use one::clock::{Self, Clock};
+    use one::event;
+    use one::object;
+    use one::transfer;
+    use one::tx_context::{Self, TxContext};
     use dungeon_flip::fee_distributor::{Self, FeeDistributor};
     use dungeon_flip::rewards_pool::RewardsPool;
-    use sui::sui::SUI;
+    use one::oct::OCT;
 
     // Errors
     const EInsufficientPayment: u64 = 0;
@@ -15,7 +15,7 @@ module dungeon_flip::active_run {
     const EInvalidStats: u64 = 2;
     const EInvalidHP: u64 = 3;
 
-    // Entry fee: 0.01 SUI (10_000_000 MIST - SUI has 9 decimals)
+    // Entry fee: 0.01 OCT (10_000_000 base units - OCT has 9 decimals)
     const ENTRY_FEE: u64 = 10_000_000;
 
     /// Admin capability for managing entry fees
@@ -80,12 +80,12 @@ module dungeon_flip::active_run {
         transfer::transfer(admin_cap, tx_context::sender(ctx));
     }
 
-    /// Start a new dungeon run by paying entry fee in SUI
+    /// Start a new dungeon run by paying entry fee in OCT
     public entry fun start_run(
         fee_config: &FeeConfig,
         fee_distributor: &mut FeeDistributor,
         rewards_pool: &mut RewardsPool,
-        payment: Coin<SUI>,
+        payment: Coin<OCT>,
         clock: &Clock,
         initial_hp: u64,
         initial_atk: u64,

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getTotalRuns } from "@/lib/sui-blockchain";
+import { getTotalRuns } from "@/lib/onechain-blockchain";
 
 export default function TotalRunsBadge() {
   const [totalRuns, setTotalRuns] = useState<number | null>(null);
