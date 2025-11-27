@@ -303,6 +303,7 @@ export default function GameBoard() {
         setActiveRunId(null);
         setAwaitingDecision(false);
         setAvatarSrc("/avatars/adventurer-idle.png");
+        setIsProcessing(false);
       }, 2000);
     } catch (error: any) {
       console.error("Error exiting dungeon:", error);
@@ -348,8 +349,14 @@ export default function GameBoard() {
           </p>
         )}
 
-        <button onClick={resetGame} className="btn-primary">
-          New Run (Pay {ENTRY_FEE_OCT} OCT)
+        <button
+          onClick={() => {
+            setIsProcessing(false);
+            resetGame();
+          }}
+          className="btn-primary"
+        >
+          New Run
         </button>
 
         <div className="mt-6">
