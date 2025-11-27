@@ -7,9 +7,9 @@ This guide explains how to test **Dungeon Flip Lite** locally without deploying 
 ## Why Development Mode?
 
 **Problem**: You want to test the game mechanics, UI, and user flow, but:
-- ❌ You don't have Sui CLI installed yet
+- ❌ You don't have OneChain CLI installed yet
 - ❌ Contracts aren't deployed to testnet
-- ❌ You don't have testnet SUI tokens
+- ❌ You don't have testnet OCT tokens
 - ❌ You just want to see how the game works
 
 **Solution**: Enable **Dev Mode** to bypass blockchain requirements and test the full game loop.
@@ -57,7 +57,7 @@ npm run dev
 ## What Works in Dev Mode
 
 ### ✅ Fully Functional
-- **Connect Wallet**: Connect Sui Wallet or OneWallet
+- **Connect Wallet**: Connect OneChain Wallet or OneWallet
 - **Skip NFT Minting**: Click "Skip & Play (Demo Mode)" button
 - **Play Full Game**:
   - Start dungeon run
@@ -81,7 +81,7 @@ npm run dev
 
 ```
 1. Open http://localhost:3000
-2. Click "Connect Wallet" → Connect Sui Wallet
+2. Click "Connect Wallet" → Connect OneChain Wallet
 3. See "Mint Adventurer NFT" screen
 4. Click "Skip & Play (Demo Mode)" button 🚧
 5. Click "Enter the Dungeon"
@@ -113,8 +113,8 @@ When you're ready to deploy contracts and use real blockchain:
 
 ```bash
 cd move
-sui move build
-sui client publish --gas-budget 100000000
+onechain move build
+onechain client publish --gas-budget 100000000
 ```
 
 ### 2. Update `.env.local`
@@ -194,7 +194,7 @@ Use dev mode to test these scenarios:
 
 Once you've tested in dev mode:
 
-1. **Install Sui CLI** - [Installation Guide](https://docs.sui.io/guides/developer/getting-started/sui-install)
+1. **Install OneChain CLI** - [Installation Guide](https://docs.sui.io/guides/developer/getting-started/sui-install)
 2. **Deploy Contracts** - Follow [README.md](README.md) deployment instructions
 3. **Configure Production** - Update `.env.local` with contract IDs
 4. **Test on Testnet** - Full blockchain integration testing

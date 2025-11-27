@@ -1,42 +1,50 @@
 # ⚔️ Dungeon Flip Lite
 
-A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT adventurers, on-chain rewards, and progress tracking on **OneChain** (OCT-Based).
+A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT adventurers, on-chain rewards, and progress tracking on **OneChain**.
 
 ![Built for OneHack 2.0](https://img.shields.io/badge/Built%20for-OneHack%202.0-blue)
-![OneChain](https://img.shields.io/badge/Blockchain-OneChain%20(Sui)-purple)
+![OneChain](https://img.shields.io/badge/Blockchain-OneChain-purple)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## 🎮 Game Overview
 
 **Dungeon Flip Lite** is a simple yet engaging roguelite card game where players:
 
-1. Connect their **OneWallet / Sui-compatible wallet** on OneChain
+1. Connect their **OneWallet** on OneChain
 2. Mint a free **Aventurer NFT** (OneChain Move object)
-3. Pay **0.05 OCT** entry fee per dungeon run
-4. Play dungeon runs with 4 random cards
-5. Face **Monsters**, collect **Treasures**, and avoid **Traps**
+3. Pay **0.01 OCT** entry fee per dungeon run
+4. Play dungeon runs with 4 random cards per room
+5. Face **Monsters**, collect **Treasures**, avoid **Traps**, and use **Potions**
 6. Compete for **weekly OCT prizes** distributed to top 10 players
 7. Track progress on-chain via shared objects
 
 ### Game Mechanics
 
-- **Cards per Run**: 4 cards
+- **Infinite Dungeon**: Continue through rooms or exit with your rewards
+- **Cards per Room**: 4 cards
 - **Card Types**:
-  - 🦹 **Monster** (60%): Block attacks with DEF, take damage = Monster ATK - Player DEF
-  - 💎 **Treasure** (30%): Collect gold (tracked off-chain in frontend)
+  - 🦹 **Monster** (50%): Enter turn-based combat with random dice rolls
+  - 💎 **Treasure** (30%): Collect gems (leaderboard score)
   - 🕸️ **Trap** (10%): Lose 1 HP
+  - 🧪 **Potion** (10%): Restore HP up to your max HP
 
 - **Basic Adventurer Stats**:
-  - ATK: 1
-  - DEF: 1
-  - HP: 4
+  - ATK: 1-2
+  - DEF: 1-2
+  - HP: 4-6
 
-- **Win Condition**: Survive all 4 cards with HP > 0
+- **Combat System**:
+  - Turn-based battles with monsters
+  - 80% hit chance for player attacks
+  - Monster damage: ATK roll - Player DEF (minimum 0)
+  - Defense can completely block attacks if DEF >= Monster ATK
+
+- **Win Condition**: Exit the dungeon voluntarily with gems collected
 - **Lose Condition**: HP reaches 0
 
 ### 💰 Economy (OCT-Based)
 
-- **Entry Fee**: 0.05 OCT per run
+- **Entry Fee**: 0.01 OCT per run
 - **Automatic Distribution**:
   - 70% → Weekly Rewards Pool (top 10 players)
   - 20% → Dev Treasury
@@ -44,30 +52,29 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 - **Weekly Prizes**: Every Friday 4:20 UTC
   - 1st place: 30% of pool
   - 2nd-10th: Decreasing percentages
-  - See [SUI_ECONOMY.md](SUI_ECONOMY.md) for full details
+  - See [ONECHAIN_ECONOMY.md](ONECHAIN_ECONOMY.md) for full details
 
 ## 🏗️ Project Structure
 
 ```
 DungeonFlip/
-├── move/                          # Sui Move smart contracts
+├── move/                          # OneChain Move smart contracts
 │   ├── Move.toml                  # Package configuration
 │   └── sources/
 │       ├── aventurer_nft.move     # NFT (Owned Object)
 │       ├── active_run.move        # Dungeon run management + entry fees
-│       ├── fee_distributor.move   # SUI distribution logic
+│       ├── fee_distributor.move   # OCT distribution logic
 │       ├── rewards_pool.move      # Weekly prize pool
 │       └── dungeon_progress.move  # Progress tracking (Shared Object)
 ├── frontend/                      # Next.js frontend
 │   ├── src/
 │   │   ├── app/                   # Next.js 14 App Router
 │   │   ├── components/            # React components
-│   │   ├── lib/                   # Utilities & Sui blockchain logic
-│   │   ├── hooks/                 # React hooks (Sui dapp-kit)
+│   │   ├── lib/                   # Utilities & OneChain blockchain logic
+│   │   ├── hooks/                 # React hooks (wallet integration)
 │   │   ├── store/                 # Zustand state management
 │   │   └── styles/                # Global styles
 │   └── package.json
-├── MIGRATION_SUMMARY.md           # EVM → Sui migration details
 ├── ONEHACK_SUBMISSION.md          # Hackathon submission document
 └── README.md                      # This file
 ```
@@ -94,10 +101,10 @@ See **[DEVELOPMENT_MODE.md](DEVELOPMENT_MODE.md)** for instructions on enabling 
 ### Prerequisites
 
 - **Node.js** v18+ and **npm**
-- **Sui CLI** ([installation guide](https://docs.sui.io/guides/developer/getting-started/sui-install))
-- **OneWallet** or **OneWallet / Sui-compatible wallet** browser extension
-- **OneChain** testnet/mainnet access (OCT-Based)
-- SUI tokens for gas fees
+- **OneChain CLI** (based on Move)
+- **OneWallet** browser extension
+- **OneChain** testnet/mainnet access
+- OCT tokens for gas fees
 
 ### 1. Install Dependencies
 
@@ -115,15 +122,18 @@ cd ..
 cd move
 
 # Build contracts
-one move build
+onechain move build
 
 # Publish to OneChain testnet
-one client publish --gas-budget 100000000
+onechain client publish --gas-budget 100000000
 
 # Save the output:
 # - Package ID
-# - TreasuryCap Object ID
+# - MintRegistry Object ID
 # - ProgressRegistry Object ID
+# - FeeConfig Object ID
+# - FeeDistributor Object ID
+# - RewardsPool Object ID
 ```
 
 ### 3. Configure Environment
@@ -132,13 +142,13 @@ Create `frontend/.env.local`:
 
 ```env
 NEXT_PUBLIC_ONECHAIN_NETWORK=testnet
-NEXT_PUBLIC_ONECHAIN_RPC_URL=https://rpc-testnet.onelabs.cc:443
-NEXT_PUBLIC_PACKAGE_ID=0x...                 # from `one client publish`
+NEXT_PUBLIC_ONECHAIN_RPC_URL=https://rpc-testnet.onechain.network
+NEXT_PUBLIC_PACKAGE_ID=0x...                 # from onechain client publish
 NEXT_PUBLIC_MINT_REGISTRY_ID=0x...           # MintRegistry shared object
-NEXT_PUBLIC_PROGRESS_REGISTRY_ID=0x...
-NEXT_PUBLIC_FEE_CONFIG_ID=0x...
-NEXT_PUBLIC_FEE_DISTRIBUTOR_ID=0x...
-NEXT_PUBLIC_REWARDS_POOL_ID=0x...
+NEXT_PUBLIC_PROGRESS_REGISTRY_ID=0x...       # ProgressRegistry shared object
+NEXT_PUBLIC_FEE_CONFIG_ID=0x...              # FeeConfig shared object
+NEXT_PUBLIC_FEE_DISTRIBUTOR_ID=0x...         # FeeDistributor shared object
+NEXT_PUBLIC_REWARDS_POOL_ID=0x...            # RewardsPool shared object
 ```
 
 ### 4. Run Frontend
@@ -153,24 +163,24 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### 5. Connect Wallet & Play
 
 1. Click **"Connect Wallet"**
-2. Select **OneWallet** or **OneWallet / Sui-compatible wallet**
+2. Select **OneWallet**
 3. Click **"Mint Adventurer NFT"** (free, requires gas)
-4. Click **"Enter the Dungeon"**
+4. Click **"Enter the Dungeon"** and pay 0.01 OCT
 5. Play and earn rewards!
 
 ## 🛠️ Technology Stack
 
 ### Smart Contracts
-- **Language**: Move (Sui Framework)
-- **Network**: OneChain (OCT-Based)
-- **Tools**: Sui CLI
+- **Language**: Move (OneChain Framework)
+- **Network**: OneChain
+- **Tools**: OneChain CLI
 
 ### Frontend
 - **Framework**: Next.js 14 (React, App Router)
 - **Language**: TypeScript
 - **Styling**: TailwindCSS
 - **State**: Zustand
-- **Web3**: @mysten/sui, @mysten/dapp-kit
+- **Web3**: OneChain SDK, @mysten/dapp-kit (OneChain is based on Move)
 - **Query**: @tanstack/react-query
 
 ## 📜 Smart Contract Architecture
@@ -179,49 +189,51 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Type**: Owned Object (NFT)
 - **Functions**:
   - `mint_basic_aventurer()` - Mint free Adventurer NFT
-- **Stats**: ATK=1, DEF=1, HP=4
+- **Stats**: ATK=1, DEF=0, HP=4
 - **Events**: `AventurerMinted`
 
 ### 2. active_run.move + fee_distributor.move + rewards_pool.move
-- **Entry Fee**: 0.05 OCT per run
+- **Entry Fee**: 0.01 OCT per run
 - **Auto-Distribution**: 70% pool / 20% dev / 10% marketing
 - **Weekly Prizes**: Automatic distribution to top 10 players
-- See [SUI_ECONOMY.md](SUI_ECONOMY.md) for complete documentation
+- See [ONECHAIN_ECONOMY.md](ONECHAIN_ECONOMY.md) for complete documentation
 
 ### 3. dungeon_progress.move
 - **Type**: Shared Object (ProgressRegistry)
 - **Functions**:
-  - `record_monster_defeated()` - Increment monsters defeated
-  - `record_run()` - Record completed run (success/fail)
+  - `record_run()` - Record completed run with gems and rooms reached
   - `get_progress()` - Query player stats
-- **Events**: `MonsterDefeated`, `RunCompleted`
+  - `advance_week()` - Advance to next season week
+- **Events**: `RunCompleted`, `WeekAdvanced`
 
 ## 🎯 Key Features
 
-### On-Chain (Sui)
+### On-Chain (OneChain)
 - ✅ NFT ownership verification
 - ✅ OCT-Based reward economy
 - ✅ Automatic fee distribution
 - ✅ Weekly prize pool
 - ✅ Progress tracking in shared object
 - ✅ Event emission for indexing
+- ✅ Random NFT stats on mint
 
 ### Off-Chain (Frontend)
 - ✅ Game logic (instant, free)
 - ✅ Card generation
-- ✅ Combat resolution (DEF-based damage calculation)
-- ✅ Gold and monsters defeated tracking
+- ✅ Turn-based combat with dice rolls
+- ✅ DEF-based damage calculation
+- ✅ Gems and rooms tracking
 - ✅ Visual feedback
 
 ### Hybrid Model Benefits
 - ⚡ Fast gameplay (no waiting for blocks)
-- 💰 Low gas costs (only rewards & progress)
+- 💰 Low gas costs (only entry fee & progress)
 - 🔐 Verifiable ownership & rewards
 - 📈 Scalable architecture
 
 ## 📚 Documentation
 
-- **[SUI_ECONOMY.md](SUI_ECONOMY.md)** - Complete SUI economy guide
+- **[ONECHAIN_ECONOMY.md](ONECHAIN_ECONOMY.md)** - Complete OCT economy guide
 - **[ONEHACK_SUBMISSION.md](ONEHACK_SUBMISSION.md)** - Hackathon submission document
 - **[SECURITY_AUDIT.md](SECURITY_AUDIT.md)** - Security analysis and vulnerabilities
 - **[DEVELOPMENT_MODE.md](DEVELOPMENT_MODE.md)** - Test without blockchain
@@ -229,22 +241,21 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## 🔗 Useful Links
 
-### Sui Resources
-- [Sui Documentation](https://docs.sui.io/)
-- [Sui Move by Example](https://examples.sui.io/)
-- [Sui TypeScript SDK](https://sdk.mystenlabs.com/typescript)
-- [dApp Kit](https://sdk.mystenlabs.com/dapp-kit)
-
-### OneChain
+### OneChain Resources
+- [OneChain Documentation](https://docs.onechain.network/)
 - [OneHack 2.0 Website](https://onehackathon.com/)
-- [OneChain Documentation](https://docs.onechain.com/)
+- [OneWallet Documentation](https://onewallet.docs/)
+
+### Move Resources
+- [Move Language](https://move-language.github.io/)
+- [Move by Example](https://examples.move-language.org/)
 
 ## 🧪 Testing
 
 ```bash
 # Test Move contracts
 cd move
-sui move test
+onechain move test
 
 # Run frontend (dev mode)
 cd frontend
@@ -256,15 +267,15 @@ npm run build
 
 ## 🚀 Deployment
 
-### Deploy to Sui Mainnet/OneChain
+### Deploy to OneChain Mainnet
 
 ```bash
 # Switch to mainnet
-sui client switch --env mainnet
+onechain client switch --env mainnet
 
 # Publish contracts
 cd move
-sui client publish --gas-budget 100000000
+onechain client publish --gas-budget 100000000
 ```
 
 ### Deploy Frontend (Vercel)
@@ -287,8 +298,7 @@ Built for OneHack 2.0 Hackathon
 ## 🙏 Acknowledgments
 
 - OneHack 2.0 Hackathon organizers
-- OneChain & Sui Foundation
-- Mysten Labs
+- OneChain Foundation
 - OneWallet team
 - Next.js, TailwindCSS, React Query communities
 
@@ -298,4 +308,4 @@ Built for OneHack 2.0 Hackathon
 
 **Version**: 1.0.0
 
-**Last Updated**: 2025-11-21
+**Last Updated**: 2025-11-27
