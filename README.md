@@ -1,6 +1,6 @@
 # ⚔️ Dungeon Flip Lite
 
-A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT adventurers, on-chain rewards, and progress tracking on **OneChain** (Sui-based).
+A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT adventurers, on-chain rewards, and progress tracking on **OneChain** (OCT-Based).
 
 ![Built for OneHack 2.0](https://img.shields.io/badge/Built%20for-OneHack%202.0-blue)
 ![OneChain](https://img.shields.io/badge/Blockchain-OneChain%20(Sui)-purple)
@@ -10,12 +10,12 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 
 **Dungeon Flip Lite** is a simple yet engaging roguelite card game where players:
 
-1. Connect their **Sui Wallet** (compatible with OneChain)
-2. Mint a free **Aventurer NFT** (Sui Object)
-3. Pay **0.05 SUI** entry fee per dungeon run
+1. Connect their **OneWallet / Sui-compatible wallet** on OneChain
+2. Mint a free **Aventurer NFT** (OneChain Move object)
+3. Pay **0.05 OCT** entry fee per dungeon run
 4. Play dungeon runs with 4 random cards
 5. Face **Monsters**, collect **Treasures**, and avoid **Traps**
-6. Compete for **weekly SUI prizes** distributed to top 10 players
+6. Compete for **weekly OCT prizes** distributed to top 10 players
 7. Track progress on-chain via shared objects
 
 ### Game Mechanics
@@ -34,9 +34,9 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 - **Win Condition**: Survive all 4 cards with HP > 0
 - **Lose Condition**: HP reaches 0
 
-### 💰 Economy (SUI-Based)
+### 💰 Economy (OCT-Based)
 
-- **Entry Fee**: 0.05 SUI per run
+- **Entry Fee**: 0.05 OCT per run
 - **Automatic Distribution**:
   - 70% → Weekly Rewards Pool (top 10 players)
   - 20% → Dev Treasury
@@ -95,8 +95,8 @@ See **[DEVELOPMENT_MODE.md](DEVELOPMENT_MODE.md)** for instructions on enabling 
 
 - **Node.js** v18+ and **npm**
 - **Sui CLI** ([installation guide](https://docs.sui.io/guides/developer/getting-started/sui-install))
-- **OneWallet** or **Sui Wallet** browser extension
-- **OneChain** testnet/mainnet access (Sui-based)
+- **OneWallet** or **OneWallet / Sui-compatible wallet** browser extension
+- **OneChain** testnet/mainnet access (OCT-Based)
 - SUI tokens for gas fees
 
 ### 1. Install Dependencies
@@ -115,10 +115,10 @@ cd ..
 cd move
 
 # Build contracts
-sui move build
+one move build
 
-# Publish to Sui testnet (or OneChain when available)
-sui client publish --gas-budget 100000000
+# Publish to OneChain testnet
+one client publish --gas-budget 100000000
 
 # Save the output:
 # - Package ID
@@ -131,14 +131,14 @@ sui client publish --gas-budget 100000000
 Create `frontend/.env.local`:
 
 ```env
-NEXT_PUBLIC_SUI_NETWORK=testnet
-NEXT_PUBLIC_PACKAGE_ID=0x...
-NEXT_PUBLIC_TREASURY_CAP_ID=0x...
+NEXT_PUBLIC_ONECHAIN_NETWORK=testnet
+NEXT_PUBLIC_ONECHAIN_RPC_URL=https://rpc-testnet.onelabs.cc:443
+NEXT_PUBLIC_PACKAGE_ID=0x...                 # from `one client publish`
+NEXT_PUBLIC_MINT_REGISTRY_ID=0x...           # MintRegistry shared object
 NEXT_PUBLIC_PROGRESS_REGISTRY_ID=0x...
-
-# When OneChain is available:
-# NEXT_PUBLIC_SUI_NETWORK=onechain
-# NEXT_PUBLIC_SUI_RPC_URL=https://rpc.onechain.network
+NEXT_PUBLIC_FEE_CONFIG_ID=0x...
+NEXT_PUBLIC_FEE_DISTRIBUTOR_ID=0x...
+NEXT_PUBLIC_REWARDS_POOL_ID=0x...
 ```
 
 ### 4. Run Frontend
@@ -153,7 +153,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ### 5. Connect Wallet & Play
 
 1. Click **"Connect Wallet"**
-2. Select **OneWallet** or **Sui Wallet**
+2. Select **OneWallet** or **OneWallet / Sui-compatible wallet**
 3. Click **"Mint Adventurer NFT"** (free, requires gas)
 4. Click **"Enter the Dungeon"**
 5. Play and earn rewards!
@@ -162,7 +162,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### Smart Contracts
 - **Language**: Move (Sui Framework)
-- **Network**: OneChain (Sui-based)
+- **Network**: OneChain (OCT-Based)
 - **Tools**: Sui CLI
 
 ### Frontend
@@ -183,7 +183,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 - **Events**: `AventurerMinted`
 
 ### 2. active_run.move + fee_distributor.move + rewards_pool.move
-- **Entry Fee**: 0.05 SUI per run
+- **Entry Fee**: 0.05 OCT per run
 - **Auto-Distribution**: 70% pool / 20% dev / 10% marketing
 - **Weekly Prizes**: Automatic distribution to top 10 players
 - See [SUI_ECONOMY.md](SUI_ECONOMY.md) for complete documentation
@@ -200,7 +200,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ### On-Chain (Sui)
 - ✅ NFT ownership verification
-- ✅ SUI-based reward economy
+- ✅ OCT-Based reward economy
 - ✅ Automatic fee distribution
 - ✅ Weekly prize pool
 - ✅ Progress tracking in shared object

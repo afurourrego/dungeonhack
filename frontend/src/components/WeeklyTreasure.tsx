@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getRewardsPoolInfo, RewardsPoolInfo } from "@/lib/sui-blockchain";
+import { getRewardsPoolInfo, RewardsPoolInfo } from "@/lib/onechain-blockchain";
 
 export default function WeeklyTreasure() {
   const [poolInfo, setPoolInfo] = useState<RewardsPoolInfo | null>(null);
@@ -140,7 +140,7 @@ export default function WeeklyTreasure() {
             Current Prize Pool
           </div>
           <div className="text-6xl font-bold text-dungeon-gold drop-shadow-[0_0_20px_rgba(251,191,36,0.8)] mb-1 dot-matrix">
-            {poolInfo.poolBalance.toFixed(2)} SUI
+            {poolInfo.poolBalance.toFixed(2)} OCT
           </div>
           <div className="text-xs text-amber-300/60">
             ≈ ${(poolInfo.poolBalance * 1.5).toFixed(2)} USD
@@ -189,7 +189,7 @@ export default function WeeklyTreasure() {
             </div>
             <div className="text-right">
               <div className="text-xl font-bold text-dungeon-gold dot-matrix">
-                {prize.amount.toFixed(2)} SUI
+                {prize.amount.toFixed(2)} OCT
               </div>
             </div>
           </div>

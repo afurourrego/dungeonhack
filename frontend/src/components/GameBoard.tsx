@@ -15,13 +15,13 @@ import {
   GameState,
   CardRevealState,
   DEV_MODE,
-  ENTRY_FEE_SUI,
+  ENTRY_FEE_OCT,
 } from "@/lib/constants";
 import {
   startDungeonRun,
   advanceToNextRoom as advanceRoomBlockchain,
   exitDungeonRun,
-} from "@/lib/sui-blockchain";
+} from "@/lib/onechain-blockchain";
 import { generateMonster } from "@/lib/combatUtils";
 import Leaderboard from "./Leaderboard";
 import WeeklyTreasure from "./WeeklyTreasure";
@@ -116,7 +116,7 @@ export default function GameBoard() {
             playerStats.atk
           );
           setActiveRunId(runId);
-          setMessage(`Entry fee paid! (${ENTRY_FEE_SUI} SUI)`);
+          setMessage(`Entry fee paid! (${ENTRY_FEE_OCT} OCT)`);
         } catch (error: any) {
           setError(error.message || "Failed to start run");
           setLoading(false);
@@ -334,7 +334,7 @@ export default function GameBoard() {
         )}
 
         <button onClick={resetGame} className="btn-primary">
-          New Run (Pay {ENTRY_FEE_SUI} SUI)
+          New Run (Pay {ENTRY_FEE_OCT} OCT)
         </button>
 
         <div className="mt-6">
@@ -355,7 +355,7 @@ export default function GameBoard() {
           </h2>
 
           <p className="text-gray-300 mb-4">
-            Pay an entry fee of <span className="text-dungeon-gold font-bold">{ENTRY_FEE_SUI} SUI</span> to
+            Pay an entry fee of <span className="text-dungeon-gold font-bold">{ENTRY_FEE_OCT} OCT</span> to
             enter the dungeon and compete for weekly prizes!
           </p>
 
@@ -395,7 +395,7 @@ export default function GameBoard() {
             disabled={isProcessing}
             className="btn-success"
           >
-            {isProcessing ? "Starting..." : `Pay ${ENTRY_FEE_SUI} SUI & Enter`}
+            {isProcessing ? "Starting..." : `Pay ${ENTRY_FEE_OCT} OCT & Enter`}
           </button>
 
           {DEV_MODE && (

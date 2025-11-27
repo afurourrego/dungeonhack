@@ -1,13 +1,13 @@
 module dungeon_flip::fee_distributor {
-    use sui::coin::{Self, Coin};
-    use sui::balance::{Self, Balance};
-    use sui::clock::{Self, Clock};
-    use sui::event;
-    use sui::object;
-    use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
+    use one::coin::{Self, Coin};
+    use one::balance::{Self, Balance};
+    use one::clock::{Self, Clock};
+    use one::event;
+    use one::object;
+    use one::transfer;
+    use one::tx_context::{Self, TxContext};
     use dungeon_flip::rewards_pool::{Self, RewardsPool};
-    use sui::sui::SUI;
+    use one::oct::OCT;
 
     /// Fee distribution percentages (in basis points, 100 = 1%)
     const POOL_PCT: u64 = 7000;      // 70%
@@ -17,8 +17,8 @@ module dungeon_flip::fee_distributor {
     /// Fee distribution treasury - holds accumulated fees
     public struct FeeDistributor has key {
         id: UID,
-        dev_balance: Balance<SUI>,
-        marketing_balance: Balance<SUI>,
+        dev_balance: Balance<OCT>,
+        marketing_balance: Balance<OCT>,
         total_fees_collected: u64,
     }
 
@@ -65,7 +65,7 @@ module dungeon_flip::fee_distributor {
     public fun distribute_entry_fee(
         distributor: &mut FeeDistributor,
         rewards_pool: &mut RewardsPool,
-        fee_payment: Coin<SUI>,
+        fee_payment: Coin<OCT>,
         clock: &Clock,
         ctx: &mut TxContext
     ) {

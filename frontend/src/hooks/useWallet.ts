@@ -10,7 +10,7 @@ import {
   mintAventurer,
   getAventurerNFT,
   getPlayerProgress,
-} from "@/lib/sui-blockchain";
+} from "@/lib/onechain-blockchain";
 
 export const useWallet = () => {
   const account = useCurrentAccount();

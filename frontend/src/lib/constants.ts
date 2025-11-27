@@ -63,13 +63,13 @@ export const POTION_TYPES = [
   999, // Full potion: Restore to max HP (represented as 999)
 ] as const;
 
-// Sui Network configuration
-export const SUI_NETWORK_CONFIG = {
-  network: process.env.NEXT_PUBLIC_SUI_NETWORK || "testnet", // Will use OneChain when available
-  rpcUrl: process.env.NEXT_PUBLIC_SUI_RPC_URL || "", // Will be OneChain RPC
+// OneChain network configuration
+export const ONECHAIN_NETWORK_CONFIG = {
+  network: process.env.NEXT_PUBLIC_ONECHAIN_NETWORK || "testnet",
+  rpcUrl: process.env.NEXT_PUBLIC_ONECHAIN_RPC_URL || "https://rpc-testnet.onelabs.cc:443",
 } as const;
 
-// Sui Package and Object IDs (will be filled after deployment)
+// OneChain package and object IDs (fill after deployment)
 export const PACKAGE_ID = process.env.NEXT_PUBLIC_PACKAGE_ID || "";
 export const GAME_ADMIN_ID = process.env.NEXT_PUBLIC_GAME_ADMIN_ID || "";
 export const MINT_REGISTRY_ID = process.env.NEXT_PUBLIC_MINT_REGISTRY_ID || "";
@@ -82,9 +82,9 @@ export const REWARDS_POOL_ID = process.env.NEXT_PUBLIC_REWARDS_POOL_ID || "";
 // Set to "true" to enable demo mode (bypass blockchain checks)
 export const DEV_MODE = process.env.NEXT_PUBLIC_DEV_MODE === "true";
 
-// Entry fee for dungeon runs in SUI (native token)
-export const ENTRY_FEE_SUI = 0.01; // 0.01 SUI
-export const ENTRY_FEE_MIST = 10_000_000; // 0.01 SUI in MIST (SUI has 9 decimals)
+// Entry fee for dungeon runs in OCT (native token)
+export const ENTRY_FEE_OCT = 0.01; // 0.01 OCT
+export const ENTRY_FEE_OCT_BASE = 10_000_000; // 0.01 OCT in base units (OCT has 9 decimals)
 
 // Fee distribution (automatic on entry):
 // 70% → Weekly Rewards Pool (distributed to top 10 players)
@@ -99,7 +99,7 @@ export const ENTRY_FEE_MIST = 10_000_000; // 0.01 SUI in MIST (SUI has 9 decimal
 export const REWARD_PER_MONSTER = 1; // Used for leaderboard scoring
 
 // For testing purposes, you can set these manually after deploying:
-// PACKAGE_ID: The package ID from `sui client publish`
+// PACKAGE_ID: The package ID from `one client publish`
 // MINT_REGISTRY_ID: The MintRegistry shared object ID for tracking NFT mints
 // PROGRESS_REGISTRY_ID: The ProgressRegistry shared object ID for tracking game progress
 

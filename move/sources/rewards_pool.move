@@ -1,13 +1,13 @@
 module dungeon_flip::rewards_pool {
-    use sui::coin::{Self, Coin};
-    use sui::balance::{Self, Balance};
-    use sui::clock::{Self, Clock};
-    use sui::event;
-    use sui::object;
-    use sui::transfer;
-    use sui::tx_context::{Self, TxContext};
+    use one::coin::{Self, Coin};
+    use one::balance::{Self, Balance};
+    use one::clock::{Self, Clock};
+    use one::event;
+    use one::object;
+    use one::transfer;
+    use one::tx_context::{Self, TxContext};
     use std::vector;
-    use sui::sui::SUI;
+    use one::oct::OCT;
 
     /// Errors
     const EDistributionNotReady: u64 = 0;
@@ -38,7 +38,7 @@ module dungeon_flip::rewards_pool {
     /// Weekly rewards pool
     public struct RewardsPool has key {
         id: UID,
-        pool_balance: Balance<SUI>,
+        pool_balance: Balance<OCT>,
         current_week: u64,
         last_distribution: u64,
         next_distribution_time: u64,
@@ -102,7 +102,7 @@ module dungeon_flip::rewards_pool {
     /// Add tokens to the current week's pool (called by fee_distributor)
     public fun add_to_pool(
         pool: &mut RewardsPool,
-        tokens: Coin<SUI>,
+        tokens: Coin<OCT>,
         clock: &Clock,
         ctx: &mut TxContext
     ) {

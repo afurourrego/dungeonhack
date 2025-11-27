@@ -1,14 +1,13 @@
 "use client";
 
 import { createNetworkConfig, SuiClientProvider, WalletProvider } from "@mysten/dapp-kit";
-import { getFullnodeUrl } from "@mysten/sui/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
+import { ONECHAIN_NETWORK_CONFIG } from "@/lib/constants";
 
 // Configure the network
 const { networkConfig } = createNetworkConfig({
-  testnet: { url: getFullnodeUrl("testnet") },
-  // Will be configured for OneChain later
+  [ONECHAIN_NETWORK_CONFIG.network]: { url: ONECHAIN_NETWORK_CONFIG.rpcUrl },
 });
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -16,7 +15,7 @@ export function Providers({ children }: { children: ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SuiClientProvider networks={networkConfig} defaultNetwork="testnet">
+      <SuiClientProvider networks={networkConfig} defaultNetwork={ONECHAIN_NETWORK_CONFIG.network}>
         <WalletProvider autoConnect>
           {children}
         </WalletProvider>
