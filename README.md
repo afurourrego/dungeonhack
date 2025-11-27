@@ -1,6 +1,6 @@
 # ⚔️ Dungeon Flip Lite
 
-A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT adventurers, on-chain rewards, and progress tracking on **OneChain**.
+A Web3 game built for **OneHack 2.0 Hackathon**, featuring NFT adventurers, on-chain rewards, and progress tracking on **OneChain**.
 
 ![Built for OneHack 2.0](https://img.shields.io/badge/Built%20for-OneHack%202.0-blue)
 ![OneChain](https://img.shields.io/badge/Blockchain-OneChain-purple)
@@ -8,7 +8,7 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 
 ## 🎮 Game Overview
 
-**Dungeon Flip Lite** is a simple yet engaging roguelite card game where players:
+**Dungeon Flip** is a simple yet engaging card game where players:
 
 1. Connect their **OneWallet** on OneChain
 2. Mint a free **Aventurer NFT** (OneChain Move object)
@@ -295,12 +295,41 @@ MIT License - see [LICENSE](LICENSE) file
 
 Built for OneHack 2.0 Hackathon
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgments & Third-Party Attributions
 
+This project complies with open-source licensing requirements and uses the following libraries and frameworks:
+
+### Blockchain & Web3
+- **[OneChain Framework](https://github.com/one-chain-labs/onechain)** (Apache 2.0) - Move smart contract framework for all on-chain logic
+- **[@mysten/dapp-kit](https://sdk.mystenlabs.com/dapp-kit)** (Apache 2.0) - Wallet integration and blockchain connectivity
+- **[@mysten/sui](https://sdk.mystenlabs.com)** (Apache 2.0) - OneChain blockchain SDK (SuiClient, Transaction, BCS)
+
+### Frontend Framework & Core Libraries
+- **[Next.js](https://nextjs.org)** (MIT) - React framework with App Router by Vercel
+- **[React](https://react.dev)** (MIT) - UI component library by Meta
+- **[TypeScript](https://www.typescriptlang.org)** (Apache 2.0) - Type-safe JavaScript by Microsoft
+
+### State Management & Data Fetching
+- **[Zustand](https://github.com/pmndrs/zustand)** (MIT) - Lightweight state management
+- **[@tanstack/react-query](https://tanstack.com/query)** (MIT) - Server state management and data fetching
+
+### Styling & UI Components
+- **[TailwindCSS](https://tailwindcss.com)** (MIT) - Utility-first CSS framework
+- **[Radix UI](https://www.radix-ui.com)** (MIT) - Accessible component primitives
+- **[PostCSS](https://postcss.org)** (MIT) & **[Autoprefixer](https://github.com/postcss/autoprefixer)** (MIT) - CSS processing
+
+### Development Tools
+- **[@types/node, @types/react, @types/react-dom](https://www.typescriptlang.org)** (MIT) - TypeScript type definitions
+- **[dotenv](https://github.com/motdotla/dotenv)** (BSD-2-Clause) - Environment variable management
+
+### Special Thanks
 - OneHack 2.0 Hackathon organizers
 - OneChain Foundation
 - OneWallet team
-- Next.js, TailwindCSS, React Query communities
+- Mysten Labs for dapp-kit and Move/Sui SDK
+- Open-source community contributors
+
+All dependencies are fully compliant with open-source licenses (MIT, Apache 2.0, BSD-2). Game assets (images, audio) are original creations for this project under MIT license.
 
 ---
 
