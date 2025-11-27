@@ -13,13 +13,13 @@ import {
   ONECHAIN_NETWORK_CONFIG,
 } from "./constants";
 
-// Hard-block known Sui package IDs to avoid signing against the wrong chain.
-const KNOWN_OLD_SUI_PACKAGE_IDS = ["0x6e18ac0bcb9a33b451849f5658fa6a9c6a6393bd96a46a0c59af14c7e0c96307"];
+// Hard-block known old package IDs to avoid signing against the wrong deployment.
+const KNOWN_OLD_PACKAGE_IDS = ["0x6e18ac0bcb9a33b451849f5658fa6a9c6a6393bd96a46a0c59af14c7e0c96307"];
 
 const assertOneChainConfig = () => {
-  if (!PACKAGE_ID || KNOWN_OLD_SUI_PACKAGE_IDS.includes(PACKAGE_ID.toLowerCase())) {
+  if (!PACKAGE_ID || KNOWN_OLD_PACKAGE_IDS.includes(PACKAGE_ID.toLowerCase())) {
     throw new Error(
-      "Set NEXT_PUBLIC_PACKAGE_ID to your OneChain deployment (not the old Sui package)."
+      "Set NEXT_PUBLIC_PACKAGE_ID to your current OneChain deployment (not an old package ID)."
     );
   }
 

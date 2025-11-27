@@ -162,8 +162,8 @@ public entry fun mint_basic_aventurer(
 - Only contract deployer can mint reward tokens
 - Mint registry enforces 1 NFT per address
 
-### ✅ Sui Move Safety Features
-- **No integer overflow**: Sui Move handles this automatically
+### ✅ OneChain Move Safety Features
+- **No integer overflow**: OneChain Move handles this automatically
 - **No reentrancy**: Move's linear type system prevents reentrancy
 - **Resource safety**: Objects cannot be duplicated or destroyed improperly
 
@@ -182,12 +182,12 @@ public entry fun mint_basic_aventurer(
 
 Before deploying, ensure:
 
-- [ ] **Build succeeds**: `sui move build` completes without errors
+- [ ] **Build succeeds**: `onechain move build` completes without errors
 - [ ] **Test on devnet first**: Deploy to devnet before testnet/mainnet
 - [ ] **Save admin keys securely**: The deployer address owns `GameAdmin` capability
 - [ ] **Document object IDs**: Save Package ID, GameAdmin ID, MintRegistry ID, ProgressRegistry ID
 - [ ] **Configure .env.local**: Set all required IDs in frontend environment variables
-- [ ] **Verify on Sui Explorer**: Check contract code matches source
+- [ ] **Verify on OneChain Explorer**: Check contract code matches source
 
 ---
 
@@ -196,8 +196,8 @@ Before deploying, ensure:
 After deployment, configure:
 
 ```env
-NEXT_PUBLIC_SUI_NETWORK=testnet
-NEXT_PUBLIC_PACKAGE_ID=0x...           # From: sui client publish
+NEXT_PUBLIC_OCT_NETWORK=testnet
+NEXT_PUBLIC_PACKAGE_ID=0x...           # From: onechain client publish
 NEXT_PUBLIC_GAME_ADMIN_ID=0x...        # GameAdmin object (owned by deployer)
 NEXT_PUBLIC_MINT_REGISTRY_ID=0x...     # MintRegistry shared object
 NEXT_PUBLIC_PROGRESS_REGISTRY_ID=0x... # ProgressRegistry shared object
@@ -216,7 +216,7 @@ NEXT_PUBLIC_PROGRESS_REGISTRY_ID=0x... # ProgressRegistry shared object
 The smart contracts are now secure for deployment with proper access controls:
 - Token minting is restricted to the game admin (deployer)
 - NFT minting is limited to 1 per address
-- All Sui Move best practices are followed
+- All OneChain Move best practices are followed
 
 **Recommendation**: Deploy to testnet for integration testing, then proceed to mainnet when ready.
 

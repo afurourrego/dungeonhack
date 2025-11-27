@@ -45,7 +45,7 @@ Technical overview of the project structure and design decisions.
 
 **Key Features:**
 - One free mint per wallet (enforced via MintRegistry)
-- Fixed stats stored on-chain: ATK=1, DEF=1, HP=4
+- Random stats stored on-chain: ATK: 1-2, DEF: 1-2, HP: 4-6 (random stats)
 - Sequential token IDs starting from 1
 - Owner can query their token ID
 
@@ -279,60 +279,89 @@ getPlayerProgress(signer, address) → { runs, monsters }
 ### Card Generation (`gameLogic.ts`)
 
 **Probability Distribution:**
-- 60% Monster (ATK 1-3 random)
-- 30% Treasure (10-30 gold random, tracked off-chain)
-- 10% Trap (1 HP damage)
+- 45% Monster (HP 1-3, ATK 1-3 random)
+- 30% Treasure (gems for leaderboard score)
+- 15% Trap (1 HP damage)
+- 10% Potion (restore HP up to max HP)
 
 ```typescript
 export const generateCard = (id: number): GameCard => {
   const random = Math.random();
 
   if (random < 0.1) return TRAP;
-  if (random < 0.4) return TREASURE;
+  if (random < 0.2) return POTION;
+  if (random < 0.5) return TREASURE;
   return MONSTER;
 };
 ```
 
-### Combat Resolution
+### Turn-Based Combat System
 
-**DEF-Based Combat System:**
-- Damage = Monster ATK - Player DEF
-- If damage > 0: Player loses that much HP
-- If damage <= 0: Player blocks the attack completely
-- Monsters only count as defeated if player survives the encounter
+**Combat Flow:**
+1. Player encounters monster card
+2. Monster attacks first (random damage roll)
+3. Player attacks (80% hit chance)
+4. Repeat until monster or player dies
+
+**Combat Mechanics:**
+- **Player Attack**: 80% hit chance, deals ATK damage
+- **Monster Attack**: Random damage between [min, max] range
+- **Defense**: Damage = Monster ATK - Player DEF (minimum 0)
+- **Defense can completely block**: If DEF >= Monster ATK, no damage taken
 
 ```typescript
-export const resolveCard = (card, playerDEF, currentHP) => {
-  if (card.type === MONSTER) {
-    const damage = Math.max(0, card.value - playerDEF);
-    if (damage > 0) {
-      return { newHP: currentHP - damage, message: `Took ${damage} damage!` };
-    } else {
-      return { message: "Blocked the attack!" };
-    }
-  }
-  // ... treasure & trap logic
-};
+// Monster Attack
+const damage = Math.floor(Math.random() * (maxDmg - minDmg + 1)) + minDmg;
+const actualDamage = Math.max(0, damage - playerDEF);
+playerHP -= actualDamage;
+
+// Player Attack
+const hitRoll = Math.random();
+if (hitRoll < 0.8) { // 80% hit chance
+  monsterHP -= playerATK;
+}
 ```
+
+### Infinite Dungeon System
+
+**Room Progression:**
+1. Player enters room with 4 cards
+2. Flip one card at a time
+3. Resolve card effect (combat, treasure, trap, potion)
+4. After 4 cards, player chooses:
+   - **Continue**: Go to next room (risk death for more rewards)
+   - **Exit**: End run successfully, record score
+
+**Scoring:**
+- Score = Total gems collected
+- Leaderboard ranks by gems collected per week
+- Top 10 players win OCT prizes
 
 ### Game Flow
 
 ```
-1. User clicks "Start Dungeon Run"
-   → Generate 4 random cards
+1. User pays 0.01 OCT entry fee
+   → Generate 4 random cards for room 1
    → Set gameState = IN_PROGRESS
 
-2. User clicks card #0
+2. User clicks card
    → Reveal card
-   → Resolve outcome
-   → Update HP/gold
-   → Check win/loss condition
+   → If Monster: Enter turn-based combat
+   → If Treasure: Collect gems
+   → If Trap: Lose 1 HP
+   → If Potion: Restore HP
 
-3. Repeat for cards #1, #2, #3
+3. After 4 cards cleared
+   → Show decision modal
+   → User chooses: Continue or Exit
 
-4. End game
-   → Calculate stats
-   → Record run on-chain
+4. If Continue
+   → Generate new 4 cards for next room
+   → Repeat from step 2
+
+5. If Exit or Death
+   → Record run on-chain (gems + rooms reached)
+   → Update weekly leaderboard
    → Show results screen
 ```
 
@@ -373,7 +402,7 @@ export const resolveCard = (card, playerDEF, currentHP) => {
 
 **Current Limitations:**
 - One adventurer type
-- Fixed stats
+- Random stats
 - Single game mode
 
 **Future Extensions:**
