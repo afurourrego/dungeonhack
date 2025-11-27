@@ -36,7 +36,7 @@ Use this checklist to ensure everything is ready for OneHack 2.0 submission.
 
 ### Contract Features
 - [x] One free mint per wallet (enforced via MintRegistry)
-- [x] Fixed stats (ATK 1, DEF 1, HP 4)
+- [x] Random stats (ATK: 1-2, DEF: 1-2, HP: 4-6 (random))
 - [x] Reward distribution system (TreasuryCap-based)
 - [x] Authorization system (GameAdmin capability pattern)
 - [x] Progress tracking in shared object (runs, monsters)

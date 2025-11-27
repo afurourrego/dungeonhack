@@ -8,9 +8,9 @@ export const GAME_CONFIG = {
 
 // Card type probabilities
 export const CARD_PROBABILITIES = {
-  MONSTER: 0.5, // 50%
+  MONSTER: 0.45, // 45%
   TREASURE: 0.3, // 30%
-  TRAP: 0.1, // 10%
+  TRAP: 0.15, // 15%
   POTION: 0.1, // 10%
 } as const;
 

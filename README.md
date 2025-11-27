@@ -324,7 +324,7 @@ This project complies with open-source licensing requirements and uses the follo
 
 ### Special Thanks
 - OneHack 2.0 Hackathon organizers
-- OneChain Foundation & development team
+- OneChain Foundation
 - OneWallet team
 - Mysten Labs for dapp-kit and Move/Sui SDK
 - Open-source community contributors

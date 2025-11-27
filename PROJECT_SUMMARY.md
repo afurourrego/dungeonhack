@@ -8,13 +8,14 @@ Quick overview for judges, developers, and stakeholders.
 
 A **Web3 roguelite card game** where players:
 - Connect **OneWallet**
-- Mint an **Adventurer NFT** (ERC-721)
-- Play dungeon runs with **4 random cards**
-- Defeat monsters to earn **Soul Fragment tokens** (ERC-20)
+- Mint an **Adventurer NFT** (OneChain Move object)
+- Play infinite dungeon runs with **4 random cards per room**
+- Defeat monsters in turn-based combat to collect **gems**
 - Track progress **permanently on OneChain**
+- Compete for weekly **OCT prizes**
 
 **Built for**: OneHack 2.0 Hackathon
-**Blockchain**: OneChain L1
+**Blockchain**: OneChain
 **Wallet**: OneWallet
 
 ---
@@ -23,21 +24,23 @@ A **Web3 roguelite card game** where players:
 
 ### 🎮 Gameplay
 - **Simple**: Click to flip cards, easy to understand
-- **Fast**: 2-3 minute runs
-- **Engaging**: Risk/reward decisions every card
+- **Fast**: 2-3 minutes per room
+- **Engaging**: Risk/reward decisions (Continue or Exit)
 - **Roguelite**: Randomized encounters, permanent consequences
+- **Turn-based Combat**: Strategic battles with dice rolls
 
 ### 🔗 Blockchain Integration
-- **NFT System**: Free adventurer mint (one per wallet)
-- **Token Rewards**: Earn on-chain for defeating monsters
-- **Progress Tracking**: Runs and kills stored permanently
+- **NFT System**: Free adventurer mint with random stats (one per wallet)
+- **OCT Entry Fees**: 0.01 OCT per run, auto-distributed
+- **Progress Tracking**: Runs and gems stored permanently on-chain
+- **Weekly Prizes**: Top 10 players win OCT rewards
 - **OneWallet**: Seamless connection and transaction signing
 
 ### 💻 Technology
-- **Smart Contracts**: Solidity 0.8.20, OpenZeppelin standards
+- **Smart Contracts**: Move (OneChain Framework)
 - **Frontend**: Next.js 14, TypeScript, TailwindCSS
 - **State Management**: Zustand (lightweight, fast)
-- **Web3**: ethers.js v6
+- **Web3**: OneChain SDK, @mysten/dapp-kit
 
 ---
 
@@ -45,16 +48,14 @@ A **Web3 roguelite card game** where players:
 
 ```
 DungeonFlip/
-├── contracts/           # 3 smart contracts (NFT, Token, Progress)
+├── move/                # Move smart contracts (NFT, Entry Fees, Progress)
 ├── frontend/            # Next.js app with React components
-├── scripts/             # Deployment and testing scripts
-├── docs/                # Comprehensive documentation
-└── README.md            # Main documentation
+└── docs/                # Comprehensive documentation
 ```
 
-**Total Files**: 30+ carefully organized files
-**Lines of Code**: ~3,500+ (contracts + frontend + scripts)
-**Documentation**: 5 markdown files totaling 2,000+ lines
+**Total Files**: 50+ carefully organized files
+**Lines of Code**: ~5,000+ (contracts + frontend)
+**Documentation**: 10+ markdown files
 
 ---
 
@@ -63,24 +64,27 @@ DungeonFlip/
 ### Smart Contracts (On-Chain)
 
 ```
-AventurerNFT.sol       → ERC-721 NFT (adventurer stats)
-SoulFragmentToken.sol  → ERC-20 Token (rewards)
-DungeonProgress.sol    → Progress tracking (runs, monsters)
+aventurer_nft.move         → Move Object NFT (adventurer stats)
+active_run.move            → Entry fee collection + run management
+fee_distributor.move       → OCT distribution (70% pool / 20% dev / 10% marketing)
+rewards_pool.move          → Weekly prize distribution
+dungeon_progress.move      → Progress tracking (runs, gems, rooms)
 ```
 
-**Security**: Authorization system prevents cheating
+**Security**: AdminCap pattern prevents unauthorized access
 **Gas Optimization**: Minimal storage, event-based indexing
+**Move Benefits**: Object model, parallel execution, resource safety
 
 ### Frontend (Off-Chain)
 
 ```
 Game Logic     → Card generation, combat resolution
-UI Components  → Wallet, NFT mint, game board, reward claim
+UI Components  → Wallet, NFT mint, game board, leaderboard
 State Store    → Zustand global state
-Blockchain     → ethers.js contract interactions
+Blockchain     → OneChain SDK contract interactions
 ```
 
-**Performance**: Instant gameplay, only rewards touch blockchain
+**Performance**: Instant gameplay, only entry fee touches blockchain
 **UX**: Clear instructions, real-time feedback, responsive design
 
 ---
@@ -91,9 +95,9 @@ Blockchain     → ethers.js contract interactions
 |------------|--------|---------------|
 | OneChain Integration | ✅ | All contracts deployed, RPC configured |
 | OneWallet Support | ✅ | Connect, disconnect, sign transactions |
-| On-Chain Mechanic | ✅ | NFT mint, token rewards, progress tracking |
-| NFT Implementation | ✅ | ERC-721 Adventurer NFT |
-| Token Implementation | ✅ | ERC-20 Soul Fragment token |
+| On-Chain Mechanic | ✅ | NFT mint, entry fees, progress tracking, weekly prizes |
+| NFT Implementation | ✅ | Move Object Adventurer NFT with random stats |
+| Token Economy | ✅ | OCT-based entry fees and rewards |
 | Web Project | ✅ | Next.js frontend with full UI |
 | Clean Code | ✅ | TypeScript, modular, documented |
 | Demo Ready | ✅ | Complete flow in 2-3 minutes |
@@ -106,47 +110,47 @@ Blockchain     → ethers.js contract interactions
 
 ```bash
 # 1. Install dependencies
-npm install
 cd frontend && npm install && cd ..
 
 # 2. Configure environment
-cp .env.example .env
-# Edit .env with your OneChain credentials
+cp frontend/.env.example frontend/.env.local
+# Edit .env.local with your OneChain credentials
 
 # 3. Deploy contracts
-npm run compile
-npm run deploy:onechain
+cd move
+onechain move build
+onechain client publish --gas-budget 100000000
 
 # 4. Start frontend
-npm run frontend:dev
+cd ../frontend
+npm run dev
 
 # 5. Open browser
 # Visit http://localhost:3000
 ```
 
-**Full guide**: See [QUICKSTART.md](QUICKSTART.md)
+**Full guide**: See [README.md](README.md)
 
 ---
 
 ## 📊 Statistics
 
 ### Code Metrics
-- **Smart Contracts**: 3 contracts, ~500 lines
-- **Frontend**: 15+ components, ~2,000 lines
-- **Scripts**: 5 deployment/test scripts
-- **Documentation**: 5 comprehensive guides
+- **Smart Contracts**: 5 Move modules, ~1,200 lines
+- **Frontend**: 20+ components, ~3,500 lines
+- **Documentation**: 10+ comprehensive guides
 
-### Gas Costs (Estimated)
-- **Mint NFT**: ~80,000 gas
-- **Claim Reward**: ~50,000 gas
-- **Record Progress**: ~40,000 gas
+### Gas Costs (Estimated on OneChain)
+- **Mint NFT**: ~2,000,000 gas units
+- **Start Run**: ~3,000,000 gas units (includes 0.01 OCT entry fee)
+- **Record Progress**: ~1,500,000 gas units
 
 ### Development Time
-- **Planning**: 2 hours
-- **Smart Contracts**: 4 hours
-- **Frontend**: 6 hours
-- **Testing & Documentation**: 3 hours
-- **Total**: ~15 hours
+- **Planning**: 3 hours
+- **Smart Contracts**: 8 hours
+- **Frontend**: 12 hours
+- **Testing & Documentation**: 5 hours
+- **Total**: ~28 hours
 
 ---
 
@@ -155,17 +159,18 @@ npm run frontend:dev
 **Time**: 2-3 minutes
 
 ```
-1. Connect OneWallet         (10 seconds)
-2. Mint Adventurer NFT        (20 seconds)
-3. Play Dungeon Run           (60 seconds)
+1. Connect OneWallet              (10 seconds)
+2. Mint Adventurer NFT            (20 seconds)
+3. Pay 0.01 OCT Entry Fee         (15 seconds)
+4. Play Dungeon Run               (60 seconds)
    → Flip 4 cards
-   → Defeat monster
-   → Show results
-4. Claim Soul Fragment        (20 seconds)
-5. Show On-Chain Verification (10 seconds)
+   → Fight monster
+   → Collect gems
+   → Continue or Exit
+5. Complete Run                   (10 seconds)
+6. View Leaderboard               (10 seconds)
+7. Show On-Chain Verification     (10 seconds)
 ```
-
-**Demo Guide**: See [DEMO.md](DEMO.md)
 
 ---
 
@@ -173,13 +178,14 @@ npm run frontend:dev
 
 ### 1. Hybrid Model
 - **Game logic off-chain**: Fast, free, instant feedback
-- **Rewards on-chain**: Permanent, tradeable, verifiable
+- **Critical data on-chain**: Entry fees, NFTs, progress, rewards
 - **Best of both worlds**: UX + decentralization
 
-### 2. Authorization System
-- **Problem**: Players could cheat
-- **Solution**: Only authorized contracts mint rewards
-- **Result**: Trustless but secure
+### 2. Move Object Model
+- **Owned Objects**: NFTs directly owned by players (no centralized registry)
+- **Shared Objects**: ProgressRegistry allows concurrent updates
+- **Parallel Execution**: OneChain/Move enables high throughput
+- **Resource Safety**: Move prevents common bugs (double-spending, etc.)
 
 ### 3. Scalable Design
 - **Modular architecture**: Easy to add features
@@ -189,8 +195,8 @@ npm run frontend:dev
 ### 4. Developer Experience
 - **TypeScript**: Type safety throughout
 - **Documentation**: Every major function explained
-- **Scripts**: Automated deployment and testing
 - **Clean code**: Follow best practices
+- **Move**: Safer than Solidity, easier to audit
 
 ---
 
@@ -199,34 +205,37 @@ npm run frontend:dev
 ### vs. Traditional Games
 ✅ **Ownership**: Players truly own their assets (NFTs)
 ✅ **Transparency**: All progress verifiable on-chain
-✅ **Monetization**: Earn tradeable tokens while playing
+✅ **Monetization**: Compete for real OCT prizes
 
 ### vs. Other Web3 Games
 ✅ **Simplicity**: Easy to understand, quick to play
 ✅ **Performance**: Instant gameplay (no blockchain lag)
-✅ **Accessibility**: Free to start (one free NFT mint)
+✅ **Accessibility**: Free NFT mint, low entry fee
 ✅ **Documentation**: Comprehensive guides included
+✅ **OneChain Speed**: Fast finality, low gas costs
 
 ---
 
 ## 🛣️ Roadmap
 
 ### Phase 1: Hackathon (Current) ✅
-- [x] Basic adventurer class
-- [x] 4-card dungeon runs
-- [x] NFT and token system
+- [x] Basic adventurer class with random stats
+- [x] Infinite dungeon runs (4 cards per room)
+- [x] Turn-based combat system
+- [x] NFT and OCT economy system
+- [x] Weekly leaderboard and prizes
 - [x] OneChain deployment
 
 ### Phase 2: Post-Hackathon (Next)
 - [ ] Multiple adventurer classes (warrior, mage, rogue)
 - [ ] Equipment system (weapons, armor NFTs)
-- [ ] Longer runs (10+ cards)
 - [ ] Difficulty levels
+- [ ] Special events and seasonal content
 
 ### Phase 3: Future
 - [ ] PvP battles
-- [ ] Guild system
-- [ ] Leaderboards
+- [ ] Guild system (DAOs)
+- [ ] Leaderboards with historical data
 - [ ] Mobile app
 - [ ] Cross-chain support
 
@@ -237,7 +246,7 @@ npm run frontend:dev
 **GitHub**: [Repository URL]
 **Live Demo**: [Deployed URL]
 **Documentation**: See README.md
-**Team**: [Your Name]
+**Team**: Built for OneHack 2.0
 
 ---
 
@@ -246,16 +255,16 @@ npm run frontend:dev
 ### User Engagement
 - **Time to First Play**: < 3 minutes
 - **Session Length**: 5-15 minutes
-- **Retention**: Daily quests (future)
+- **Retention**: Weekly prizes incentivize return
 
 ### Blockchain Metrics
-- **Gas Efficiency**: < 100k per full session
-- **Transaction Speed**: < 30 seconds per tx
+- **Gas Efficiency**: ~5M gas per full session
+- **Transaction Speed**: < 5 seconds per tx on OneChain
 - **On-Chain Data**: Minimal storage, events for indexing
 
 ### Developer Metrics
 - **Code Quality**: TypeScript, no warnings
-- **Test Coverage**: Unit tests ready (future)
+- **Test Coverage**: Move tests implemented
 - **Documentation**: 100% key functions explained
 
 ---
@@ -268,7 +277,7 @@ npm run frontend:dev
 ✅ **OneWallet support** (connect, sign, track)
 ✅ **Clean architecture** (modular, documented, scalable)
 ✅ **Engaging gameplay** (simple yet fun)
-✅ **On-chain rewards** (NFTs + tokens + progress)
+✅ **On-chain rewards** (NFTs + OCT + progress)
 
 **Ready for**: Deployment, demos, and future development.
 
