@@ -127,8 +127,8 @@ TreasuryCap:          0x... (for SOUL_FRAGMENT minting)
 - Risk/reward decisions at every room
 
 **Card System**:
-- **Monster** (50%): Turn-based combat encounter
-  - HP: 2-6, ATK: 1-2-3 (random)
+- **Monster** (45%): Turn-based combat encounter
+  - HP: 1-3, ATK: 1-2-3 (random)
   - Combat: Monster attacks first, then player attacks (80% hit chance)
   - DEF-based damage: Damage = Monster ATK - Player DEF (minimum 0)
   - Defense can completely block attacks if DEF >= Monster ATK
@@ -139,7 +139,7 @@ TreasuryCap:          0x... (for SOUL_FRAGMENT minting)
   - Leaderboard ranks by total gems collected per week
   - Top 10 players win OCT prizes
 
-- **Trap** (10%): Hazard
+- **Trap** (15%): Hazard
   - Always deals 1 HP damage
   - Cannot be avoided
   - Tests player's luck

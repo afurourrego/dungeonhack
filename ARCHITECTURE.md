@@ -279,9 +279,9 @@ getPlayerProgress(signer, address) → { runs, monsters }
 ### Card Generation (`gameLogic.ts`)
 
 **Probability Distribution:**
-- 50% Monster (HP 2-6, ATK 1-3 random)
+- 45% Monster (HP 1-3, ATK 1-3 random)
 - 30% Treasure (gems for leaderboard score)
-- 10% Trap (1 HP damage)
+- 15% Trap (1 HP damage)
 - 10% Potion (restore HP up to max HP)
 
 ```typescript

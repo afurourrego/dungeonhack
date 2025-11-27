@@ -384,7 +384,7 @@ export default function GameBoard() {
           <p className="text-gray-400 text-sm mb-6">
             Each room has 4 cards. Choose 1 to reveal.
             <br />
-            50% Monster | 30% Treasure | 10% Trap | 10% Potion
+            45% Monster | 30% Treasure | 15% Trap | 10% Potion
             <br />
             After each room: Continue (risk death) or Exit (claim rewards).
             <br />

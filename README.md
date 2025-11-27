@@ -23,9 +23,9 @@ A Web3 roguelite mini-game built for **OneHack 2.0 Hackathon**, featuring NFT ad
 - **Infinite Dungeon**: Continue through rooms or exit with your rewards
 - **Cards per Room**: 4 cards
 - **Card Types**:
-  - 🦹 **Monster** (50%): Enter turn-based combat with random dice rolls
+  - 🦹 **Monster** (45%): Enter turn-based combat with random dice rolls
   - 💎 **Treasure** (30%): Collect gems (leaderboard score)
-  - 🕸️ **Trap** (10%): Lose 1 HP
+  - 🕸️ **Trap** (15%): Lose 1 HP
   - 🧪 **Potion** (10%): Restore HP up to your max HP
 
 - **Basic Adventurer Stats**:
